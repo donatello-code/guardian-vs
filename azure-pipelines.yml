@@ -1,0 +1,36 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main # Triggers build on every push to the main branch
+
+pool:
+  vmImage: 'ubuntu-latest' # Standard hosted agent
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x' # Cline requires Node 18 or higher
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    cd webview-ui
+    npm install
+    cd ..
+  displayName: 'Install Dependencies (Root & Webview)'
+
+- script: npm run compile
+  displayName: 'Compile TypeScript'
+
+- script: npx @vscode/vsce package
+  displayName: 'Package Extension (.vsix)'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.SourcesDirectory)'
+    artifact: 'guardian-vs-package'
+    publishLocation: 'pipeline'
+  displayName: 'Save .vsix for Download'
