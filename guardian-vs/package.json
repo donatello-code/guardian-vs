@@ -2,7 +2,7 @@
 	"name": "guardian-vs",
 	"displayName": "Guardian VS",
 	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
-	"version": "3.66.0",
+	"version": "3.7.0",
 	"icon": "assets/icons/icon.png",
 	"workspaces": [
 		".",
@@ -15,7 +15,7 @@
 		"name": "Guardian VS"
 	},
 	"license": "Apache-2.0",
-	"publisher": "guardian-vs",
+	"publisher": "GuardianVS",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/guardian-vs/guardian-vs"
@@ -557,6 +557,7 @@
 		"clone-deep": "^4.0.1",
 		"default-shell": "^2.2.0",
 		"diff": "^5.2.0",
+		"dprint-node": "^1.0.8",
 		"exceljs": "^4.4.0",
 		"execa": "^9.5.2",
 		"fast-deep-equal": "^3.1.3",

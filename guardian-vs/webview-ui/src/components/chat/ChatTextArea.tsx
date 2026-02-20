@@ -1607,7 +1607,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 										title="Add to Queue"
 										onClick={() => {
 											if (!sendingDisabled && inputValue.trim()) {
-												messageHandlers.handleAddToQueue(inputValue, selectedImages, selectedFiles)
+												messageHandlers?.handleAddToQueue(inputValue, selectedImages, selectedFiles)
 											}
 										}}
 									/>

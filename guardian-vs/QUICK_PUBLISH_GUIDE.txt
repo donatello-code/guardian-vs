@@ -1,0 +1,43 @@
+QUICK PUBLISHING GUIDE FOR GUARDIAN VS
+========================================
+
+1. UPDATE VERSION (in package.json)
+   - Edit: "version": "X.Y.Z"
+   - Current: 3.7.0
+
+2. BUILD EXTENSION
+   npm install
+   cd webview-ui && npm install && cd ..
+   npm run package
+
+3. CREATE VSIX
+   npx @vscode/vsce package
+   → Creates: guardian-vs-X.Y.Z.vsix
+
+4. TEST LOCALLY
+   - Open VS Code
+   - Extensions → "..." → "Install from VSIX"
+   - Select the .vsix file
+   - Test thoroughly
+
+5. PUBLISH TO MARKETPLACE
+   npx @vscode/vsce publish --allow-package-secrets sendgrid
+
+   For pre-release:
+   npx @vscode/vsce publish --allow-package-secrets sendgrid --pre-release
+
+6. VERIFY
+   - Visit: https://marketplace.visualstudio.com/items?itemName=GuardianVS.guardian-vs
+   - Check new version appears
+
+PREREQUISITES (One-time setup):
+- Publisher account: https://marketplace.visualstudio.com/manage/publishers/guardianvs
+- Personal Access Token (PAT) with "Marketplace (Publish)" scope
+- Login: npx @vscode/vsce login GuardianVS
+
+TROUBLESHOOTING:
+- Build fails? Run: npm run check-types
+- Authentication error? Re-login: vsce logout && vsce login GuardianVS
+- Version conflict? Use higher version number
+
+Full guide: See PUBLISHING_GUIDE.md

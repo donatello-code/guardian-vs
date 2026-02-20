@@ -1,12 +1,13 @@
 import { Controller } from "@core/controller"
-import { Empty, QueueResponse, QueueItem } from "@shared/proto/cline/state"
+import { Empty } from "@shared/proto/cline/common"
+import { QueueResponse, QueueItem } from "@shared/proto/cline/state"
 
 /**
  * Handler for getting the current queue
  */
 export async function getQueue(controller: Controller, request: Empty): Promise<QueueResponse> {
 	const queuedPrompts = controller.stateManager.getGlobalStateKey("queuedPrompts") || []
-	
+
 	// Convert string prompts to QueueItem objects
 	const items: QueueItem[] = queuedPrompts.map((prompt: string, index: number) => {
 		return QueueItem.create({
@@ -15,6 +16,6 @@ export async function getQueue(controller: Controller, request: Empty): Promise<
 			timestamp: Date.now(),
 		})
 	})
-	
+
 	return QueueResponse.create({ items })
 }

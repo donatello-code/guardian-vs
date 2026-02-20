@@ -350,7 +350,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 		const output = outputIndex === -1 ? "" : text.slice(outputIndex + COMMAND_OUTPUT_STRING.length).trim()
 
 		const isAsk = type === "ask"
-		const label = isAsk ? "Cline wants to execute this command: " : "Cline executed this command: "
+		const label = isAsk ? "Guardian VS CLI Command: " : "Guardian VS CLI Command: "
 
 		return (
 			<Box flexDirection="column" marginBottom={1} width="100%">

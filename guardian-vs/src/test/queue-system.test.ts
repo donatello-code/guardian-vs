@@ -3,6 +3,8 @@
  * This is a conceptual test - in a real implementation, we would need proper test setup
  */
 
+import { describe, it, expect } from "vitest"
+
 describe("Queue System", () => {
 	it("should add prompts to queue", async () => {
 		// This is a conceptual test

@@ -12,7 +12,7 @@ interface QueueDisplayProps {
  * Simple queue display component showing queued prompts
  */
 export const QueueDisplay: React.FC<QueueDisplayProps> = ({ onClearQueue, onRemoveItem }) => {
-	const { state } = useExtensionState()
+	const state = useExtensionState()
 	const queuedPrompts = state?.queuedPrompts || []
 
 	if (queuedPrompts.length === 0) {

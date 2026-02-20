@@ -1123,7 +1123,7 @@ export class Controller {
 		const nextPrompt = queuedPrompts[0]
 		const updatedQueue = queuedPrompts.slice(1)
 		this.stateManager.setGlobalState("queuedPrompts", updatedQueue)
-		
+
 		// Start the next task
 		await this.initTask(nextPrompt)
 		await this.postStateToWebview()

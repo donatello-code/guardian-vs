@@ -241,7 +241,7 @@ export class ExecuteCommandToolHandler implements IFullyManagedTool {
 		} else {
 			// Manual approval flow
 			showNotificationForApproval(
-				`Cline wants to execute a command: ${actualCommand}`,
+				`Guardian VS CLI Command: ${actualCommand}`,
 				config.autoApprovalSettings.enableNotifications,
 			)
 
