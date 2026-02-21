@@ -3,7 +3,11 @@ QUICK PUBLISHING GUIDE FOR GUARDIAN VS
 
 1. UPDATE VERSION (in package.json)
    - Edit: "version": "X.Y.Z"
-   - Current: 3.7.0
+   - Current: 3.7.1
+   - IMPORTANT: Once a version is published to the marketplace, it CANNOT be modified
+   - If version X.Y.Z already exists, you MUST increment to X.Y.(Z+1) or higher
+   - Version format: MAJOR.MINOR.PATCH (semantic versioning)
+   - Common practice: Increment PATCH for bug fixes, MINOR for new features, MAJOR for breaking changes
 
 2. BUILD EXTENSION
    npm install
@@ -39,5 +43,11 @@ TROUBLESHOOTING:
 - Build fails? Run: npm run check-types
 - Authentication error? Re-login: vsce logout && vsce login GuardianVS
 - Version conflict? Use higher version number
+  - Error: "The version X.Y.Z already exists and cannot be modified"
+  - Solution: Increment version in package.json (e.g., X.Y.Z → X.Y.(Z+1))
+  - Rebuild and create new VSIX with updated version
+- Marketplace rejects VSIX with same filename?
+  - Rename VSIX file to include timestamp: guardian-vs-X.Y.Z-YYYYMMDD-HHMMSS.vsix
+  - The marketplace may cache filenames; unique names help avoid rejection
 
 Full guide: See PUBLISHING_GUIDE.md
