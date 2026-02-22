@@ -17,7 +17,7 @@ import type { Controller } from "@/core/controller"
 import { refreshOcaModels } from "@/core/controller/models/refreshOcaModels"
 import { StateManager } from "@/core/storage/StateManager"
 import { openAiCodexOAuthManager } from "@/integrations/openai-codex/oauth"
-import { ClineAccountService } from "@/services/account/ClineAccountService"
+import { GuardianAccountService } from "@/services/account/GuardianAccountService"
 import { AuthService, ClineAccountOrganization } from "@/services/auth/AuthService"
 import { StringRequest } from "@/shared/proto/cline/common"
 import { openExternal } from "@/utils/env"
@@ -315,7 +315,7 @@ export const SettingsPanelContent: React.FC<SettingsPanelContentProps> = ({
 				return
 			}
 
-			const accountService = ClineAccountService.getInstance()
+				const accountService = GuardianAccountService.getInstance()
 
 			// Fetch fresh organization info from server (like webview's getUserOrganizations RPC)
 			// Don't use authService.getUserOrganizations() as it returns cached data
@@ -388,7 +388,7 @@ export const SettingsPanelContent: React.FC<SettingsPanelContentProps> = ({
 			}
 			setIsPickingOrganization(false)
 			try {
-				await ClineAccountService.getInstance().switchAccount(orgId || undefined)
+				await GuardianAccountService.getInstance().switchAccount(orgId || undefined)
 				// Refetch fresh org data from server
 				await fetchAccountInfo()
 			} catch {

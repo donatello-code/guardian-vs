@@ -87,13 +87,27 @@ export interface BannerAction {
  */
 
 export const BANNER_DATA: BannerCardData[] = [
-	// Sonnet 4.6 banner
+	// Guardian LLM API announcement
 	{
-		// Bump this version string when copy/CTA changes and you want the banner to reappear.
-		id: "claude-sonnet-4-6-2026-feb-18",
+		id: "guardian-llm-api-q2-2026",
+		icon: "rocket",
+		title: "Guardian LLM API Coming Q2 2026",
+		description: "Our own high-performance LLM API designed specifically for coding tasks. Get early access and exclusive pricing.",
+		actions: [
+			{
+				title: "Learn more",
+				action: BannerActionType.Link,
+				arg: "https://guardian-vs.dev/llm-api",
+			},
+		],
+	},
+
+	// Claude Sonnet 4.6 banner (updated)
+	{
+		id: "claude-sonnet-4-6-2026-feb-21",
 		icon: "sparkles",
 		title: "Try Claude Sonnet 4.6",
-		description: "Anthropic's latest model with strong reasoning and coding performance.",
+		description: "Anthropic's latest model with advanced reasoning and superior coding performance. Perfect for complex development tasks.",
 		actions: [
 			{
 				title: "Use Sonnet 4.6",
@@ -104,49 +118,36 @@ export const BANNER_DATA: BannerCardData[] = [
 		],
 	},
 
-	// Minimax free promo banner
+	// Quickstart: Workflows & Todo
 	{
-		// Bump this version string when copy/CTA changes and you want the banner to reappear.
-		id: "minimax-m2.5-free-2026-feb-18",
-		icon: "zap",
-		title: "Try MiniMax M2.5 Free",
-		description: "SOTA coding capability with lightning fast inference, free in Cline.",
+		id: "quickstart-workflows-todo",
+		icon: "list-checks",
+		title: "Quickstart: Workflows & Todo",
+		description: "Use `/deep-planning` for structured implementation. Guardian VS automatically creates todo lists and tracks progress as you work.",
 		actions: [
 			{
-				title: "Try now",
-				action: BannerActionType.SetModel,
-				arg: "minimax/minimax-m2.5",
-				tab: "free",
+				title: "Try workflow",
+				action: BannerActionType.ShowFeatureSettings,
 			},
 		],
 	},
 
-	// ChatGPT integration banner
+	// ChatGPT integration banner (updated)
 	{
-		id: "chatgpt-integration-v1",
+		id: "chatgpt-integration-v2",
 		icon: "megaphone",
-		title: "Use ChatGPT with Cline",
-		description:
-			"Bring your ChatGPT subscription to Cline! Use your existing plan directly with no per token costs or API keys to manage.",
+		title: "Connect Your ChatGPT Subscription",
+		description: "Use GPT-5, GPT-4.5, and other OpenAI models directly through your existing ChatGPT Plus/Pro subscription.",
 		actions: [
 			{
-				title: "Connect",
+				title: "Connect now",
 				action: BannerActionType.ShowApiSettings,
-				arg: "openai-codex", // Pre-select OpenAI Codex provider
+				arg: "openai-codex",
 			},
 		],
 	},
 
-	// Jupyter Notebooks banner
-	{
-		id: "jupyter-notebooks-v1",
-		icon: "book-open",
-		title: "Jupyter Notebooks",
-		description:
-			"Comprehensive AI-assisted editing of `.ipynb` files with full cell-level context awareness. [Learn More →](https://docs.cline.bot/features/jupyter-notebooks)",
-	},
-
-	// Platform-specific banner (Windows)
+	// Platform-specific banner (Windows) - keeping as is
 	{
 		id: "cli-info-windows-v1",
 		icon: "terminal",
@@ -156,7 +157,7 @@ export const BANNER_DATA: BannerCardData[] = [
 			"Available for macOS and Linux. Coming soon to other platforms. [Learn more](https://docs.cline.bot/cline-cli/overview)",
 	},
 
-	// Info banner with inline link
+	// Info banner with inline link - keeping as is
 	{
 		id: "info-banner-v1",
 		icon: "lightbulb",

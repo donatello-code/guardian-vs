@@ -79,28 +79,28 @@ export const WhatsNewItems: React.FC<WhatsNewItemsProps> = ({
 				<>
 					{/* Hardcoded fallback items shown when remote welcome banners feature flag is off */}
 					<li className="mb-2">
-						<strong>Claude Sonnet 4.6 is here!</strong> Advanced reasoning and coding performance.{" "}
-						<InlineModelLink label="Try now" modelId="anthropic/claude-sonnet-4.6" pickerTab="recommended" />
-					</li>
-					<li className="mb-2">
-						<strong>Gemini 3.1 Pro:</strong> Google's latest SOTA model across most reasoning, coding, and stem use
-						cases <InlineModelLink label="Try now" modelId="google/gemini-3.1-pro-preview" pickerTab="recommended" />
-					</li>{" "}
-					<li className="mb-2">
-						<strong>MiniMax M2.5 & Z.ai GLM 5:</strong> available in Cline with free promo, ends Friday Feb 20{" "}
-						<InlineModelLink label="Try now" modelId="minimax/minimax-m2.5" pickerTab="free" />
-					</li>
-					<li className="mb-2">
-						<strong>Cline CLI 2.0:</strong> Major upgrade bringing interactive and autonomous agentic coding to your
-						terminal. Install with <code style={inlineCodeStyle}>npm install -g cline</code>
+						<strong>Welcome to Guardian VS!</strong> Your AI coding partner that thinks like a developer. I can edit files, run commands, browse the web, and more—always with your permission.{" "}
 						<a
-							href="https://cline.bot/cli"
-							rel="noopener noreferrer"
-							style={{ color: "var(--vscode-textLink-foreground)" }}
-							target="_blank">
-							{" "}
-							Learn more
+							href="#"
+							onClick={(event) => {
+								event.preventDefault()
+								// This would need to be connected to open the walkthrough
+								console.log("Take a Tour clicked")
+							}}
+							style={{ color: "var(--vscode-textLink-foreground)", cursor: "pointer" }}>
+							Take a Tour
 						</a>
+					</li>
+					<li className="mb-2">
+						<strong>Start with any coding goal</strong> - Describe what you want to build or fix. I'll plan, ask questions, and execute step-by-step like a true development partner.
+					</li>
+					<li className="mb-2">
+						<strong>Connect to top AI models</strong> - Use Claude Sonnet, Gemini, GPT, and more through our integrated providers. Configure your API key to get started.{" "}
+						<span
+							onClick={() => onNavigateToModelPicker("recommended")}
+							style={{ color: "var(--vscode-textLink-foreground)", cursor: "pointer" }}>
+							Set up API
+						</span>
 					</li>
 				</>
 			)}

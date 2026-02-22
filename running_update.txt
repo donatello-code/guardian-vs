@@ -1,0 +1,246 @@
+# GUARDIAN VS PRODUCTION WORKFLOW v4.0
+# ======================================
+# CLI-FOCUSED RELEASE AUTOMATION & DEPLOYMENT GUIDE
+# Last updated: $(date +"%Y-%m-%d %H:%M:%S")
+
+## 🚀 QUICK START: ONE-LINER RELEASE
+# -----------------------------------
+# Complete release with version bump, commit, push, and VSIX creation:
+python automate_vsix_release.py --quick
+
+# Release with specific version (e.g., 4.0.0):
+python automate_vsix_release.py --quick-version 4.0.0
+
+## 🔧 CORE CLI COMMANDS
+# ---------------------
+
+### 1. GIT WORKFLOW COMMANDS
+```bash
+# Stage all changes and commit with structured message
+git add . && git commit -m "feat: Update welcome messaging and banners
+- [x] Added Guardian LLM API Q2 2026 announcement
+- [x] Enhanced Claude Sonnet 4.6 description
+- [x] Created quickstart workflows & todo guidance
+- [x] Updated ChatGPT integration banner
+Ref: #update-welcome-v4"
+
+# Push to main branch
+git push origin main
+
+# Create and push version tag
+git tag -a v4.0.0 -m "Release v4.0.0: Production-ready welcome messaging update"
+git push origin v4.0.0
+```
+
+### 2. BUILD & TEST COMMANDS
+```bash
+# Build webview UI
+cd guardian-vs && npm run build:webview
+
+# Run full test suite
+cd guardian-vs && npm test
+
+# TypeScript type checking
+cd guardian-vs && npx tsc --noEmit
+
+# Clean rebuild
+cd guardian-vs && npm run clean && npm install && npm run build:webview
+```
+
+### 3. VSIX AUTOMATION COMMANDS
+```bash
+# Show current version info
+python automate_vsix_release.py info
+
+# Update version only (patch bump)
+python automate_vsix_release.py version --bump patch
+
+# Build VSIX only
+python automate_vsix_release.py build
+
+# Full release with custom message
+python automate_vsix_release.py release --bump minor --message "Release v4.0.0: Production welcome messaging"
+
+# Dry run (no commit, no push)
+python automate_vsix_release.py release --bump patch --no-commit --no-push
+```
+
+## 📋 PRODUCTION RELEASE CHECKLIST
+# ---------------------------------
+# Run these commands in sequence for a production release:
+
+# 1. Pre-release validation
+cd guardian-vs && npx tsc --noEmit
+cd guardian-vs && npm test
+cd guardian-vs && npm run build:webview
+
+# 2. Update CHANGELOG (manual step)
+# Edit guardian-vs/CHANGELOG.md with release notes
+
+# 3. Automated release
+python automate_vsix_release.py --quick-version 4.0.0
+
+# 4. Post-release verification
+ls -la guardian-vs-*.vsix
+git log --oneline -5
+git tag -l | tail -5
+
+## ⚡ TIME-MANAGED TASK EXECUTION
+# -------------------------------
+# Commands with automatic timeout (15s) for production safety:
+
+# Build with timeout
+timeout 15s cd guardian-vs && npm run build:webview || echo "Build timed out after 15s"
+
+# Test with timeout  
+timeout 15s cd guardian-vs && npm test || echo "Tests timed out after 15s"
+
+# Type check with timeout
+timeout 15s cd guardian-vs && npx tsc --noEmit || echo "Type check timed out after 15s"
+
+## 🎯 TARGETED FILE UPDATES
+# -------------------------
+# Update specific files with CLI commands:
+
+# Update banner data
+sed -i '' 's/Try Claude Sonnet 4\.6/Try Claude Sonnet 4.6 (Production)/g' guardian-vs/src/shared/cline/banner.ts
+
+# Update version in package.json
+cd guardian-vs && npm version patch --no-git-tag-version
+
+# Check file changes
+git diff --name-only
+git status --short
+
+## 🔄 ITERATIVE DEVELOPMENT COMMANDS
+# ----------------------------------
+# Rapid iteration commands for development:
+
+# Watch and rebuild webview (development)
+cd guardian-vs && npm run dev:webview
+
+# Run specific test file
+cd guardian-vs && npm test -- --grep "banner"
+
+# Lint and format code
+cd guardian-vs && npx biome check --apply
+
+# Check bundle size
+cd guardian-vs/webview-ui && du -sh build/
+
+## 🏷️ VERSION MANAGEMENT
+# ----------------------
+# Version control and tagging:
+
+# List all versions
+git tag -l | grep -E '^v[0-9]' | sort -V
+
+# Show current version from package.json
+cd guardian-vs && node -p "require('./package.json').version"
+
+# Compare versions
+git diff v3.99.0 v4.0.0 --name-only
+
+# Create hotfix branch
+git checkout -b hotfix/v4.0.1 main
+
+## 📊 MONITORING & LOGS
+# ---------------------
+# Production monitoring commands:
+
+# Check VSIX file size
+ls -lh *.vsix | awk '{print $5, $9}'
+
+# View recent git activity
+git log --oneline --graph -10
+
+# Check disk usage
+du -sh guardian-vs/
+du -sh guardian-vs/webview-ui/build/
+
+# Monitor processes
+ps aux | grep -E "(node|npm|python)" | grep -v grep
+
+## 🚨 ERROR RECOVERY
+# ------------------
+# Recovery commands for common issues:
+
+# Reset failed build
+cd guardian-vs && rm -rf node_modules webview-ui/node_modules && npm install
+
+# Revert last commit (if needed)
+git reset --soft HEAD~1
+
+# Clean VSIX artifacts
+rm -f guardian-vs-*.vsix
+
+# Fix permission issues
+chmod +x automate_vsix_release.py
+chmod +x guardian-vs/scripts/*.sh
+
+## 📈 PERFORMANCE OPTIMIZATION
+# ----------------------------
+# Optimization commands:
+
+# Minify and optimize build
+cd guardian-vs && npm run build:webview -- --minify
+
+# Analyze bundle size
+cd guardian-vs/webview-ui && npx vite-bundle-analyzer
+
+# Cache cleanup
+npm cache clean --force
+
+## 🔐 SECURITY CHECKS
+# -------------------
+# Security validation commands:
+
+# Check for vulnerable dependencies
+cd guardian-vs && npm audit
+
+# Verify file integrity
+find guardian-vs -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | xargs wc -l
+
+# Validate VSIX contents
+unzip -l guardian-vs-4.0.0.vsix | head -20
+
+## 📝 PRODUCTION NOTES
+# --------------------
+# Current Production State:
+# - Version: 4.0.0 (target)
+# - Status: Ready for production deployment
+# - Changes: Updated welcome messaging, banners, and workflows
+# - Dependencies: All tests passing, type checks clean
+
+# Next Production Release:
+# 1. Run full test suite: npm test
+# 2. Update version: python automate_vsix_release.py version --bump minor
+# 3. Build VSIX: python automate_vsix_release.py build
+# 4. Commit & push: git add . && git commit -m "Release v4.0.0" && git push origin main
+# 5. Create tag: git tag -a v4.0.0 -m "Production release" && git push origin v4.0.0
+
+## 🆘 TROUBLESHOOTING
+# -------------------
+# Common issues and solutions:
+
+# Issue: VSIX build fails
+# Solution: rm -rf guardian-vs/node_modules && npm install
+
+# Issue: TypeScript errors
+# Solution: npx tsc --noEmit --showConfig
+
+# Issue: Webview build fails
+# Solution: cd guardian-vs/webview-ui && rm -rf node_modules build && npm install
+
+# Issue: Git push rejected
+# Solution: git pull --rebase origin main && git push origin main
+
+## 📞 SUPPORT
+# ------------
+# For production issues:
+# 1. Check logs: tail -f /var/log/guardian-vs.log
+# 2. Monitor metrics: Check bundle size and test coverage
+# 3. Rollback if needed: git revert <commit-hash>
+# 4. Contact: devops@guardian-vs.dev
+
+# EOF - Guardian VS Production Workflow v4.0

@@ -3,7 +3,7 @@ QUICK PUBLISHING GUIDE FOR GUARDIAN VS
 
 1. UPDATE VERSION (in package.json)
    - Edit: "version": "X.Y.Z"
-   - Current: 3.7.1
+   - Current: 3.7.2
    - IMPORTANT: Once a version is published to the marketplace, it CANNOT be modified
    - If version X.Y.Z already exists, you MUST increment to X.Y.(Z+1) or higher
    - Version format: MAJOR.MINOR.PATCH (semantic versioning)

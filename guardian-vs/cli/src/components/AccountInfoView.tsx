@@ -7,7 +7,7 @@ import { Box, Text } from "ink"
 import React, { useCallback, useEffect, useState } from "react"
 import { Controller } from "@/core/controller"
 import { StateManager } from "@/core/storage/StateManager"
-import { ClineAccountService } from "@/services/account/ClineAccountService"
+import { GuardianAccountService } from "@/services/account/GuardianAccountService"
 import { AuthService, ClineAccountOrganization } from "@/services/auth/AuthService"
 import { LoadingSpinner } from "./Spinner"
 
@@ -90,7 +90,7 @@ export const AccountInfoView: React.FC<AccountInfoViewProps> = React.memo(({ con
 
 				// Fetch credit balance
 				try {
-					const accountService = ClineAccountService.getInstance()
+					const accountService = GuardianAccountService.getInstance()
 					const activeOrgId = authService.getActiveOrganizationId()
 
 					if (activeOrgId) {

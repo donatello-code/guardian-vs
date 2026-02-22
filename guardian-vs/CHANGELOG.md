@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.7.2]
+
+### Fixed
+
+- Fixed remaining "Cline" branding references in ClineAccountService.ts
+- Updated all references from "Cline" to "Guardian VS" for consistency
+- Renamed ClineAccountService to GuardianAccountService
+
 ## [3.66.0]
 
 ### Added

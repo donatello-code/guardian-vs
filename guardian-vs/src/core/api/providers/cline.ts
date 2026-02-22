@@ -4,7 +4,7 @@ import axios from "axios"
 import OpenAI from "openai"
 import type { ChatCompletionTool as OpenAITool } from "openai/resources/chat/completions"
 import { ClineEnv } from "@/config"
-import { ClineAccountService } from "@/services/account/ClineAccountService"
+import { GuardianAccountService } from "@/services/account/GuardianAccountService"
 import { AuthService } from "@/services/auth/AuthService"
 import { buildClineExtraHeaders } from "@/services/EnvUtils"
 import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@/shared/ClineAccount"
@@ -34,7 +34,7 @@ const CLINE_FREE_MODELS = ["minimax/minimax-m2.5", "kwaipilot/kat-coder-pro", "z
 
 export class ClineHandler implements ApiHandler {
 	private options: ClineHandlerOptions
-	private clineAccountService = ClineAccountService.getInstance()
+	private clineAccountService = GuardianAccountService.getInstance()
 	private _authService: AuthService
 	private client: OpenAI | undefined
 	lastGenerationId?: string

@@ -1,0 +1,17 @@
+
+
+
+
+"manage cline rules and workflows" should be renamed to guardian vs
+
+time cli commands
+ and
+ time tasks. if task hasnt progressed in 15s cancel and continue automatically
+ better define modify cli tool call
+ have it explain the modification or cli command its about to do
+ detect if its a cli command and just call if so. better cli ux.
+ quick command toolbar
+ 
+ auto scroll to bottom button
+ remove add context button at bottom
+ remove managage mcp servers, add to bottom of @ input popup

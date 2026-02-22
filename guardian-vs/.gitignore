@@ -5,6 +5,7 @@ node_modules
 tmp
 .vscode-test/
 *.vsix
+guardian-vs-*.vsix
 
 .DS_Store
 .idea
@@ -54,3 +55,28 @@ evals/smoke-tests/results/
 
 # SSH keys and sensitive files
 azure-key.txt
+
+# Build directories
+webview-ui/build/
+webview-ui/dist/
+webview-ui/dist-ssr/
+webview-ui/.vite-port
+webview-ui/coverage
+webview-ui/storybook-static
+
+# CLI build directories
+cli/dist/
+cli/coverage
+
+# Testing platform build directories
+testing-platform/dist/
+testing-platform/coverage
+
+# Docs build directories
+docs/.next/
+docs/out/
+docs/build/
+
+# Generated asset directories
+**/build/assets/
+**/dist/assets/
