@@ -1,10 +1,10 @@
 import { ModelFamily } from "@/shared/prompts"
-import { ClineDefaultTool } from "@/shared/tools"
-import type { ClineToolSpec } from "../spec"
+import { GuardianDefaultTool } from "@/shared/tools"
+import type { GuardianToolSpec } from "../spec"
 
-const id = ClineDefaultTool.USE_SUBAGENTS
+const id = GuardianDefaultTool.USE_SUBAGENTS
 
-const generic: ClineToolSpec = {
+const generic: GuardianToolSpec = {
 	variant: ModelFamily.GENERIC,
 	id,
 	name: "use_subagents",

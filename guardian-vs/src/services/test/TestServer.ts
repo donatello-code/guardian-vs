@@ -1,4 +1,4 @@
-import { getSavedApiConversationHistory, getSavedClineMessages } from "@core/storage/disk"
+import { getSavedApiConversationHistory, getSavedGuardianMessages } from "@core/storage/disk"
 import { WebviewProvider } from "@core/webview"
 import { AutoApprovalSettings, DEFAULT_AUTO_APPROVAL_SETTINGS } from "@shared/AutoApprovalSettings"
 import { ApiProvider } from "@shared/api"
@@ -84,8 +84,8 @@ async function updateAutoApprovalSettings(controller?: Controller) {
  * @returns The created HTTP server instance
  */
 export async function createTestServer(controller: Controller): Promise<http.Server> {
-	// Try to show the Cline sidebar
-	Logger.log("[createTestServer] Opening Cline in sidebar...")
+	// Try to show the Guardian sidebar
+	Logger.log("[createTestServer] Opening Guardian in sidebar...")
 	vscode.commands.executeCommand(`workbench.view.${ExtensionRegistryInfo.name}-ActivityBar`)
 
 	// Then ensure the webview is focused/loaded
@@ -150,7 +150,7 @@ export async function createTestServer(controller: Controller): Promise<http.Ser
 				const visibleWebview = WebviewProvider.getVisibleInstance()
 				if (!visibleWebview || !visibleWebview.controller) {
 					res.writeHead(500)
-					res.end(JSON.stringify({ error: "No active Cline instance found" }))
+					res.end(JSON.stringify({ error: "No active Guardian instance found" }))
 					return
 				}
 
@@ -211,21 +211,21 @@ export async function createTestServer(controller: Controller): Promise<http.Ser
 						// Update API configuration with API key
 						const updatedConfig = {
 							...apiConfiguration,
-							apiProvider: "cline" as ApiProvider,
-							clineAccountId: apiKey,
+							apiProvider: "guardian" as ApiProvider,
+							guardianAccountId: apiKey,
 						}
 
 						// Store the API key securely
-						visibleWebview.controller.stateManager.setSecret("clineAccountId", apiKey)
+						visibleWebview.controller.stateManager.setSecret("guardianAccountId", apiKey)
 
 						visibleWebview.controller.stateManager.setApiConfiguration(updatedConfig)
 
-						// Update cache service to use cline provider
+						// Update cache service to use guardian provider
 						const currentConfig = visibleWebview.controller.stateManager.getApiConfiguration()
 						visibleWebview.controller.stateManager.setApiConfiguration({
 							...currentConfig,
-							planModeApiProvider: "cline",
-							actModeApiProvider: "cline",
+							planModeApiProvider: "guardian",
+							actModeApiProvider: "guardian",
 						})
 
 						// Post state to webview to reflect changes
@@ -302,10 +302,10 @@ export async function createTestServer(controller: Controller): Promise<http.Ser
 						let apiConversationHistory: any[] = []
 						try {
 							if (typeof taskId === "string") {
-								messages = await getSavedClineMessages(taskId)
+								messages = await getSavedGuardianMessages(taskId)
 							}
 						} catch (error) {
-							Logger.log(`Error getting saved Cline messages: ${error}`)
+							Logger.log(`Error getting saved Guardian messages: ${error}`)
 						}
 
 						try {

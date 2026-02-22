@@ -5,8 +5,8 @@ import { getWorkspaceBasename, resolveWorkspacePath } from "@core/workspace"
 import { extractFileContent } from "@integrations/misc/extract-file-content"
 import { arePathsEqual, getReadablePath, isLocatedInWorkspace } from "@utils/path"
 import { telemetryService } from "@/services/telemetry"
-import { ClineSayTool } from "@/shared/ExtensionMessage"
-import { ClineDefaultTool } from "@/shared/tools"
+import { GuardianSayTool } from "@/shared/ExtensionMessage"
+import { GuardianDefaultTool } from "@/shared/tools"
 import type { ToolResponse } from "../../index"
 import { showNotificationForApproval } from "../../utils"
 import type { IFullyManagedTool } from "../ToolExecutorCoordinator"
@@ -16,7 +16,7 @@ import type { StronglyTypedUIHelpers } from "../types/UIHelpers"
 import { ToolResultUtils } from "../utils/ToolResultUtils"
 
 export class ReadFileToolHandler implements IFullyManagedTool {
-	readonly name = ClineDefaultTool.FILE_READ
+	readonly name = GuardianDefaultTool.FILE_READ
 
 	constructor(private validator: ToolValidator) {}
 
@@ -67,13 +67,13 @@ export class ReadFileToolHandler implements IFullyManagedTool {
 			return await config.callbacks.sayAndCreateMissingParamError(this.name, "path")
 		}
 
-		// Check clineignore access
-		const accessValidation = this.validator.checkClineIgnorePath(relPath!)
+		// Check guardianignore access
+		const accessValidation = this.validator.checkGuardianIgnorePath(relPath!)
 		if (!accessValidation.ok) {
 			if (!config.isSubagentExecution) {
-				await config.callbacks.say("clineignore_error", relPath)
+				await config.callbacks.say("guardianignore_error", relPath)
 			}
-			return formatResponse.toolError(formatResponse.clineIgnoreError(relPath!))
+			return formatResponse.toolError(formatResponse.guardianIgnoreError(relPath!))
 		}
 
 		config.taskState.consecutiveMistakeCount = 0
@@ -98,7 +98,7 @@ export class ReadFileToolHandler implements IFullyManagedTool {
 			path: getReadablePath(config.cwd, displayPath),
 			content: absolutePath,
 			operationIsLocatedInWorkspace: await isLocatedInWorkspace(relPath!),
-		} satisfies ClineSayTool
+		} satisfies GuardianSayTool
 
 		const completeMessage = JSON.stringify(sharedMessageProps)
 
@@ -124,7 +124,7 @@ export class ReadFileToolHandler implements IFullyManagedTool {
 			)
 		} else {
 			// Manual approval flow
-			const notificationMessage = `Cline wants to read ${getWorkspaceBasename(absolutePath, "ReadFileToolHandler.notification")}`
+			const notificationMessage = `Guardian wants to read ${getWorkspaceBasename(absolutePath, "ReadFileToolHandler.notification")}`
 
 			// Show notification
 			showNotificationForApproval(notificationMessage, config.autoApprovalSettings.enableNotifications)

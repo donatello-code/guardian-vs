@@ -7,7 +7,7 @@ import { Box, Text, useInput } from "ink"
 import React, { useCallback, useState } from "react"
 import { Controller } from "@/core/controller"
 import { showTaskWithId } from "@/core/controller/task/showTaskWithId"
-import { StringRequest } from "@/shared/proto/cline/common"
+import { StringRequest } from "@/shared/proto/guardian/common"
 import { useStdinContext } from "../context/StdinContext"
 import { useTerminalSize } from "../hooks/useTerminalSize"
 

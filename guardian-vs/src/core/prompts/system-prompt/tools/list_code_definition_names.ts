@@ -1,11 +1,11 @@
 import { ModelFamily } from "@/shared/prompts"
-import { ClineDefaultTool } from "@/shared/tools"
-import type { ClineToolSpec } from "../spec"
+import { GuardianDefaultTool } from "@/shared/tools"
+import type { GuardianToolSpec } from "../spec"
 import { TASK_PROGRESS_PARAMETER } from "../types"
 
-const id = ClineDefaultTool.LIST_CODE_DEF
+const id = GuardianDefaultTool.LIST_CODE_DEF
 
-const generic: ClineToolSpec = {
+const generic: GuardianToolSpec = {
 	variant: ModelFamily.GENERIC,
 	id,
 	name: "list_code_definition_names",
@@ -22,7 +22,7 @@ const generic: ClineToolSpec = {
 	],
 }
 
-const NATIVE_GPT_5: ClineToolSpec = {
+const NATIVE_GPT_5: GuardianToolSpec = {
 	variant: ModelFamily.NATIVE_GPT_5,
 	id,
 	name: "list_code_definition_names",
@@ -38,7 +38,7 @@ const NATIVE_GPT_5: ClineToolSpec = {
 	],
 }
 
-const NATIVE_NEXT_GEN: ClineToolSpec = {
+const NATIVE_NEXT_GEN: GuardianToolSpec = {
 	...NATIVE_GPT_5,
 	variant: ModelFamily.NATIVE_NEXT_GEN,
 }

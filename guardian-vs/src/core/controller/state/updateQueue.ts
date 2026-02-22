@@ -1,6 +1,6 @@
 import { Controller } from "@core/controller"
-import { UpdateQueueRequest } from "@shared/proto/cline/state"
-import { Empty } from "@shared/proto/cline/common"
+import { UpdateQueueRequest } from "@shared/proto/guardian/state"
+import { Empty } from "@shared/proto/guardian/common"
 
 /**
  * Handler for updating the entire queue

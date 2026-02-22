@@ -1,6 +1,6 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import { AssistantMessageContent } from "@core/assistant-message"
-import { ClineAskResponse } from "@shared/WebviewMessage"
+import { GuardianAskResponse } from "@shared/WebviewMessage"
 import type { HookExecution } from "./types/HookExecution"
 
 export class TaskState {
@@ -22,7 +22,7 @@ export class TaskState {
 	presentAssistantMessageHasPendingUpdates = false
 
 	// Ask/Response handling
-	askResponse?: ClineAskResponse
+	askResponse?: GuardianAskResponse
 	askResponseText?: string
 	askResponseImages?: string[]
 	askResponseFiles?: string[]
@@ -70,4 +70,8 @@ export class TaskState {
 	// Auto-context summarization
 	currentlySummarizing = false
 	lastAutoCompactTriggerIndex?: number
+
+	// Auto-completion tracking
+	streamingEndedAt?: number
+	autoCompletionTimer?: NodeJS.Timeout
 }

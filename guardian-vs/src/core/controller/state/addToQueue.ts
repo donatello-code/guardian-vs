@@ -1,6 +1,6 @@
 import { Controller } from "@core/controller"
-import { AddToQueueRequest } from "@shared/proto/cline/state"
-import { Empty } from "@shared/proto/cline/common"
+import { AddToQueueRequest } from "@shared/proto/guardian/state"
+import { Empty } from "@shared/proto/guardian/common"
 
 /**
  * Handler for adding a prompt to the queue

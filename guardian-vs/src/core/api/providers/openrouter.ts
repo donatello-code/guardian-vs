@@ -5,7 +5,7 @@ import { shouldSkipReasoningForModel } from "@utils/model-utils"
 import axios from "axios"
 import OpenAI from "openai"
 import type { ChatCompletionTool as OpenAITool } from "openai/resources/chat/completions"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { createOpenAIClient, getAxiosSettings } from "@/shared/net"
 import { Logger } from "@/shared/services/Logger"
 import { ApiHandler, CommonApiHandlerOptions } from "../"
@@ -43,7 +43,7 @@ export class OpenRouterHandler implements ApiHandler {
 					baseURL: "https://openrouter.ai/api/v1",
 					apiKey: this.options.openRouterApiKey,
 					defaultHeaders: {
-						"HTTP-Referer": "https://cline.bot", // Optional, for including your app on openrouter.ai rankings.
+						"HTTP-Referer": "https://guardian.bot", // Optional, for including your app on openrouter.ai rankings.
 						"X-Title": "Guardian VS", // Optional. Shows in rankings on openrouter.ai.
 					},
 				})
@@ -55,7 +55,7 @@ export class OpenRouterHandler implements ApiHandler {
 	}
 
 	@withRetry()
-	async *createMessage(systemPrompt: string, messages: ClineStorageMessage[], tools?: OpenAITool[]): ApiStream {
+	async *createMessage(systemPrompt: string, messages: GuardianStorageMessage[], tools?: OpenAITool[]): ApiStream {
 		const client = this.ensureClient()
 		this.lastGenerationId = undefined
 

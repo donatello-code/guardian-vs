@@ -1,8 +1,8 @@
 /**
- * Terminal display utilities for rendering Cline messages in the CLI
+ * Terminal display utilities for rendering Guardian messages in the CLI
  */
 
-import type { ClineAsk, ClineMessage, ClineSay, ExtensionState } from "@shared/ExtensionMessage"
+import type { GuardianAsk, GuardianMessage, GuardianSay, ExtensionState } from "@shared/ExtensionMessage"
 import { originalConsoleError, originalConsoleLog } from "./console"
 
 // ANSI color codes for terminal output
@@ -88,7 +88,7 @@ export function formatTimestamp(ts: number): string {
 /**
  * Get a prefix icon for different message types
  */
-function getMessageIcon(message: ClineMessage): string {
+function getMessageIcon(message: GuardianMessage): string {
 	if (message.type === "ask") {
 		switch (message.ask) {
 			case "followup":
@@ -152,9 +152,9 @@ function getMessageIcon(message: ClineMessage): string {
 }
 
 /**
- * Format a ClineMessage for terminal display
+ * Format a GuardianMessage for terminal display
  */
-export function formatMessage(message: ClineMessage, verbose: boolean = false): string {
+export function formatMessage(message: GuardianMessage, verbose: boolean = false): string {
 	const icon = getMessageIcon(message)
 	const timestamp = formatTimestamp(message.ts)
 	const lines: string[] = []
@@ -170,8 +170,8 @@ export function formatMessage(message: ClineMessage, verbose: boolean = false): 
 	return lines.filter(Boolean).join("\n")
 }
 
-function formatAskMessage(message: ClineMessage, prefix: string, verbose: boolean): string {
-	const ask = message.ask as ClineAsk
+function formatAskMessage(message: GuardianMessage, prefix: string, verbose: boolean): string {
+	const ask = message.ask as GuardianAsk
 
 	switch (ask) {
 		case "followup": {
@@ -217,8 +217,8 @@ function formatAskMessage(message: ClineMessage, prefix: string, verbose: boolea
 	}
 }
 
-function formatSayMessage(message: ClineMessage, prefix: string, verbose: boolean): string {
-	const say = message.say as ClineSay
+function formatSayMessage(message: GuardianMessage, prefix: string, verbose: boolean): string {
+	const say = message.say as GuardianSay
 
 	switch (say) {
 		case "task":
@@ -317,10 +317,10 @@ export function formatState(state: ExtensionState, verbose: boolean = false): st
 	}
 
 	// Show messages
-	if (state.clineMessages && state.clineMessages.length > 0) {
+	if (state.guardianMessages && state.guardianMessages.length > 0) {
 		const messagesToShow = verbose
-			? state.clineMessages
-			: state.clineMessages.filter((m) => {
+			? state.guardianMessages
+			: state.guardianMessages.filter((m) => {
 					// Filter out noisy messages in non-verbose mode
 					// if (m.say === "api_req_started" || m.say === "api_req_finished") return false
 					return true

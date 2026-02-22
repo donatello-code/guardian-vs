@@ -2,7 +2,7 @@ import { ModelInfo, openRouterDefaultModelId, openRouterDefaultModelInfo } from 
 import { shouldSkipReasoningForModel } from "@utils/model-utils"
 import OpenAI from "openai"
 import type { ChatCompletionTool as OpenAITool } from "openai/resources/chat/completions"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { createOpenAIClient } from "@/shared/net"
 import { Logger } from "@/shared/services/Logger"
 import { ApiHandler, CommonApiHandlerOptions } from "../index"
@@ -37,7 +37,7 @@ export class VercelAIGatewayHandler implements ApiHandler {
 					baseURL: "https://ai-gateway.vercel.sh/v1",
 					apiKey: this.options.vercelAiGatewayApiKey,
 					defaultHeaders: {
-						"http-referer": "https://cline.bot",
+						"http-referer": "https://guardian.bot",
 						"x-title": "Guardian VS",
 					},
 				})
@@ -49,7 +49,7 @@ export class VercelAIGatewayHandler implements ApiHandler {
 	}
 
 	@withRetry()
-	async *createMessage(systemPrompt: string, messages: ClineStorageMessage[], tools?: OpenAITool[]): ApiStream {
+	async *createMessage(systemPrompt: string, messages: GuardianStorageMessage[], tools?: OpenAITool[]): ApiStream {
 		const client = this.ensureClient()
 		const modelId = this.getModel().id
 		const modelInfo = this.getModel().info

@@ -6,7 +6,7 @@ import { NotebookDiffView } from "@/hosts/vscode/NotebookDiffView"
 import { Logger } from "@/shared/services/Logger"
 import { arePathsEqual } from "@/utils/path"
 
-export const DIFF_VIEW_URI_SCHEME = "cline-diff"
+export const DIFF_VIEW_URI_SCHEME = "guardian-diff"
 
 export class VscodeDiffViewProvider extends DiffViewProvider {
 	private activeDiffEditor?: vscode.TextEditor
@@ -52,6 +52,7 @@ export class VscodeDiffViewProvider extends DiffViewProvider {
 			// Use already open diff editor.
 			this.activeDiffEditor = await vscode.window.showTextDocument(diffTab.input.modified, {
 				preserveFocus: true,
+				preview: false,
 			})
 		} else {
 			// Open new diff editor.
@@ -72,9 +73,10 @@ export class VscodeDiffViewProvider extends DiffViewProvider {
 						query: Buffer.from(this.originalContent ?? "").toString("base64"),
 					}),
 					uri,
-					`${fileName}: ${fileExists ? "Original ↔ Cline's Changes" : "New File"} (Editable)`,
+					`${fileName}: ${fileExists ? "Original ↔ Guardian's Changes" : "New File"} (Editable)`,
 					{
 						preserveFocus: true,
+						preview: false,
 					},
 				)
 				// This may happen on very slow machines ie project idx
@@ -202,7 +204,7 @@ export class VscodeDiffViewProvider extends DiffViewProvider {
 	}
 
 	protected async closeAllDiffViews(): Promise<void> {
-		// Close all the cline diff views.
+		// Close all the guardian diff views.
 		const tabs = vscode.window.tabGroups.all
 			.flatMap((tg) => tg.tabs)
 			.filter((tab) => tab.input instanceof vscode.TabInputTextDiff && tab.input?.original?.scheme === DIFF_VIEW_URI_SCHEME)

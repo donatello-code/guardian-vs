@@ -1,16 +1,16 @@
-import { EmptyRequest } from "@shared/proto/cline/common"
+import { EmptyRequest } from "@shared/proto/guardian/common"
 import {
-	ClineRulesToggles,
+	GuardianRulesToggles,
 	RefreshedRules,
 	RuleScope,
 	SkillInfo,
 	ToggleAgentsRuleRequest,
-	ToggleClineRuleRequest,
+	ToggleGuardianRuleRequest,
 	ToggleCursorRuleRequest,
 	ToggleSkillRequest,
 	ToggleWindsurfRuleRequest,
 	ToggleWorkflowRequest,
-} from "@shared/proto/cline/file"
+} from "@shared/proto/guardian/file"
 import { VSCodeButton, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import React, { useEffect, useRef, useState } from "react"
 import { useClickAway, useWindowSize } from "react-use"
@@ -25,10 +25,10 @@ import NewRuleRow from "./NewRuleRow"
 import RuleRow from "./RuleRow"
 import RulesToggleList from "./RulesToggleList"
 
-const ClineRulesToggleModal: React.FC = () => {
+const GuardianRulesToggleModal: React.FC = () => {
 	const {
-		globalClineRulesToggles = {},
-		localClineRulesToggles = {},
+		globalGuardianRulesToggles = {},
+		localGuardianRulesToggles = {},
 		localCursorRulesToggles = {},
 		localWindsurfRulesToggles = {},
 		localAgentsRulesToggles = {},
@@ -40,8 +40,8 @@ const ClineRulesToggleModal: React.FC = () => {
 		remoteWorkflowToggles = {},
 		remoteConfigSettings = {},
 		hooksEnabled,
-		setGlobalClineRulesToggles,
-		setLocalClineRulesToggles,
+		setGlobalGuardianRulesToggles,
+		setLocalGuardianRulesToggles,
 		setLocalCursorRulesToggles,
 		setLocalWindsurfRulesToggles,
 		setLocalAgentsRulesToggles,
@@ -80,11 +80,11 @@ const ClineRulesToggleModal: React.FC = () => {
 			FileServiceClient.refreshRules({} as EmptyRequest)
 				.then((response: RefreshedRules) => {
 					// Update state with the response data using all available setters
-					if (response.globalClineRulesToggles?.toggles) {
-						setGlobalClineRulesToggles(response.globalClineRulesToggles.toggles)
+					if (response.globalGuardianRulesToggles?.toggles) {
+						setGlobalGuardianRulesToggles(response.globalGuardianRulesToggles.toggles)
 					}
-					if (response.localClineRulesToggles?.toggles) {
-						setLocalClineRulesToggles(response.localClineRulesToggles.toggles)
+					if (response.localGuardianRulesToggles?.toggles) {
+						setLocalGuardianRulesToggles(response.localGuardianRulesToggles.toggles)
 					}
 					if (response.localCursorRulesToggles?.toggles) {
 						setLocalCursorRulesToggles(response.localCursorRulesToggles.toggles)
@@ -108,8 +108,8 @@ const ClineRulesToggleModal: React.FC = () => {
 		}
 	}, [
 		isVisible,
-		setGlobalClineRulesToggles,
-		setLocalClineRulesToggles,
+		setGlobalGuardianRulesToggles,
+		setLocalGuardianRulesToggles,
 		setGlobalWorkflowToggles,
 		setLocalCursorRulesToggles,
 		setLocalWindsurfRulesToggles,
@@ -192,12 +192,12 @@ const ClineRulesToggleModal: React.FC = () => {
 	}, [isVisible, currentView])
 
 	// Format global rules for display with proper typing
-	const globalRules = Object.entries(globalClineRulesToggles || {})
+	const globalRules = Object.entries(globalGuardianRulesToggles || {})
 		.map(([path, enabled]): [string, boolean] => [path, enabled as boolean])
 		.sort(([a], [b]) => a.localeCompare(b))
 
 	// Format local rules for display with proper typing
-	const localRules = Object.entries(localClineRulesToggles || {})
+	const localRules = Object.entries(localGuardianRulesToggles || {})
 		.map(([path, enabled]): [string, boolean] => [path, enabled as boolean])
 		.sort(([a], [b]) => a.localeCompare(b))
 
@@ -231,8 +231,8 @@ const ClineRulesToggleModal: React.FC = () => {
 
 	// Handle toggle rule using gRPC
 	const toggleRule = (isGlobal: boolean, rulePath: string, enabled: boolean) => {
-		FileServiceClient.toggleClineRule(
-			ToggleClineRuleRequest.create({
+		FileServiceClient.toggleGuardianRule(
+			ToggleGuardianRuleRequest.create({
 				scope: isGlobal ? RuleScope.GLOBAL : RuleScope.LOCAL,
 				rulePath,
 				enabled,
@@ -240,18 +240,18 @@ const ClineRulesToggleModal: React.FC = () => {
 		)
 			.then((response) => {
 				// Update the local state with the response
-				if (response.globalClineRulesToggles?.toggles) {
-					setGlobalClineRulesToggles(response.globalClineRulesToggles.toggles)
+				if (response.globalGuardianRulesToggles?.toggles) {
+					setGlobalGuardianRulesToggles(response.globalGuardianRulesToggles.toggles)
 				}
-				if (response.localClineRulesToggles?.toggles) {
-					setLocalClineRulesToggles(response.localClineRulesToggles.toggles)
+				if (response.localGuardianRulesToggles?.toggles) {
+					setLocalGuardianRulesToggles(response.localGuardianRulesToggles.toggles)
 				}
 				if (response.remoteRulesToggles?.toggles) {
 					setRemoteRulesToggles(response.remoteRulesToggles.toggles)
 				}
 			})
 			.catch((error) => {
-				console.error("Error toggling Cline rule:", error)
+				console.error("Error toggling Guardian rule:", error)
 			})
 	}
 
@@ -280,7 +280,7 @@ const ClineRulesToggleModal: React.FC = () => {
 				enabled,
 			} as ToggleWindsurfRuleRequest),
 		)
-			.then((response: ClineRulesToggles) => {
+			.then((response: GuardianRulesToggles) => {
 				if (response.toggles) {
 					setLocalWindsurfRulesToggles(response.toggles)
 				}
@@ -297,7 +297,7 @@ const ClineRulesToggleModal: React.FC = () => {
 				enabled,
 			} as ToggleAgentsRuleRequest),
 		)
-			.then((response: ClineRulesToggles) => {
+			.then((response: GuardianRulesToggles) => {
 				if (response.toggles) {
 					setLocalAgentsRulesToggles(response.toggles)
 				}
@@ -349,8 +349,8 @@ const ClineRulesToggleModal: React.FC = () => {
 
 	// Handle toggle for remote rules
 	const toggleRemoteRule = (ruleName: string, enabled: boolean) => {
-		FileServiceClient.toggleClineRule(
-			ToggleClineRuleRequest.create({
+		FileServiceClient.toggleGuardianRule(
+			ToggleGuardianRuleRequest.create({
 				scope: RuleScope.REMOTE,
 				rulePath: ruleName,
 				enabled,
@@ -435,11 +435,11 @@ const ClineRulesToggleModal: React.FC = () => {
 		<div className="inline-flex min-w-0 max-w-full items-center" ref={modalRef}>
 			<div className="inline-flex w-full items-center" ref={buttonRef}>
 				<Tooltip>
-					{!isVisible && <TooltipContent>Manage Cline Rules & Workflows</TooltipContent>}
+					{!isVisible && <TooltipContent>Guardian VS</TooltipContent>}
 					<TooltipTrigger>
 						<VSCodeButton
 							appearance="icon"
-							aria-label={isVisible ? "Hide Cline Rules & Workflows" : "Show Cline Rules & Workflows"}
+							aria-label={isVisible ? "Hide Guardian Rules & Workflows" : "Show Guardian Rules & Workflows"}
 							className="p-0 m-0 flex items-center"
 							onClick={() => setIsVisible(!isVisible)}>
 							<i className="codicon codicon-law" style={{ fontSize: "12.5px" }} />
@@ -498,35 +498,35 @@ const ClineRulesToggleModal: React.FC = () => {
 						<div className="text-xs text-description mb-4">
 							{currentView === "rules" ? (
 								<p>
-									Rules allow you to provide Cline with system-level guidance. Think of them as a persistent way
+									Rules allow you to provide Guardian with system-level guidance. Think of them as a persistent way
 									to include context and preferences for your projects or globally for every conversation.{" "}
 									<VSCodeLink
 										className="text-xs"
-										href="https://docs.cline.bot/features/cline-rules"
+										href="https://docs.guardian.bot/features/guardian-rules"
 										style={{ display: "inline", fontSize: "inherit" }}>
 										Docs
 									</VSCodeLink>
 								</p>
 							) : currentView === "workflows" ? (
 								<p>
-									Workflows allow you to define a series of steps to guide Cline through a repetitive set of
+									Workflows allow you to define a series of steps to guide Guardian through a repetitive set of
 									tasks, such as deploying a service or submitting a PR. To invoke a workflow, type{" "}
 									<span className="text-foreground font-bold">/workflow-name</span> in the chat.{" "}
 									<VSCodeLink
 										className="text-xs inline"
-										href="https://docs.cline.bot/features/slash-commands/workflows">
+										href="https://docs.guardian.bot/features/slash-commands/workflows">
 										Docs
 									</VSCodeLink>
 								</p>
 							) : currentView === "skills" ? (
 								<p>
-									Skills are reusable instruction sets that Cline can activate on-demand. When a task matches a
-									skill's description, Cline uses the <span className="font-bold">use_skill</span> tool to load
+									Skills are reusable instruction sets that Guardian can activate on-demand. When a task matches a
+									skill's description, Guardian uses the <span className="font-bold">use_skill</span> tool to load
 									the full instructions.
 								</p>
 							) : (
 								<p>
-									Hooks allow you to execute custom scripts at specific points in Cline's execution lifecycle,
+									Hooks allow you to execute custom scripts at specific points in Guardian's execution lifecycle,
 									enabling automation and integration with external tools.
 								</p>
 							)}
@@ -552,7 +552,7 @@ const ClineRulesToggleModal: React.FC = () => {
 														isRemote={true}
 														key={rule.name}
 														rulePath={rule.name}
-														ruleType="cline"
+														ruleType="guardian"
 														toggleRule={toggleRemoteRule}
 													/>
 												)
@@ -570,7 +570,7 @@ const ClineRulesToggleModal: React.FC = () => {
 										isGlobal={true}
 										listGap="small"
 										rules={globalRules}
-										ruleType={"cline"}
+										ruleType={"guardian"}
 										showNewRule={true}
 										showNoRules={false}
 										toggleRule={(rulePath, enabled) => toggleRule(true, rulePath, enabled)}
@@ -584,7 +584,7 @@ const ClineRulesToggleModal: React.FC = () => {
 										isGlobal={false}
 										listGap="small"
 										rules={localRules}
-										ruleType={"cline"}
+										ruleType={"guardian"}
 										showNewRule={false}
 										showNoRules={false}
 										toggleRule={(rulePath, enabled) => toggleRule(false, rulePath, enabled)}
@@ -683,7 +683,7 @@ const ClineRulesToggleModal: React.FC = () => {
 										Toggle to enable/disable (chmod +x/-x).{" "}
 										<VSCodeLink
 											className="text-xs"
-											href="https://docs.cline.bot/features/hooks"
+											href="https://docs.guardian.bot/features/hooks"
 											style={{ display: "inline", fontSize: "inherit" }}>
 											Docs
 										</VSCodeLink>
@@ -739,7 +739,7 @@ const ClineRulesToggleModal: React.FC = () => {
 										className={index === workspaceHooks.length - 1 ? "-mb-2.5" : "mb-3"}
 										key={workspace.workspaceName}>
 										<div className="text-sm font-normal mb-2">
-											{workspace.workspaceName}/.clinerules/hooks/
+											{workspace.workspaceName}/.guardianrules/hooks/
 										</div>
 										<div className="flex flex-col gap-0">
 											{workspace.hooks
@@ -853,4 +853,4 @@ export const TabButton = ({
 	</StyledTabButton>
 )
 
-export default ClineRulesToggleModal
+export default GuardianRulesToggleModal

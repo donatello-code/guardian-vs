@@ -1,20 +1,20 @@
-import { HistoryIcon, PlusIcon, SettingsIcon, UserCircleIcon } from "lucide-react"
+import { HistoryIcon, PlusIcon, SettingsIcon } from "lucide-react"
 import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TaskServiceClient } from "@/services/grpc-client"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 
-// Custom MCP Server Icon component using VSCode codicon
-const McpServerIcon = ({ className, size }: { className?: string; size?: number }) => (
+// Custom Fullscreen Icon component using VSCode codicon
+const FullscreenIcon = ({ isFullscreen, className, size }: { isFullscreen: boolean; className?: string; size?: number }) => (
 	<span
-		className={`codicon codicon-server flex items-center ${className || ""}`}
+		className={`codicon ${isFullscreen ? "codicon-screen-normal" : "codicon-screen-full"} flex items-center ${className || ""}`}
 		style={{ fontSize: size ? `${size}px` : "12.5px", marginBottom: "1px" }}
 	/>
 )
 
 export const Navbar = () => {
-	const { navigateToHistory, navigateToSettings, navigateToAccount, navigateToMcp, navigateToChat } = useExtensionState()
+	const { navigateToHistory, navigateToSettings, navigateToChat, isFullscreen, toggleFullscreen } = useExtensionState()
 
 	const SETTINGS_TABS = useMemo(
 		() => [
@@ -33,13 +33,6 @@ export const Navbar = () => {
 				},
 			},
 			{
-				id: "mcp",
-				name: "MCP",
-				tooltip: "MCP Servers",
-				icon: McpServerIcon,
-				navigate: navigateToMcp,
-			},
-			{
 				id: "history",
 				name: "History",
 				tooltip: "History",
@@ -47,11 +40,13 @@ export const Navbar = () => {
 				navigate: navigateToHistory,
 			},
 			{
-				id: "account",
-				name: "Account",
-				tooltip: "Account",
-				icon: UserCircleIcon,
-				navigate: navigateToAccount,
+				id: "fullscreen",
+				name: "Fullscreen",
+				tooltip: isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen",
+				icon: ({ className, size }: { className?: string; size?: number }) => (
+					<FullscreenIcon isFullscreen={isFullscreen} className={className} size={size} />
+				),
+				navigate: toggleFullscreen,
 			},
 			{
 				id: "settings",
@@ -61,13 +56,13 @@ export const Navbar = () => {
 				navigate: navigateToSettings,
 			},
 		],
-		[navigateToAccount, navigateToChat, navigateToHistory, navigateToMcp, navigateToSettings],
+		[navigateToChat, navigateToHistory, navigateToSettings, isFullscreen, toggleFullscreen],
 	)
 
 	return (
 		<nav
 			className="flex-none inline-flex justify-end bg-transparent gap-2 mb-1 z-10 border-none items-center mr-4!"
-			id="cline-navbar-container">
+			id="guardian-navbar-container">
 			{SETTINGS_TABS.map((tab) => (
 				<Tooltip key={`navbar-tooltip-${tab.id}`}>
 					<TooltipContent side="bottom">{tab.tooltip}</TooltipContent>

@@ -11,7 +11,7 @@ import {
 import { GeminiModelId, geminiDefaultModelId, geminiModels, ModelInfo } from "@shared/api"
 import { buildExternalBasicHeaders } from "@/services/EnvUtils"
 import { telemetryService } from "@/services/telemetry"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { Logger } from "@/shared/services/Logger"
 import { ApiHandler, CommonApiHandlerOptions } from "../"
 import { RetriableError, withRetry } from "../retry"
@@ -132,7 +132,7 @@ export class GeminiHandler implements ApiHandler {
 		baseDelay: 2000,
 		maxDelay: 15000,
 	})
-	async *createMessage(systemPrompt: string, messages: ClineStorageMessage[], tools?: GoogleTool[]): ApiStream {
+	async *createMessage(systemPrompt: string, messages: GuardianStorageMessage[], tools?: GoogleTool[]): ApiStream {
 		const client = this.ensureClient()
 		const { id: modelId, info } = this.getModel()
 		const contents = messages.map(convertAnthropicMessageToGemini)
@@ -320,7 +320,7 @@ export class GeminiHandler implements ApiHandler {
 					}
 
 					// Fallback in case Gemini throws a rate limit error without a 429 status code
-					// https://github.com/cline/cline/pull/5205#discussion_r2311761559
+					// https://github.com/guardian/guardian/pull/5205#discussion_r2311761559
 					const isRateLimit = rateLimitPatterns.some((pattern) => pattern.test(error.message))
 					if (isRateLimit) {
 						throw new RetriableError(apiError, undefined, { cause: error })

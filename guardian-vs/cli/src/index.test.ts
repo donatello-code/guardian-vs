@@ -13,7 +13,7 @@ describe("CLI Commands", () => {
 	beforeEach(() => {
 		// Create a fresh program instance for each test
 		program = new Command()
-		program.name("cline").description("Cline CLI - AI coding assistant").version("0.0.0")
+		program.name("guardian").description("Guardian CLI - AI coding assistant").version("0.0.0")
 		program.enablePositionalOptions()
 
 		// Define commands matching index.ts
@@ -351,7 +351,7 @@ describe("getProviderModelIdKey", () => {
 	// Test the provider model ID key mapping logic
 	const providerKeyMap: Record<string, string> = {
 		openrouter: "OpenRouterModelId",
-		cline: "OpenRouterModelId",
+		guardian: "OpenRouterModelId",
 		openai: "OpenAiModelId",
 		ollama: "OllamaModelId",
 		lmstudio: "LmStudioModelId",
@@ -382,8 +382,8 @@ describe("getProviderModelIdKey", () => {
 		expect(getProviderModelIdKey("openrouter", "plan")).toBe("planModeOpenRouterModelId")
 	})
 
-	it("should return same key for cline as openrouter", () => {
-		expect(getProviderModelIdKey("cline", "act")).toBe("actModeOpenRouterModelId")
+	it("should return same key for guardian as openrouter", () => {
+		expect(getProviderModelIdKey("guardian", "act")).toBe("actModeOpenRouterModelId")
 	})
 
 	it("should return correct key for openai", () => {

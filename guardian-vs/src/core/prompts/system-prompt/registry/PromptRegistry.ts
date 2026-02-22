@@ -1,9 +1,9 @@
 import { ModelFamily } from "@/shared/prompts"
 import { Logger } from "@/shared/services/Logger"
-import type { ClineTool } from "@/shared/tools"
-import { ClineToolSet } from ".."
+import type { GuardianTool } from "@/shared/tools"
+import { GuardianToolSet } from ".."
 import { getSystemPromptComponents } from "../components"
-import { registerClineToolSets } from "../tools"
+import { registerGuardianToolSets } from "../tools"
 import type { ComponentFunction, ComponentRegistry, PromptVariant, SystemPromptContext } from "../types"
 import { loadAllVariantConfigs } from "../variants"
 import { config as genericConfig } from "../variants/generic/config"
@@ -14,10 +14,10 @@ export class PromptRegistry {
 	private variants: Map<string, PromptVariant> = new Map()
 	private components: ComponentRegistry = {}
 	private loaded: boolean = false
-	public nativeTools: ClineTool[] | undefined = undefined
+	public nativeTools: GuardianTool[] | undefined = undefined
 
 	private constructor() {
-		registerClineToolSets()
+		registerGuardianToolSets()
 	}
 
 	static getInstance(): PromptRegistry {
@@ -123,7 +123,7 @@ export class PromptRegistry {
 		}
 
 		// Hacky way to get native tools for the current variant - it's bad and ugly
-		this.nativeTools = ClineToolSet.getNativeTools(variant, context)
+		this.nativeTools = GuardianToolSet.getNativeTools(variant, context)
 
 		const builder = new PromptBuilder(variant, context, this.components)
 		return await builder.build()

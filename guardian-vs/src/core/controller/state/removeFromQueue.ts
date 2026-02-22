@@ -1,6 +1,6 @@
 import { Controller } from "@core/controller"
-import { RemoveFromQueueRequest } from "@shared/proto/cline/state"
-import { Empty } from "@shared/proto/cline/common"
+import { RemoveFromQueueRequest } from "@shared/proto/guardian/state"
+import { Empty } from "@shared/proto/guardian/common"
 
 /**
  * Handler for removing an item from the queue by index

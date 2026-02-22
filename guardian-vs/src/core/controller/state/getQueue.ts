@@ -1,6 +1,6 @@
 import { Controller } from "@core/controller"
-import { Empty } from "@shared/proto/cline/common"
-import { QueueResponse, QueueItem } from "@shared/proto/cline/state"
+import { Empty } from "@shared/proto/guardian/common"
+import { QueueResponse, QueueItem } from "@shared/proto/guardian/state"
 
 /**
  * Handler for getting the current queue

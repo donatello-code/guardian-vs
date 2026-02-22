@@ -1,4 +1,4 @@
-import type { ClineMessage } from "@shared/ExtensionMessage"
+import type { GuardianMessage } from "@shared/ExtensionMessage"
 import type React from "react"
 import { useCallback, useMemo } from "react"
 import { Virtuoso } from "react-virtuoso"
@@ -10,9 +10,9 @@ import { isToolGroup } from "../../utils/messageUtils"
 import { createMessageRenderer } from "../messages/MessageRenderer"
 
 interface MessagesAreaProps {
-	task: ClineMessage
-	groupedMessages: (ClineMessage | ClineMessage[])[]
-	modifiedMessages: ClineMessage[]
+	task: GuardianMessage
+	groupedMessages: (GuardianMessage | GuardianMessage[])[]
+	modifiedMessages: GuardianMessage[]
 	scrollBehavior: ScrollBehavior
 	chatState: ChatState
 	messageHandlers: MessageHandlers
@@ -30,8 +30,8 @@ export const MessagesArea: React.FC<MessagesAreaProps> = ({
 	chatState,
 	messageHandlers,
 }) => {
-	const { clineMessages } = useExtensionState()
-	const lastRawMessage = useMemo(() => clineMessages.at(-1), [clineMessages])
+	const { guardianMessages } = useExtensionState()
+	const lastRawMessage = useMemo(() => guardianMessages.at(-1), [guardianMessages])
 
 	const {
 		virtuosoRef,
@@ -51,8 +51,8 @@ export const MessagesArea: React.FC<MessagesAreaProps> = ({
 		if (!scrolledPastUserMessage) {
 			return -1
 		}
-		return clineMessages.findIndex((msg) => msg.ts === scrolledPastUserMessage.ts)
-	}, [clineMessages, scrolledPastUserMessage])
+		return guardianMessages.findIndex((msg) => msg.ts === scrolledPastUserMessage.ts)
+	}, [guardianMessages, scrolledPastUserMessage])
 
 	// Handler to scroll to the scrolled past user message
 	const handleScrollToUserMessage = useCallback(() => {
@@ -153,11 +153,11 @@ export const MessagesArea: React.FC<MessagesAreaProps> = ({
 		return isWaitingForResponse || handoffToReasoningPending
 	}, [isWaitingForResponse, lastRawMessage, lastVisibleMessage?.say])
 
-	const displayedGroupedMessages = useMemo<(ClineMessage | ClineMessage[])[]>(() => {
+	const displayedGroupedMessages = useMemo<(GuardianMessage | GuardianMessage[])[]>(() => {
 		if (!showThinkingLoaderRow) {
 			return groupedMessages
 		}
-		const waitingRow: ClineMessage = {
+		const waitingRow: GuardianMessage = {
 			ts: Number.MIN_SAFE_INTEGER,
 			type: "say",
 			say: "reasoning",

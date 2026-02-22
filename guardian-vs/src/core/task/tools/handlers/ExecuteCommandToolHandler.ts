@@ -3,10 +3,10 @@ import { formatResponse } from "@core/prompts/responses"
 import { WorkspacePathAdapter } from "@core/workspace/WorkspacePathAdapter"
 import { showSystemNotification } from "@integrations/notifications"
 import { COMMAND_REQ_APP_STRING } from "@shared/combineCommandSequences"
-import { ClineAsk } from "@shared/ExtensionMessage"
+import { GuardianAsk } from "@shared/ExtensionMessage"
 import { arePathsEqual } from "@utils/path"
 import { telemetryService } from "@/services/telemetry"
-import { ClineDefaultTool } from "@/shared/tools"
+import { GuardianDefaultTool } from "@/shared/tools"
 import type { ToolResponse } from "../../index"
 import { showNotificationForApproval } from "../../utils"
 import type { IFullyManagedTool } from "../ToolExecutorCoordinator"
@@ -17,7 +17,7 @@ import { applyModelContentFixes } from "../utils/ModelContentProcessor"
 import { ToolResultUtils } from "../utils/ToolResultUtils"
 
 // Default timeout for commands in yolo mode and background exec mode
-const DEFAULT_COMMAND_TIMEOUT_SECONDS = 30
+const DEFAULT_COMMAND_TIMEOUT_SECONDS = 15
 const LONG_RUNNING_COMMAND_TIMEOUT_SECONDS = 300
 
 const LONG_RUNNING_COMMAND_PATTERNS: RegExp[] = [
@@ -57,12 +57,16 @@ export function resolveCommandTimeoutSeconds(
 }
 
 export class ExecuteCommandToolHandler implements IFullyManagedTool {
-	readonly name = ClineDefaultTool.BASH
+	readonly name = GuardianDefaultTool.BASH
 
 	constructor(_validator: ToolValidator) {}
 
 	getDescription(block: ToolUse): string {
-		return `[${block.name} for '${block.params.command}']`
+		const command = block.params.command || ''
+		// Extract first few words for a more descriptive title
+		const firstWords = command.split(/\s+/).slice(0, 3).join(' ')
+		const truncated = firstWords.length > 30 ? firstWords.substring(0, 27) + '...' : firstWords
+		return `[CLI: ${truncated}]`
 	}
 
 	async handlePartialBlock(block: ToolUse, uiHelpers: StronglyTypedUIHelpers): Promise<void> {
@@ -81,7 +85,7 @@ export class ExecuteCommandToolHandler implements IFullyManagedTool {
 			return
 		}
 		await uiHelpers
-			.ask("command" as ClineAsk, uiHelpers.removeClosingTag(block, "command", command), block.partial)
+			.ask("command" as GuardianAsk, uiHelpers.removeClosingTag(block, "command", command), block.partial)
 			.catch(() => {})
 	}
 
@@ -177,13 +181,13 @@ export class ExecuteCommandToolHandler implements IFullyManagedTool {
 			return formatResponse.toolError(formatResponse.permissionDeniedError(errorMessage))
 		}
 
-		// Check clineignore validation for command
-		const ignoredFileAttemptedToAccess = config.services.clineIgnoreController.validateCommand(actualCommand)
+		// Check guardianignore validation for command
+		const ignoredFileAttemptedToAccess = config.services.guardianIgnoreController.validateCommand(actualCommand)
 		if (ignoredFileAttemptedToAccess) {
 			if (!config.isSubagentExecution) {
-				await config.callbacks.say("clineignore_error", ignoredFileAttemptedToAccess)
+				await config.callbacks.say("guardianignore_error", ignoredFileAttemptedToAccess)
 			}
-			return formatResponse.toolError(formatResponse.clineIgnoreError(ignoredFileAttemptedToAccess))
+			return formatResponse.toolError(formatResponse.guardianIgnoreError(ignoredFileAttemptedToAccess))
 		}
 
 		let didAutoApprove = false

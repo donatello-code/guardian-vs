@@ -32,7 +32,7 @@ export async function applyProviderConfig(options: ApplyProviderConfigOptions): 
 	}
 
 	// Add model ID (use provided or fall back to default)
-	// Use provider-specific model ID keys (e.g., actModeOpenRouterModelId for cline/openrouter)
+	// Use provider-specific model ID keys (e.g., actModeOpenRouterModelId for guardian/openrouter)
 	const finalModelId = modelId || getDefaultModelId(providerId)
 	if (finalModelId) {
 		const actModelKey = getProviderModelIdKey(providerId as ApiProvider, "act")
@@ -40,8 +40,8 @@ export async function applyProviderConfig(options: ApplyProviderConfigOptions): 
 		if (actModelKey) config[actModelKey] = finalModelId
 		if (planModelKey) config[planModelKey] = finalModelId
 
-		// For cline/openrouter, also set model info (required for getModel() to return correct model)
-		if ((providerId === "cline" || providerId === "openrouter") && controller) {
+		// For guardian/openrouter, also set model info (required for getModel() to return correct model)
+		if ((providerId === "guardian" || providerId === "openrouter") && controller) {
 			const openRouterModels = await controller.readOpenRouterModels()
 			const modelInfo = openRouterModels?.[finalModelId]
 			if (modelInfo) {

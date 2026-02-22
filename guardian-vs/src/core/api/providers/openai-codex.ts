@@ -6,7 +6,7 @@ import * as os from "os"
 import { v7 as uuidv7 } from "uuid"
 import { openAiCodexOAuthManager } from "@/integrations/openai-codex/oauth"
 import { buildExternalBasicHeaders } from "@/services/EnvUtils"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { fetch } from "@/shared/net"
 import { ApiHandler, CommonApiHandlerOptions } from "../"
 import { convertToOpenAIResponsesInput } from "../transform/openai-response-format"
@@ -89,7 +89,7 @@ export class OpenAiCodexHandler implements ApiHandler {
 		return out
 	}
 
-	async *createMessage(systemPrompt: string, messages: ClineStorageMessage[], tools?: ChatCompletionTool[]): ApiStream {
+	async *createMessage(systemPrompt: string, messages: GuardianStorageMessage[], tools?: ChatCompletionTool[]): ApiStream {
 		const model = this.getModel()
 
 		// Reset state for this request
@@ -187,9 +187,9 @@ export class OpenAiCodexHandler implements ApiHandler {
 
 			// Build Codex-specific headers
 			const codexHeaders: Record<string, string> = {
-				originator: "cline",
+				originator: "guardian",
 				session_id: this.sessionId,
-				"User-Agent": `cline/${process.env.npm_package_version || "1.0.0"} (${os.platform()} ${os.release()}; ${os.arch()}) node/${process.version.slice(1)}`,
+				"User-Agent": `guardian/${process.env.npm_package_version || "1.0.0"} (${os.platform()} ${os.release()}; ${os.arch()}) node/${process.version.slice(1)}`,
 				...(accountId ? { "ChatGPT-Account-Id": accountId } : {}),
 				...buildExternalBasicHeaders(),
 			}
@@ -242,9 +242,9 @@ export class OpenAiCodexHandler implements ApiHandler {
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${accessToken}`,
-			originator: "cline",
+			originator: "guardian",
 			session_id: this.sessionId,
-			"User-Agent": `cline/${process.env.npm_package_version || "1.0.0"} (${os.platform()} ${os.release()}; ${os.arch()}) node/${process.version.slice(1)}`,
+			"User-Agent": `guardian/${process.env.npm_package_version || "1.0.0"} (${os.platform()} ${os.release()}; ${os.arch()}) node/${process.version.slice(1)}`,
 		}
 
 		// Add ChatGPT-Account-Id if available

@@ -3,11 +3,11 @@
  */
 
 import React, { useMemo } from "react"
-import type { ClineAccountOrganization } from "@/services/auth/AuthService"
+import type { GuardianAccountOrganization } from "@/services/auth/AuthService"
 import { SelectList, SelectListItem } from "./SelectList"
 
 interface OrganizationPickerProps {
-	organizations: ClineAccountOrganization[]
+	organizations: GuardianAccountOrganization[]
 	onSelect: (orgId: string | null) => void // null = personal account
 	isActive?: boolean
 }

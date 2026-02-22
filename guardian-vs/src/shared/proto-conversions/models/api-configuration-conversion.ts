@@ -6,7 +6,7 @@ import {
 	ApiProvider as ProtoApiProvider,
 	OcaModelInfo as ProtoOcaModelInfo,
 	ThinkingConfig,
-} from "@shared/proto/cline/models"
+} from "@shared/proto/guardian/models"
 import {
 	ApiConfiguration,
 	ApiProvider,
@@ -278,7 +278,7 @@ function convertApiProviderToProto(provider: string | undefined): ProtoApiProvid
 			return ProtoApiProvider.MISTRAL
 		case "vscode-lm":
 			return ProtoApiProvider.VSCODE_LM
-		case "cline":
+		case "guardian":
 			return ProtoApiProvider.CLINE
 		case "litellm":
 			return ProtoApiProvider.LITELLM
@@ -369,7 +369,7 @@ export function convertProtoToApiProvider(provider: ProtoApiProvider): ApiProvid
 		case ProtoApiProvider.VSCODE_LM:
 			return "vscode-lm"
 		case ProtoApiProvider.CLINE:
-			return "cline"
+			return "guardian"
 		case ProtoApiProvider.LITELLM:
 			return "litellm"
 		case ProtoApiProvider.MOONSHOT:
@@ -426,7 +426,7 @@ export function convertApiConfigurationToProto(config: ApiConfiguration): ProtoA
 	return {
 		// Global configuration fields
 		apiKey: config.apiKey,
-		clineAccountId: config.clineAccountId,
+		guardianAccountId: config.guardianAccountId,
 		ulid: config.ulid,
 		liteLlmBaseUrl: config.liteLlmBaseUrl,
 		liteLlmApiKey: config.liteLlmApiKey,
@@ -502,7 +502,7 @@ export function convertApiConfigurationToProto(config: ApiConfiguration): ProtoA
 		minimaxApiKey: config.minimaxApiKey,
 		minimaxApiLine: config.minimaxApiLine,
 		nousResearchApiKey: config.nousResearchApiKey,
-		clineApiKey: config.clineApiKey,
+		guardianApiKey: config.guardianApiKey,
 		ocaMode: config.ocaMode,
 		aihubmixApiKey: config.aihubmixApiKey,
 		aihubmixBaseUrl: config.aihubmixBaseUrl,
@@ -601,7 +601,7 @@ export function convertProtoToApiConfiguration(protoConfig: ProtoApiConfiguratio
 	return {
 		// Global configuration fields
 		apiKey: protoConfig.apiKey,
-		clineAccountId: protoConfig.clineAccountId,
+		guardianAccountId: protoConfig.guardianAccountId,
 		ulid: protoConfig.ulid,
 		liteLlmBaseUrl: protoConfig.liteLlmBaseUrl,
 		liteLlmApiKey: protoConfig.liteLlmApiKey,
@@ -683,7 +683,7 @@ export function convertProtoToApiConfiguration(protoConfig: ProtoApiConfiguratio
 		hicapApiKey: protoConfig.hicapApiKey,
 		hicapModelId: protoConfig.hicapModelId,
 		nousResearchApiKey: protoConfig.nousResearchApiKey,
-		clineApiKey: protoConfig.clineApiKey,
+		guardianApiKey: protoConfig.guardianApiKey,
 
 		// Plan mode configurations
 		planModeApiProvider:

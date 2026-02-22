@@ -10,9 +10,9 @@ import {
 import { createOcaHeaders } from "@/services/auth/oca/utils/utils"
 import { buildExternalBasicHeaders } from "@/services/EnvUtils"
 import { OcaModelInfo } from "@/shared/api"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { fetch } from "@/shared/net"
-import { ApiFormat } from "@/shared/proto/index.cline"
+import { ApiFormat } from "@/shared/proto/index.guardian"
 import { Logger } from "@/shared/services/Logger"
 import { ApiHandler, type CommonApiHandlerOptions } from ".."
 import { withRetry } from "../retry"
@@ -160,7 +160,7 @@ export class OcaHandler implements ApiHandler {
 	}
 
 	@withRetry()
-	async *createMessage(systemPrompt: string, messages: ClineStorageMessage[], tools?: OpenAITool[]): ApiStream {
+	async *createMessage(systemPrompt: string, messages: GuardianStorageMessage[], tools?: OpenAITool[]): ApiStream {
 		if (this.options.ocaModelInfo?.apiFormat == ApiFormat.OPENAI_RESPONSES) {
 			yield* this.createMessageResponsesApi(systemPrompt, messages, tools)
 		} else {
@@ -168,7 +168,7 @@ export class OcaHandler implements ApiHandler {
 		}
 	}
 
-	async *createMessageChatApi(systemPrompt: string, messages: ClineStorageMessage[], tools?: OpenAITool[]): ApiStream {
+	async *createMessageChatApi(systemPrompt: string, messages: GuardianStorageMessage[], tools?: OpenAITool[]): ApiStream {
 		const client = this.ensureClient()
 		const formattedMessages = convertToOpenAiMessages(messages)
 		const systemMessage: OpenAI.Chat.ChatCompletionSystemMessageParam = {
@@ -232,7 +232,7 @@ export class OcaHandler implements ApiHandler {
 			stream_options: { include_usage: true },
 			...(thinkingConfig && { thinking: thinkingConfig }), // Add thinking configuration when applicable
 			...(this.options.taskId && {
-				litellm_session_id: `cline-${this.options.taskId}`,
+				litellm_session_id: `guardian-${this.options.taskId}`,
 				...getOpenAIToolParams(tools),
 			}), // Add session ID for LiteLLM tracking
 		}
@@ -305,7 +305,7 @@ export class OcaHandler implements ApiHandler {
 		}
 	}
 
-	async *createMessageResponsesApi(systemPrompt: string, messages: ClineStorageMessage[], tools?: OpenAITool[]): ApiStream {
+	async *createMessageResponsesApi(systemPrompt: string, messages: GuardianStorageMessage[], tools?: OpenAITool[]): ApiStream {
 		const client = this.ensureClient()
 		const inputMessages = convertToOpenAIResponsesInput(messages).input
 		// Convert messages to Responses API input format

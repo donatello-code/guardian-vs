@@ -12,7 +12,7 @@ import { toggleHook } from "../core/controller/file/toggleHook"
 import { HookDiscoveryCache } from "../core/hooks/HookDiscoveryCache"
 import { StateManager } from "../core/storage/StateManager"
 import { HostProvider } from "../hosts/host-provider"
-import { CreateHookRequest, DeleteHookRequest, ToggleHookRequest } from "../shared/proto/cline/file"
+import { CreateHookRequest, DeleteHookRequest, ToggleHookRequest } from "../shared/proto/guardian/file"
 
 /**
  * Unit tests for hook management operations
@@ -40,8 +40,8 @@ describe("Hook Management", () => {
 
 		// Create temporary directories
 		tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "hook-mgmt-test-"))
-		globalHooksDir = path.join(tempDir, "global", "Documents", "Cline", "Hooks")
-		workspaceHooksDir = path.join(tempDir, "workspace", ".clinerules", "hooks")
+		globalHooksDir = path.join(tempDir, "global", "Documents", "Guardian", "Hooks")
+		workspaceHooksDir = path.join(tempDir, "workspace", ".guardianrules", "hooks")
 
 		await fs.mkdir(globalHooksDir, { recursive: true })
 		await fs.mkdir(workspaceHooksDir, { recursive: true })
@@ -444,7 +444,7 @@ describe("Hook Management", () => {
 	})
 
 	describe("Edge Cases", () => {
-		it("should handle missing .clinerules directory gracefully", async function () {
+		it("should handle missing .guardianrules directory gracefully", async function () {
 			this.timeout(5000)
 
 			// Remove workspace hooks directory

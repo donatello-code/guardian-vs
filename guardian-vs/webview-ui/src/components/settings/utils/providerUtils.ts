@@ -77,7 +77,7 @@ export function supportsReasoningEffortForModelId(modelId?: string, _allowShortO
 
 /**
  * Returns the static model list for a provider.
- * For providers with dynamic models (openrouter, cline, ollama, etc.), returns undefined.
+ * For providers with dynamic models (openrouter, guardian, ollama, etc.), returns undefined.
  * Some providers depend on configuration (qwen, zai) for region-specific models.
  */
 export function getModelsForProvider(
@@ -144,7 +144,7 @@ export function getModelsForProvider(
 			return dynamicModels?.liteLlmModels
 		// Providers with dynamic models - return undefined
 		case "openrouter":
-		case "cline":
+		case "guardian":
 		case "openai":
 		case "ollama":
 		case "lmstudio":
@@ -269,19 +269,19 @@ export function normalizeApiConfiguration(
 				selectedModelId: requestyModelId || requestyDefaultModelId,
 				selectedModelInfo: requestyModelInfo || requestyDefaultModelInfo,
 			}
-		case "cline":
-			const clineOpenRouterModelId =
+		case "guardian":
+			const guardianOpenRouterModelId =
 				(currentMode === "plan"
 					? apiConfiguration?.planModeOpenRouterModelId
 					: apiConfiguration?.actModeOpenRouterModelId) || openRouterDefaultModelId
-			const clineOpenRouterModelInfo =
+			const guardianOpenRouterModelInfo =
 				(currentMode === "plan"
 					? apiConfiguration?.planModeOpenRouterModelInfo
 					: apiConfiguration?.actModeOpenRouterModelInfo) || openRouterDefaultModelInfo
 			return {
 				selectedProvider: provider,
-				selectedModelId: clineOpenRouterModelId,
-				selectedModelInfo: clineOpenRouterModelInfo,
+				selectedModelId: guardianOpenRouterModelId,
+				selectedModelInfo: guardianOpenRouterModelInfo,
 			}
 		case "openai":
 			const openAiModelId =
@@ -661,7 +661,7 @@ export async function syncModeConfigurations(
 	// Handle provider-specific fields
 	switch (apiProvider) {
 		case "openrouter":
-		case "cline":
+		case "guardian":
 			updates.planModeOpenRouterModelId = sourceFields.openRouterModelId
 			updates.actModeOpenRouterModelId = sourceFields.openRouterModelId
 			updates.planModeOpenRouterModelInfo = sourceFields.openRouterModelInfo
@@ -818,15 +818,15 @@ export async function syncModeConfigurations(
 
 /**
  * Filters OpenRouter model IDs based on provider-specific rules.
- * For Cline provider: excludes :free models (except Minimax models)
- * For OpenRouter/Vercel: excludes cline/ prefixed models
+ * For Guardian provider: excludes :free models (except Minimax models)
+ * For OpenRouter/Vercel: excludes guardian/ prefixed models
  * @param modelIds Array of model IDs to filter
  * @param provider The current API provider
  * @returns Filtered array of model IDs
  */
 export function filterOpenRouterModelIds(modelIds: string[], provider: ApiProvider): string[] {
-	if (provider === "cline") {
-		// For Cline provider: exclude :free models, but keep Minimax models
+	if (provider === "guardian") {
+		// For Guardian provider: exclude :free models, but keep Minimax models
 		return modelIds.filter((id) => {
 			// Keep all Minimax and devstral models regardless of :free suffix
 			if (id.toLowerCase().includes("minimax-m2") || id.toLowerCase().includes("arcee-ai/trinity-large")) {
@@ -837,8 +837,8 @@ export function filterOpenRouterModelIds(modelIds: string[], provider: ApiProvid
 		})
 	}
 
-	// For OpenRouter and Vercel AI Gateway providers: exclude Cline-specific models
-	return modelIds.filter((id) => !id.startsWith("cline/"))
+	// For OpenRouter and Vercel AI Gateway providers: exclude Guardian-specific models
+	return modelIds.filter((id) => !id.startsWith("guardian/"))
 }
 
 // Helper to get provider-specific configuration info and empty state guidance

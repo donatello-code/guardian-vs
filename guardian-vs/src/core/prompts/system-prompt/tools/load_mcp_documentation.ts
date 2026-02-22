@@ -1,6 +1,6 @@
 import { ModelFamily } from "@/shared/prompts"
-import { ClineDefaultTool } from "@/shared/tools"
-import type { ClineToolSpec } from "../spec"
+import { GuardianDefaultTool } from "@/shared/tools"
+import type { GuardianToolSpec } from "../spec"
 
 /**
  * ## load_mcp_documentation
@@ -11,9 +11,9 @@ Usage:
 </load_mcp_documentation>
  */
 
-const id = ClineDefaultTool.MCP_DOCS
+const id = GuardianDefaultTool.MCP_DOCS
 
-const generic: ClineToolSpec = {
+const generic: GuardianToolSpec = {
 	id,
 	variant: ModelFamily.GENERIC,
 	name: "load_mcp_documentation",

@@ -61,8 +61,8 @@ interface AppProps {
 	globalState?: Record<string, any>
 	workspaceState?: Record<string, any>
 	// Rules toggles
-	globalClineRulesToggles?: Record<string, boolean>
-	localClineRulesToggles?: Record<string, boolean>
+	globalGuardianRulesToggles?: Record<string, boolean>
+	localGuardianRulesToggles?: Record<string, boolean>
 	localCursorRulesToggles?: Record<string, boolean>
 	localWindsurfRulesToggles?: Record<string, boolean>
 	localAgentsRulesToggles?: Record<string, boolean>
@@ -106,8 +106,8 @@ export const App: React.FC<AppProps> = ({
 	globalState = {},
 	workspaceState = {},
 	// Rules
-	globalClineRulesToggles,
-	localClineRulesToggles,
+	globalGuardianRulesToggles,
+	localGuardianRulesToggles,
 	localCursorRulesToggles,
 	localWindsurfRulesToggles,
 	localAgentsRulesToggles,
@@ -199,14 +199,14 @@ export const App: React.FC<AppProps> = ({
 			content = (
 				<ConfigView
 					dataDir={dataDir}
-					globalClineRulesToggles={globalClineRulesToggles}
+					globalGuardianRulesToggles={globalGuardianRulesToggles}
 					globalHooks={globalHooks}
 					globalSkills={globalSkills}
 					globalState={globalState}
 					globalWorkflowToggles={globalWorkflowToggles}
 					hooksEnabled={hooksEnabled}
 					localAgentsRulesToggles={localAgentsRulesToggles}
-					localClineRulesToggles={localClineRulesToggles}
+					localGuardianRulesToggles={localGuardianRulesToggles}
 					localCursorRulesToggles={localCursorRulesToggles}
 					localSkills={localSkills}
 					localWindsurfRulesToggles={localWindsurfRulesToggles}

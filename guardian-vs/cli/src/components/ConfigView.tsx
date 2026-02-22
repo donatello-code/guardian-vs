@@ -49,8 +49,8 @@ interface ConfigViewProps {
 	onUpdateGlobal?: (key: GlobalStateAndSettingsKey, value: GlobalStateAndSettings[GlobalStateAndSettingsKey]) => void
 	onUpdateWorkspace?: (key: LocalStateKey, value: LocalState[LocalStateKey]) => void
 	// Rules toggles
-	globalClineRulesToggles?: Record<string, boolean>
-	localClineRulesToggles?: Record<string, boolean>
+	globalGuardianRulesToggles?: Record<string, boolean>
+	localGuardianRulesToggles?: Record<string, boolean>
 	localCursorRulesToggles?: Record<string, boolean>
 	localWindsurfRulesToggles?: Record<string, boolean>
 	localAgentsRulesToggles?: Record<string, boolean>
@@ -83,8 +83,8 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 	workspaceState,
 	onUpdateGlobal,
 	onUpdateWorkspace,
-	globalClineRulesToggles,
-	localClineRulesToggles,
+	globalGuardianRulesToggles,
+	localGuardianRulesToggles,
 	localCursorRulesToggles,
 	localWindsurfRulesToggles,
 	localAgentsRulesToggles,
@@ -127,15 +127,15 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 	// Build entries for rules tab
 	const ruleEntries = useMemo(() => {
 		const entries: ToggleEntry[] = []
-		entries.push(...buildToggleEntries(globalClineRulesToggles, "global", "cline"))
-		entries.push(...buildToggleEntries(localClineRulesToggles, "workspace", "cline"))
+		entries.push(...buildToggleEntries(globalGuardianRulesToggles, "global", "guardian"))
+		entries.push(...buildToggleEntries(localGuardianRulesToggles, "workspace", "guardian"))
 		entries.push(...buildToggleEntries(localCursorRulesToggles, "workspace", "cursor"))
 		entries.push(...buildToggleEntries(localWindsurfRulesToggles, "workspace", "windsurf"))
 		entries.push(...buildToggleEntries(localAgentsRulesToggles, "workspace", "agents"))
 		return entries
 	}, [
-		globalClineRulesToggles,
-		localClineRulesToggles,
+		globalGuardianRulesToggles,
+		localGuardianRulesToggles,
 		localCursorRulesToggles,
 		localWindsurfRulesToggles,
 		localAgentsRulesToggles,
@@ -281,7 +281,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 	const handleToggle = () => {
 		if (currentTab === "rules" && ruleEntries[selectedIndex] && onToggleRule) {
 			const entry = ruleEntries[selectedIndex]
-			onToggleRule(entry.source === "global", entry.path, !entry.enabled, entry.ruleType || "cline")
+			onToggleRule(entry.source === "global", entry.path, !entry.enabled, entry.ruleType || "guardian")
 		} else if (currentTab === "workflows" && workflowEntries[selectedIndex] && onToggleWorkflow) {
 			const entry = workflowEntries[selectedIndex]
 			onToggleWorkflow(entry.source === "global", entry.path, !entry.enabled)
@@ -485,7 +485,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 					return (
 						<Box>
 							<Text color="gray">
-								No rules configured. Add .clinerules files to your workspace or global config.
+								No rules configured. Add .guardianrules files to your workspace or global config.
 							</Text>
 						</Box>
 					)
@@ -624,7 +624,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 	return (
 		<Box flexDirection="column">
 			<Text bold color="white">
-				⚙️ Cline Configuration
+				⚙️ Guardian Configuration
 			</Text>
 			<Text color="gray">{SEPARATOR}</Text>
 

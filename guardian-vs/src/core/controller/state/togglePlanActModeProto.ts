@@ -1,5 +1,5 @@
-import { Boolean } from "@shared/proto/cline/common"
-import { PlanActMode, TogglePlanActModeRequest } from "@shared/proto/cline/state"
+import { Boolean } from "@shared/proto/guardian/common"
+import { PlanActMode, TogglePlanActModeRequest } from "@shared/proto/guardian/state"
 import { Mode } from "@shared/storage/types"
 import { Logger } from "@/shared/services/Logger"
 import { Controller } from ".."

@@ -17,9 +17,9 @@ export { getProviderLabel }
  */
 function isProviderConfigured(providerId: string, config: ApiConfiguration): boolean {
 	switch (providerId) {
-		case "cline":
-			// Check if user has Cline API key or Cline account auth data stored
-			return !!(config.clineApiKey ?? config["cline:clineAccountId"])
+		case "guardian":
+			// Check if user has Guardian API key or Guardian account auth data stored
+			return !!(config.guardianApiKey ?? config["guardian:guardianAccountId"])
 		case "anthropic":
 			return !!config.apiKey
 		case "openrouter":

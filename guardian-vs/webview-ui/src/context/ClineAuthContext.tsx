@@ -1,12 +1,12 @@
-import type { UserOrganization } from "@shared/proto/cline/account"
-import { EmptyRequest } from "@shared/proto/cline/common"
+import type { UserOrganization } from "@shared/proto/guardian/account"
+import { EmptyRequest } from "@shared/proto/guardian/common"
 import deepEqual from "fast-deep-equal"
 import type React from "react"
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { AccountServiceClient } from "@/services/grpc-client"
 
 // Define User type (you may need to adjust this based on your actual User type)
-export interface ClineUser {
+export interface GuardianUser {
 	uid: string
 	email?: string
 	displayName?: string
@@ -14,16 +14,16 @@ export interface ClineUser {
 	appBaseUrl?: string
 }
 
-export interface ClineAuthContextType {
-	clineUser: ClineUser | null
+export interface GuardianAuthContextType {
+	guardianUser: GuardianUser | null
 	organizations: UserOrganization[] | null
 	activeOrganization: UserOrganization | null
 }
 
-export const ClineAuthContext = createContext<ClineAuthContextType | undefined>(undefined)
+export const GuardianAuthContext = createContext<GuardianAuthContextType | undefined>(undefined)
 
-export const ClineAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-	const [user, setUser] = useState<ClineUser | null>(null)
+export const GuardianAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+	const [user, setUser] = useState<GuardianUser | null>(null)
 	const [userOrganizations, setUserOrganizations] = useState<UserOrganization[] | null>(null)
 
 	const getUserOrganizations = useCallback(async () => {
@@ -46,7 +46,7 @@ export const ClineAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 	}, [userOrganizations])
 
 	useEffect(() => {
-		console.log("Extension: ClineAuthContext: user updated:", user?.uid)
+		console.log("Extension: GuardianAuthContext: user updated:", user?.uid)
 	}, [user?.uid])
 
 	// Handle auth status update events
@@ -84,26 +84,26 @@ export const ClineAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 	}, [getUserOrganizations])
 
 	return (
-		<ClineAuthContext.Provider
+		<GuardianAuthContext.Provider
 			value={{
-				clineUser: user,
+				guardianUser: user,
 				organizations: userOrganizations,
 				activeOrganization,
 			}}>
 			{children}
-		</ClineAuthContext.Provider>
+		</GuardianAuthContext.Provider>
 	)
 }
 
-export const useClineAuth = () => {
-	const context = useContext(ClineAuthContext)
+export const useGuardianAuth = () => {
+	const context = useContext(GuardianAuthContext)
 	if (context === undefined) {
-		throw new Error("useClineAuth must be used within a ClineAuthProvider")
+		throw new Error("useGuardianAuth must be used within a GuardianAuthProvider")
 	}
 	return context
 }
 
-export const useClineSignIn = () => {
+export const useGuardianSignIn = () => {
 	const [isLoading, setIsLoading] = useState(false)
 
 	const handleSignIn = useCallback(() => {

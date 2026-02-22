@@ -5,35 +5,35 @@ import Mutex from "p-mutex"
 import { findLastIndex } from "@/shared/array"
 import { combineApiRequests } from "@/shared/combineApiRequests"
 import { combineCommandSequences } from "@/shared/combineCommandSequences"
-import { ClineMessage } from "@/shared/ExtensionMessage"
+import { GuardianMessage } from "@/shared/ExtensionMessage"
 import { getApiMetrics } from "@/shared/getApiMetrics"
 import { HistoryItem } from "@/shared/HistoryItem"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { Logger } from "@/shared/services/Logger"
 import { getCwd, getDesktopDir } from "@/utils/path"
-import { ensureTaskDirectoryExists, saveApiConversationHistory, saveClineMessages } from "../storage/disk"
+import { ensureTaskDirectoryExists, saveApiConversationHistory, saveGuardianMessages } from "../storage/disk"
 import { TaskState } from "./TaskState"
 
-// Event types for clineMessages changes
-export type ClineMessageChangeType = "add" | "update" | "delete" | "set"
+// Event types for guardianMessages changes
+export type GuardianMessageChangeType = "add" | "update" | "delete" | "set"
 
-export interface ClineMessageChange {
-	type: ClineMessageChangeType
+export interface GuardianMessageChange {
+	type: GuardianMessageChangeType
 	/** The full array after the change */
-	messages: ClineMessage[]
+	messages: GuardianMessage[]
 	/** The affected index (for add/update/delete) */
 	index?: number
 	/** The new/updated message (for add/update) */
-	message?: ClineMessage
+	message?: GuardianMessage
 	/** The old message before change (for update/delete) */
-	previousMessage?: ClineMessage
+	previousMessage?: GuardianMessage
 	/** The entire previous array (for set) */
-	previousMessages?: ClineMessage[]
+	previousMessages?: GuardianMessage[]
 }
 
 // Strongly-typed event emitter interface
 export interface MessageStateHandlerEvents {
-	clineMessagesChanged: [change: ClineMessageChange]
+	guardianMessagesChanged: [change: GuardianMessageChange]
 }
 
 interface MessageStateHandlerParams {
@@ -46,8 +46,8 @@ interface MessageStateHandlerParams {
 }
 
 export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents> {
-	private apiConversationHistory: ClineStorageMessage[] = []
-	private clineMessages: ClineMessage[] = []
+	private apiConversationHistory: GuardianStorageMessage[] = []
+	private guardianMessages: GuardianMessage[] = []
 	private taskIsFavorited: boolean
 	private checkpointTracker: CheckpointTracker | undefined
 	private updateTaskHistory: (historyItem: HistoryItem) => Promise<HistoryItem[]>
@@ -71,10 +71,10 @@ export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents>
 	}
 
 	/**
-	 * Emit a clineMessagesChanged event with the change details
+	 * Emit a guardianMessagesChanged event with the change details
 	 */
-	private emitClineMessagesChanged(change: ClineMessageChange): void {
-		this.emit("clineMessagesChanged", change)
+	private emitGuardianMessagesChanged(change: GuardianMessageChange): void {
+		this.emit("guardianMessagesChanged", change)
 	}
 
 	setCheckpointTracker(tracker: CheckpointTracker | undefined) {
@@ -90,24 +90,24 @@ export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents>
 		return await this.stateMutex.withLock(fn)
 	}
 
-	getApiConversationHistory(): ClineStorageMessage[] {
+	getApiConversationHistory(): GuardianStorageMessage[] {
 		return this.apiConversationHistory
 	}
 
-	setApiConversationHistory(newHistory: ClineStorageMessage[]): void {
+	setApiConversationHistory(newHistory: GuardianStorageMessage[]): void {
 		this.apiConversationHistory = newHistory
 	}
 
-	getClineMessages(): ClineMessage[] {
-		return this.clineMessages
+	getGuardianMessages(): GuardianMessage[] {
+		return this.guardianMessages
 	}
 
-	setClineMessages(newMessages: ClineMessage[]) {
-		const previousMessages = this.clineMessages
-		this.clineMessages = newMessages
-		this.emitClineMessagesChanged({
+	setGuardianMessages(newMessages: GuardianMessage[]) {
+		const previousMessages = this.guardianMessages
+		this.guardianMessages = newMessages
+		this.emitGuardianMessagesChanged({
 			type: "set",
-			messages: this.clineMessages,
+			messages: this.guardianMessages,
 			previousMessages,
 		})
 	}
@@ -115,19 +115,19 @@ export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents>
 	/**
 	 * Internal method to save messages and update history (without mutex protection)
 	 * This is used by methods that already hold the stateMutex lock
-	 * Should NOT be called directly - use saveClineMessagesAndUpdateHistory() instead
+	 * Should NOT be called directly - use saveGuardianMessagesAndUpdateHistory() instead
 	 */
-	private async saveClineMessagesAndUpdateHistoryInternal(): Promise<void> {
+	private async saveGuardianMessagesAndUpdateHistoryInternal(): Promise<void> {
 		try {
-			await saveClineMessages(this.taskId, this.clineMessages)
+			await saveGuardianMessages(this.taskId, this.guardianMessages)
 
 			// combined as they are in ChatView
-			const apiMetrics = getApiMetrics(combineApiRequests(combineCommandSequences(this.clineMessages.slice(1))))
-			const taskMessage = this.clineMessages[0] // first message is always the task say
+			const apiMetrics = getApiMetrics(combineApiRequests(combineCommandSequences(this.guardianMessages.slice(1))))
+			const taskMessage = this.guardianMessages[0] // first message is always the task say
 			const lastRelevantMessage =
-				this.clineMessages[
+				this.guardianMessages[
 					findLastIndex(
-						this.clineMessages,
+						this.guardianMessages,
 						(message) => !(message.ask === "resume_task" || message.ask === "resume_completed_task"),
 					)
 				]
@@ -161,21 +161,21 @@ export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents>
 				modelId: lastModelInfo?.modelInfo?.modelId,
 			})
 		} catch (error) {
-			Logger.error("Failed to save cline messages:", error)
+			Logger.error("Failed to save guardian messages:", error)
 		}
 	}
 
 	/**
-	 * Save cline messages and update task history (public API with mutex protection)
+	 * Save guardian messages and update task history (public API with mutex protection)
 	 * This is the main entry point for saving message state from external callers
 	 */
-	async saveClineMessagesAndUpdateHistory(): Promise<void> {
+	async saveGuardianMessagesAndUpdateHistory(): Promise<void> {
 		return await this.withStateLock(async () => {
-			await this.saveClineMessagesAndUpdateHistoryInternal()
+			await this.saveGuardianMessagesAndUpdateHistoryInternal()
 		})
 	}
 
-	async addToApiConversationHistory(message: ClineStorageMessage) {
+	async addToApiConversationHistory(message: GuardianStorageMessage) {
 		// Protect with mutex to prevent concurrent modifications from corrupting data (RC-4)
 		return await this.withStateLock(async () => {
 			this.apiConversationHistory.push(message)
@@ -183,7 +183,7 @@ export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents>
 		})
 	}
 
-	async overwriteApiConversationHistory(newHistory: ClineStorageMessage[]): Promise<void> {
+	async overwriteApiConversationHistory(newHistory: GuardianStorageMessage[]): Promise<void> {
 		// Protect with mutex to prevent concurrent modifications from corrupting data (RC-4)
 		return await this.withStateLock(async () => {
 			this.apiConversationHistory = newHistory
@@ -192,100 +192,100 @@ export class MessageStateHandler extends EventEmitter<MessageStateHandlerEvents>
 	}
 
 	/**
-	 * Add a new message to clineMessages array with proper index tracking
+	 * Add a new message to guardianMessages array with proper index tracking
 	 * CRITICAL: This entire operation must be atomic to prevent race conditions (RC-4)
 	 * The conversationHistoryIndex must be set correctly based on the current state,
 	 * and the message must be added and saved without any interleaving operations
 	 */
-	async addToClineMessages(message: ClineMessage) {
+	async addToGuardianMessages(message: GuardianMessage) {
 		return await this.withStateLock(async () => {
-			// these values allow us to reconstruct the conversation history at the time this cline message was created
-			// it's important that apiConversationHistory is initialized before we add cline messages
-			message.conversationHistoryIndex = this.apiConversationHistory.length - 1 // NOTE: this is the index of the last added message which is the user message, and once the clinemessages have been presented we update the apiconversationhistory with the completed assistant message. This means when resetting to a message, we need to +1 this index to get the correct assistant message that this tool use corresponds to
+			// these values allow us to reconstruct the conversation history at the time this guardian message was created
+			// it's important that apiConversationHistory is initialized before we add guardian messages
+			message.conversationHistoryIndex = this.apiConversationHistory.length - 1 // NOTE: this is the index of the last added message which is the user message, and once the guardianmessages have been presented we update the apiconversationhistory with the completed assistant message. This means when resetting to a message, we need to +1 this index to get the correct assistant message that this tool use corresponds to
 			message.conversationHistoryDeletedRange = this.taskState.conversationHistoryDeletedRange
-			const index = this.clineMessages.length
-			this.clineMessages.push(message)
-			this.emitClineMessagesChanged({
+			const index = this.guardianMessages.length
+			this.guardianMessages.push(message)
+			this.emitGuardianMessagesChanged({
 				type: "add",
-				messages: this.clineMessages,
+				messages: this.guardianMessages,
 				index,
 				message,
 			})
-			await this.saveClineMessagesAndUpdateHistoryInternal()
+			await this.saveGuardianMessagesAndUpdateHistoryInternal()
 		})
 	}
 
 	/**
-	 * Replace the entire clineMessages array with new messages
+	 * Replace the entire guardianMessages array with new messages
 	 * Protected by mutex to prevent concurrent modifications (RC-4)
 	 */
-	async overwriteClineMessages(newMessages: ClineMessage[]) {
+	async overwriteGuardianMessages(newMessages: GuardianMessage[]) {
 		return await this.withStateLock(async () => {
-			const previousMessages = this.clineMessages
-			this.clineMessages = newMessages
-			this.emitClineMessagesChanged({
+			const previousMessages = this.guardianMessages
+			this.guardianMessages = newMessages
+			this.emitGuardianMessagesChanged({
 				type: "set",
-				messages: this.clineMessages,
+				messages: this.guardianMessages,
 				previousMessages,
 			})
-			await this.saveClineMessagesAndUpdateHistoryInternal()
+			await this.saveGuardianMessagesAndUpdateHistoryInternal()
 		})
 	}
 
 	/**
-	 * Update a specific message in the clineMessages array
+	 * Update a specific message in the guardianMessages array
 	 * The entire operation (validate, update, save) is atomic to prevent races (RC-4)
 	 */
-	async updateClineMessage(index: number, updates: Partial<ClineMessage>): Promise<void> {
+	async updateGuardianMessage(index: number, updates: Partial<GuardianMessage>): Promise<void> {
 		return await this.withStateLock(async () => {
-			if (index < 0 || index >= this.clineMessages.length) {
+			if (index < 0 || index >= this.guardianMessages.length) {
 				throw new Error(`Invalid message index: ${index}`)
 			}
 
 			// Capture previous state before mutation
-			const previousMessage = { ...this.clineMessages[index] }
+			const previousMessage = { ...this.guardianMessages[index] }
 
 			// Apply updates to the message
-			Object.assign(this.clineMessages[index], updates)
+			Object.assign(this.guardianMessages[index], updates)
 
-			this.emitClineMessagesChanged({
+			this.emitGuardianMessagesChanged({
 				type: "update",
-				messages: this.clineMessages,
+				messages: this.guardianMessages,
 				index,
 				previousMessage,
-				message: this.clineMessages[index],
+				message: this.guardianMessages[index],
 			})
 
 			// Save changes and update history
-			await this.saveClineMessagesAndUpdateHistoryInternal()
+			await this.saveGuardianMessagesAndUpdateHistoryInternal()
 		})
 	}
 
 	/**
-	 * Delete a specific message from the clineMessages array
+	 * Delete a specific message from the guardianMessages array
 	 * The entire operation (validate, delete, save) is atomic to prevent races (RC-4)
 	 */
-	async deleteClineMessage(index: number): Promise<void> {
+	async deleteGuardianMessage(index: number): Promise<void> {
 		return await this.withStateLock(async () => {
-			if (index < 0 || index >= this.clineMessages.length) {
+			if (index < 0 || index >= this.guardianMessages.length) {
 				throw new Error(`Invalid message index: ${index}`)
 			}
 
 			// Capture the message before deletion
-			const previousMessage = this.clineMessages[index]
+			const previousMessage = this.guardianMessages[index]
 
 			// Remove the message at the specified index
-			this.clineMessages.splice(index, 1)
+			this.guardianMessages.splice(index, 1)
 
-			this.emitClineMessagesChanged({
+			this.emitGuardianMessagesChanged({
 				type: "delete",
-				messages: this.clineMessages,
+				messages: this.guardianMessages,
 				index,
 				previousMessage,
 			})
 
 			// Save changes and update history
-			await this.saveClineMessagesAndUpdateHistoryInternal()
+			await this.saveGuardianMessagesAndUpdateHistoryInternal()
 		})
 	}
 }

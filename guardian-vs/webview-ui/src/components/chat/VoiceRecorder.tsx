@@ -1,5 +1,5 @@
-import { TranscribeAudioRequest } from "@shared/proto/cline/dictation"
-import { EmptyRequest } from "@shared/proto/index.cline"
+import { TranscribeAudioRequest } from "@shared/proto/guardian/dictation"
+import { EmptyRequest } from "@shared/proto/index.guardian"
 import { SquareIcon, StopCircleIcon } from "lucide-react"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -43,7 +43,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 	useEffect(() => {
 		if (isAuthenticated && error) {
 			// Clear error if it's related to authentication
-			if (error.toLowerCase().includes("sign in") || error.toLowerCase().includes("cline account")) {
+			if (error.toLowerCase().includes("sign in") || error.toLowerCase().includes("guardian account")) {
 				setError(null)
 			}
 		}

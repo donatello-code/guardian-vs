@@ -1,5 +1,5 @@
 import { Controller } from "@core/controller"
-import { Empty } from "@shared/proto/cline/common"
+import { Empty } from "@shared/proto/guardian/common"
 
 /**
  * Handler for clearing the queue

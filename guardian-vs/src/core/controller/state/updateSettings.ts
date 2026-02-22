@@ -1,10 +1,10 @@
 import { buildApiHandler } from "@core/api"
-import { Empty } from "@shared/proto/cline/common"
-import { PlanActMode, McpDisplayMode as ProtoMcpDisplayMode, UpdateSettingsRequest } from "@shared/proto/cline/state"
+import { Empty } from "@shared/proto/guardian/common"
+import { PlanActMode, McpDisplayMode as ProtoMcpDisplayMode, UpdateSettingsRequest } from "@shared/proto/guardian/state"
 import { convertProtoToApiProvider } from "@shared/proto-conversions/models/api-configuration-conversion"
 import { OpenaiReasoningEffort } from "@shared/storage/types"
 import { TelemetrySetting } from "@shared/TelemetrySetting"
-import { ClineEnv } from "@/config"
+import { GuardianEnv } from "@/config"
 import { fetchRemoteConfig } from "@/core/storage/remote-config/fetch"
 import { clearRemoteConfig } from "@/core/storage/remote-config/utils"
 import { HostProvider } from "@/hosts/host-provider"
@@ -24,8 +24,8 @@ import { accountLogoutClicked } from "../account/accountLogoutClicked"
  */
 export async function updateSettings(controller: Controller, request: UpdateSettingsRequest): Promise<Empty> {
 	try {
-		if (request.clineEnv !== undefined) {
-			ClineEnv.setEnvironment(request.clineEnv)
+		if (request.guardianEnv !== undefined) {
+			GuardianEnv.setEnvironment(request.guardianEnv)
 			await accountLogoutClicked(controller, Empty.create())
 		}
 
@@ -145,12 +145,12 @@ export async function updateSettings(controller: Controller, request: UpdateSett
 			controller.stateManager.setGlobalState("yoloModeToggled", request.yoloModeToggled)
 		}
 
-		// Update cline web tools setting
-		if (request.clineWebToolsEnabled !== undefined) {
+		// Update guardian web tools setting
+		if (request.guardianWebToolsEnabled !== undefined) {
 			if (controller.task) {
-				telemetryService.captureClineWebToolsToggle(controller.task.ulid, request.clineWebToolsEnabled)
+				telemetryService.captureGuardianWebToolsToggle(controller.task.ulid, request.guardianWebToolsEnabled)
 			}
-			controller.stateManager.setGlobalState("clineWebToolsEnabled", request.clineWebToolsEnabled)
+			controller.stateManager.setGlobalState("guardianWebToolsEnabled", request.guardianWebToolsEnabled)
 		}
 
 		// Update worktrees setting
@@ -200,7 +200,7 @@ export async function updateSettings(controller: Controller, request: UpdateSett
 
 				const focusChainSettings = {
 					enabled: isEnabled,
-					remindClineInterval: request.focusChainSettings.remindClineInterval,
+					remindGuardianInterval: request.focusChainSettings.remindGuardianInterval,
 				}
 				controller.stateManager.setGlobalState("focusChainSettings", focusChainSettings)
 

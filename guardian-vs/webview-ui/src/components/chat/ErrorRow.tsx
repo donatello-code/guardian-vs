@@ -1,24 +1,24 @@
-import { ClineMessage } from "@shared/ExtensionMessage"
+import { GuardianMessage } from "@shared/ExtensionMessage"
 import { memo } from "react"
 import CreditLimitError from "@/components/chat/CreditLimitError"
 import { Button } from "@/components/ui/button"
-import { useClineAuth, useClineSignIn } from "@/context/ClineAuthContext"
-import { ClineError, ClineErrorType } from "../../../../src/services/error/ClineError"
+import { useGuardianAuth, useGuardianSignIn } from "@/context/GuardianAuthContext"
+import { GuardianError, GuardianErrorType } from "../../../../src/services/error/GuardianError"
 
 const _errorColor = "var(--vscode-errorForeground)"
 
 interface ErrorRowProps {
-	message: ClineMessage
-	errorType: "error" | "mistake_limit_reached" | "diff_error" | "clineignore_error"
+	message: GuardianMessage
+	errorType: "error" | "mistake_limit_reached" | "diff_error" | "guardianignore_error"
 	apiRequestFailedMessage?: string
 	apiReqStreamingFailedMessage?: string
 }
 
 const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStreamingFailedMessage }: ErrorRowProps) => {
-	const { clineUser } = useClineAuth()
+	const { guardianUser } = useGuardianAuth()
 	const rawApiError = apiRequestFailedMessage || apiReqStreamingFailedMessage
 
-	const { isLoginLoading, handleSignIn } = useClineSignIn()
+	const { isLoginLoading, handleSignIn } = useGuardianSignIn()
 
 	const renderErrorContent = () => {
 		switch (errorType) {
@@ -26,16 +26,16 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 			case "mistake_limit_reached":
 				// Handle API request errors with special error parsing
 				if (rawApiError) {
-					// FIXME: ClineError parsing should not be applied to non-Cline providers, but it seems we're using clineErrorMessage below in the default error display
-					const clineError = ClineError.parse(rawApiError)
-					const errorMessage = clineError?._error?.message || clineError?.message || rawApiError
-					const requestId = clineError?._error?.request_id
-					const providerId = clineError?.providerId || clineError?._error?.providerId
-					const isClineProvider = providerId === "cline"
-					const errorCode = clineError?._error?.code
+					// FIXME: GuardianError parsing should not be applied to non-Guardian providers, but it seems we're using guardianErrorMessage below in the default error display
+					const guardianError = GuardianError.parse(rawApiError)
+					const errorMessage = guardianError?._error?.message || guardianError?.message || rawApiError
+					const requestId = guardianError?._error?.request_id
+					const providerId = guardianError?.providerId || guardianError?._error?.providerId
+					const isGuardianProvider = providerId === "guardian"
+					const errorCode = guardianError?._error?.code
 
-					if (clineError?.isErrorType(ClineErrorType.Balance)) {
-						const errorDetails = clineError._error?.details
+					if (guardianError?.isErrorType(GuardianErrorType.Balance)) {
+						const errorDetails = guardianError._error?.details
 						return (
 							<CreditLimitError
 								buyCreditsUrl={errorDetails?.buy_credits_url}
@@ -47,7 +47,7 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 						)
 					}
 
-					if (clineError?.isErrorType(ClineErrorType.RateLimit)) {
+					if (guardianError?.isErrorType(GuardianErrorType.RateLimit)) {
 						return (
 							<p className="m-0 whitespace-pre-wrap text-error wrap-anywhere">
 								{errorMessage}
@@ -58,7 +58,7 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 
 					return (
 						<p className="m-0 whitespace-pre-wrap text-error wrap-anywhere flex flex-col gap-3">
-							{/* Display the well-formatted error extracted from the ClineError instance */}
+							{/* Display the well-formatted error extracted from the GuardianError instance */}
 
 							<header>
 								{providerId && <span className="uppercase">[{providerId}] </span>}
@@ -73,7 +73,7 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 									It seems like you're having Windows PowerShell issues, please see this{" "}
 									<a
 										className="underline text-inherit"
-										href="https://github.com/cline/cline/wiki/TroubleShooting-%E2%80%90-%22PowerShell-is-not-recognized-as-an-internal-or-external-command%22">
+										href="https://github.com/guardian/guardian/wiki/TroubleShooting-%E2%80%90-%22PowerShell-is-not-recognized-as-an-internal-or-external-command%22">
 										troubleshooting guide
 									</a>
 									.
@@ -83,12 +83,12 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 							{/* Display raw API error if different from parsed error message */}
 							{errorMessage !== rawApiError && <div>{rawApiError}</div>}
 
-							{/* Display Login button for non-logged in users using the Cline provider */}
+							{/* Display Login button for non-logged in users using the Guardian provider */}
 							<div>
-								{/* The user is signed in or not using cline provider */}
-								{isClineProvider && !clineUser ? (
+								{/* The user is signed in or not using guardian provider */}
+								{isGuardianProvider && !guardianUser ? (
 									<Button className="w-full mb-4" disabled={isLoginLoading} onClick={handleSignIn}>
-										Sign in to Cline
+										Sign in to Guardian
 										{isLoginLoading && (
 											<span className="ml-1 animate-spin">
 												<span className="codicon codicon-refresh"></span>
@@ -113,11 +113,11 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 					</div>
 				)
 
-			case "clineignore_error":
+			case "guardianignore_error":
 				return (
 					<div className="flex flex-col p-2 rounded text-xs opacity-80 bg-quote text-foreground">
 						<div>
-							Cline tried to access <code>{message.text}</code> which is blocked by the <code>.clineignore</code>
+							Guardian tried to access <code>{message.text}</code> which is blocked by the <code>.guardianignore</code>
 							file.
 						</div>
 					</div>
@@ -128,8 +128,8 @@ const ErrorRow = memo(({ message, errorType, apiRequestFailedMessage, apiReqStre
 		}
 	}
 
-	// For diff_error and clineignore_error, we don't show the header separately
-	if (errorType === "diff_error" || errorType === "clineignore_error") {
+	// For diff_error and guardianignore_error, we don't show the header separately
+	if (errorType === "diff_error" || errorType === "guardianignore_error") {
 		return renderErrorContent()
 	}
 

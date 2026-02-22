@@ -1,6 +1,6 @@
 import { resolveWorkspacePath } from "@core/workspace"
 import { isMultiRootEnabled } from "@core/workspace/multi-root-utils"
-import { ClineDefaultTool } from "@shared/tools"
+import { GuardianDefaultTool } from "@shared/tools"
 import { StateManager } from "@/core/storage/StateManager"
 import { HostProvider } from "@/hosts/host-provider"
 import { getCwd, getDesktopDir, isLocatedInPath, isLocatedInWorkspace } from "@/utils/path"
@@ -39,48 +39,48 @@ export class AutoApprove {
 
 	// Check if the tool should be auto-approved based on the settings
 	// Returns bool for most tools, and tuple for tools with nested settings
-	shouldAutoApproveTool(toolName: ClineDefaultTool): boolean | [boolean, boolean] {
+	shouldAutoApproveTool(toolName: GuardianDefaultTool): boolean | [boolean, boolean] {
 		if (this.stateManager.getGlobalSettingsKey("yoloModeToggled")) {
 			switch (toolName) {
-				case ClineDefaultTool.FILE_READ:
-				case ClineDefaultTool.LIST_FILES:
-				case ClineDefaultTool.LIST_CODE_DEF:
-				case ClineDefaultTool.SEARCH:
-				case ClineDefaultTool.NEW_RULE:
-				case ClineDefaultTool.FILE_NEW:
-				case ClineDefaultTool.FILE_EDIT:
-				case ClineDefaultTool.APPLY_PATCH:
-				case ClineDefaultTool.BASH:
-				case ClineDefaultTool.USE_SUBAGENTS:
+				case GuardianDefaultTool.FILE_READ:
+				case GuardianDefaultTool.LIST_FILES:
+				case GuardianDefaultTool.LIST_CODE_DEF:
+				case GuardianDefaultTool.SEARCH:
+				case GuardianDefaultTool.NEW_RULE:
+				case GuardianDefaultTool.FILE_NEW:
+				case GuardianDefaultTool.FILE_EDIT:
+				case GuardianDefaultTool.APPLY_PATCH:
+				case GuardianDefaultTool.BASH:
+				case GuardianDefaultTool.USE_SUBAGENTS:
 					return [true, true]
 
-				case ClineDefaultTool.BROWSER:
-				case ClineDefaultTool.WEB_FETCH:
-				case ClineDefaultTool.WEB_SEARCH:
-				case ClineDefaultTool.MCP_ACCESS:
-				case ClineDefaultTool.MCP_USE:
+				case GuardianDefaultTool.BROWSER:
+				case GuardianDefaultTool.WEB_FETCH:
+				case GuardianDefaultTool.WEB_SEARCH:
+				case GuardianDefaultTool.MCP_ACCESS:
+				case GuardianDefaultTool.MCP_USE:
 					return true
 			}
 		}
 
 		if (this.stateManager.getGlobalSettingsKey("autoApproveAllToggled")) {
 			switch (toolName) {
-				case ClineDefaultTool.FILE_READ:
-				case ClineDefaultTool.LIST_FILES:
-				case ClineDefaultTool.LIST_CODE_DEF:
-				case ClineDefaultTool.SEARCH:
-				case ClineDefaultTool.NEW_RULE:
-				case ClineDefaultTool.FILE_NEW:
-				case ClineDefaultTool.FILE_EDIT:
-				case ClineDefaultTool.APPLY_PATCH:
-				case ClineDefaultTool.BASH:
-				case ClineDefaultTool.USE_SUBAGENTS:
+				case GuardianDefaultTool.FILE_READ:
+				case GuardianDefaultTool.LIST_FILES:
+				case GuardianDefaultTool.LIST_CODE_DEF:
+				case GuardianDefaultTool.SEARCH:
+				case GuardianDefaultTool.NEW_RULE:
+				case GuardianDefaultTool.FILE_NEW:
+				case GuardianDefaultTool.FILE_EDIT:
+				case GuardianDefaultTool.APPLY_PATCH:
+				case GuardianDefaultTool.BASH:
+				case GuardianDefaultTool.USE_SUBAGENTS:
 					return [true, true]
-				case ClineDefaultTool.BROWSER:
-				case ClineDefaultTool.WEB_FETCH:
-				case ClineDefaultTool.WEB_SEARCH:
-				case ClineDefaultTool.MCP_ACCESS:
-				case ClineDefaultTool.MCP_USE:
+				case GuardianDefaultTool.BROWSER:
+				case GuardianDefaultTool.WEB_FETCH:
+				case GuardianDefaultTool.WEB_SEARCH:
+				case GuardianDefaultTool.MCP_ACCESS:
+				case GuardianDefaultTool.MCP_USE:
 					return true
 			}
 		}
@@ -88,29 +88,29 @@ export class AutoApprove {
 		const autoApprovalSettings = this.stateManager.getGlobalSettingsKey("autoApprovalSettings")
 
 		switch (toolName) {
-			case ClineDefaultTool.FILE_READ:
-			case ClineDefaultTool.LIST_FILES:
-			case ClineDefaultTool.LIST_CODE_DEF:
-			case ClineDefaultTool.SEARCH:
-			case ClineDefaultTool.USE_SUBAGENTS:
+			case GuardianDefaultTool.FILE_READ:
+			case GuardianDefaultTool.LIST_FILES:
+			case GuardianDefaultTool.LIST_CODE_DEF:
+			case GuardianDefaultTool.SEARCH:
+			case GuardianDefaultTool.USE_SUBAGENTS:
 				return [autoApprovalSettings.actions.readFiles, autoApprovalSettings.actions.readFilesExternally ?? false]
-			case ClineDefaultTool.NEW_RULE:
-			case ClineDefaultTool.FILE_NEW:
-			case ClineDefaultTool.FILE_EDIT:
-			case ClineDefaultTool.APPLY_PATCH:
+			case GuardianDefaultTool.NEW_RULE:
+			case GuardianDefaultTool.FILE_NEW:
+			case GuardianDefaultTool.FILE_EDIT:
+			case GuardianDefaultTool.APPLY_PATCH:
 				return [autoApprovalSettings.actions.editFiles, autoApprovalSettings.actions.editFilesExternally ?? false]
-			case ClineDefaultTool.BASH:
+			case GuardianDefaultTool.BASH:
 				return [
 					autoApprovalSettings.actions.executeSafeCommands ?? false,
 					autoApprovalSettings.actions.executeAllCommands ?? false,
 				]
-			case ClineDefaultTool.BROWSER:
+			case GuardianDefaultTool.BROWSER:
 				return autoApprovalSettings.actions.useBrowser
-			case ClineDefaultTool.WEB_FETCH:
-			case ClineDefaultTool.WEB_SEARCH:
+			case GuardianDefaultTool.WEB_FETCH:
+			case GuardianDefaultTool.WEB_SEARCH:
 				return autoApprovalSettings.actions.useBrowser
-			case ClineDefaultTool.MCP_ACCESS:
-			case ClineDefaultTool.MCP_USE:
+			case GuardianDefaultTool.MCP_ACCESS:
+			case GuardianDefaultTool.MCP_USE:
 				return autoApprovalSettings.actions.useMcp
 		}
 		return false
@@ -120,7 +120,7 @@ export class AutoApprove {
 	// and the path of the action. Returns true if the tool should be auto-approved
 	// based on the user's settings and the path of the action.
 	async shouldAutoApproveToolWithPath(
-		blockname: ClineDefaultTool,
+		blockname: GuardianDefaultTool,
 		autoApproveActionpath: string | undefined,
 	): Promise<boolean> {
 		if (this.stateManager.getGlobalSettingsKey("yoloModeToggled")) {

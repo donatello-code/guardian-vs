@@ -9,7 +9,7 @@ import { Logger } from "@/shared/services/Logger"
 import * as pkg from "../../../../package.json"
 import type { PostHogClientValidConfig } from "../../../shared/services/config/posthog-config"
 import { getErrorLevelFromString } from ".."
-import { ClineError } from "../ClineError"
+import { GuardianError } from "../GuardianError"
 import type { ErrorSettings, IErrorProvider } from "./IErrorProvider"
 
 const isDev = process.env.IS_DEV === "true"
@@ -61,7 +61,7 @@ export class PostHogErrorProvider implements IErrorProvider {
 		return this
 	}
 
-	public logException(error: Error | ClineError, properties: Record<string, unknown> = {}): void {
+	public logException(error: Error | GuardianError, properties: Record<string, unknown> = {}): void {
 		if (!this.isEnabled() || this.errorSettings.level === "off") {
 			return
 		}
@@ -75,7 +75,7 @@ export class PostHogErrorProvider implements IErrorProvider {
 			...properties,
 		}
 
-		if (error instanceof ClineError) {
+		if (error instanceof GuardianError) {
 			Object.assign(errorDetails, {
 				modelId: error.modelId,
 				providerId: error.providerId,

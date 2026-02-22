@@ -12,7 +12,7 @@ import type {
 import type { HostBridgeClientProvider, StreamingCallbacks } from "@hosts/host-provider-types"
 import * as proto from "@shared/proto/index"
 import { StateManager } from "@/core/storage/StateManager"
-import { ClineClient } from "@/shared/cline"
+import { GuardianClient } from "@/shared/guardian"
 import { version as CLI_VERSION } from "../../package.json"
 import { printError, printInfo, printWarning } from "../utils/display"
 
@@ -87,37 +87,37 @@ export class CliEnvServiceClient implements EnvServiceClientInterface {
 		return setting === "disabled" ? proto.host.Setting.DISABLED : proto.host.Setting.ENABLED
 	}
 
-	async clipboardWriteText(request: proto.cline.StringRequest): Promise<proto.cline.Empty> {
+	async clipboardWriteText(request: proto.guardian.StringRequest): Promise<proto.guardian.Empty> {
 		this.clipboardContent = request.value || ""
 		printInfo(`📋 Copied to clipboard`)
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 
-	async clipboardReadText(_request: proto.cline.EmptyRequest): Promise<proto.cline.String> {
-		return proto.cline.String.create({ value: this.clipboardContent })
+	async clipboardReadText(_request: proto.guardian.EmptyRequest): Promise<proto.guardian.String> {
+		return proto.guardian.String.create({ value: this.clipboardContent })
 	}
 
-	async getHostVersion(_request: proto.cline.EmptyRequest): Promise<proto.host.GetHostVersionResponse> {
+	async getHostVersion(_request: proto.guardian.EmptyRequest): Promise<proto.host.GetHostVersionResponse> {
 		return proto.host.GetHostVersionResponse.create({
 			version: CLI_VERSION,
-			platform: "Cline CLI - Node.js",
-			clineType: ClineClient.Cli,
+			platform: "Guardian CLI - Node.js",
+			guardianType: GuardianClient.Cli,
 		})
 	}
 
-	async getIdeRedirectUri(_request: proto.cline.EmptyRequest): Promise<proto.cline.String> {
+	async getIdeRedirectUri(_request: proto.guardian.EmptyRequest): Promise<proto.guardian.String> {
 		// CLI doesn't have IDE redirect
-		return proto.cline.String.create({ value: "" })
+		return proto.guardian.String.create({ value: "" })
 	}
 
-	async getTelemetrySettings(_request: proto.cline.EmptyRequest): Promise<proto.host.GetTelemetrySettingsResponse> {
+	async getTelemetrySettings(_request: proto.guardian.EmptyRequest): Promise<proto.host.GetTelemetrySettingsResponse> {
 		return proto.host.GetTelemetrySettingsResponse.create({
 			isEnabled: this.getTelemetrySetting(),
 		})
 	}
 
 	subscribeToTelemetrySettings(
-		_request: proto.cline.EmptyRequest,
+		_request: proto.guardian.EmptyRequest,
 		callbacks: StreamingCallbacks<proto.host.TelemetrySettingsEvent>,
 	): () => void {
 		// Send initial settings
@@ -130,20 +130,20 @@ export class CliEnvServiceClient implements EnvServiceClientInterface {
 		return () => {}
 	}
 
-	debugLog(request: proto.cline.StringRequest): Promise<proto.cline.Empty> {
+	debugLog(request: proto.guardian.StringRequest): Promise<proto.guardian.Empty> {
 		const message = request.value || ""
 		if (process.env.IS_DEV) {
 			printInfo(`[DebugLog] ${message}`)
 		}
-		return Promise.resolve(proto.cline.Empty.create())
+		return Promise.resolve(proto.guardian.Empty.create())
 	}
 
-	async shutdown(_request: proto.cline.EmptyRequest): Promise<proto.cline.Empty> {
+	async shutdown(_request: proto.guardian.EmptyRequest): Promise<proto.guardian.Empty> {
 		printInfo("Shutting down...")
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 
-	async openExternal(request: proto.cline.StringRequest): Promise<proto.cline.Empty> {
+	async openExternal(request: proto.guardian.StringRequest): Promise<proto.guardian.Empty> {
 		const url = request.value || ""
 		if (url) {
 			printInfo(`🌐 Opening: ${url}`)
@@ -151,7 +151,7 @@ export class CliEnvServiceClient implements EnvServiceClientInterface {
 			const { default: open } = await import("open")
 			await open(url)
 		}
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 }
 
@@ -208,7 +208,7 @@ export class CliWindowServiceClient implements WindowServiceClientInterface {
 	}
 
 	async openSettings(_request: proto.host.OpenSettingsRequest): Promise<proto.host.OpenSettingsResponse> {
-		printInfo("Settings can be configured in ~/.cline/data/globalState.json")
+		printInfo("Settings can be configured in ~/.guardian/data/globalState.json")
 		return proto.host.OpenSettingsResponse.create({})
 	}
 
@@ -269,11 +269,11 @@ export class CliWorkspaceServiceClient implements WorkspaceServiceClientInterfac
 		return proto.host.OpenInFileExplorerPanelResponse.create({})
 	}
 
-	async openClineSidebarPanel(
-		_request: proto.host.OpenClineSidebarPanelRequest,
-	): Promise<proto.host.OpenClineSidebarPanelResponse> {
+	async openGuardianSidebarPanel(
+		_request: proto.host.OpenGuardianSidebarPanelRequest,
+	): Promise<proto.host.OpenGuardianSidebarPanelResponse> {
 		// No sidebar in CLI
-		return proto.host.OpenClineSidebarPanelResponse.create({})
+		return proto.host.OpenGuardianSidebarPanelResponse.create({})
 	}
 
 	async openTerminalPanel(_request: proto.host.OpenTerminalRequest): Promise<proto.host.OpenTerminalResponse> {

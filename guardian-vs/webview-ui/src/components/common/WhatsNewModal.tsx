@@ -1,4 +1,4 @@
-import { BannerAction, BannerCardData } from "@shared/cline/banner"
+import { BannerAction, BannerCardData } from "@shared/guardian/banner"
 import React, { useCallback } from "react"
 import { useMount } from "react-use"
 import DiscordIcon from "@/assets/DiscordIcon"
@@ -28,11 +28,11 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 
 	const navigateToModelPicker = useCallback(
 		(initialModelTab: "recommended" | "free", modelId?: string) => {
-			// Switch to Cline provider first so the model picker tab works
+			// Switch to Guardian provider first so the model picker tab works
 			// Optionally also set the model if provided
 			const updates: Record<string, any> = {
-				planModeApiProvider: "cline",
-				actModeApiProvider: "cline",
+				planModeApiProvider: "guardian",
+				actModeApiProvider: "guardian",
 			}
 			if (modelId) {
 				updates.planModeOpenRouterModelId = modelId
@@ -85,7 +85,7 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 							<a
 								aria-label="Follow us on X"
 								className="text-[var(--vscode-foreground)] hover:text-[var(--vscode-textLink-activeForeground)] transition-colors"
-								href="https://x.com/cline"
+								href="https://x.com/guardian"
 								rel="noopener noreferrer"
 								target="_blank">
 								<XIcon />
@@ -95,7 +95,7 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 							<a
 								aria-label="Join our Discord"
 								className="text-[var(--vscode-foreground)] hover:text-[var(--vscode-textLink-activeForeground)] transition-colors"
-								href="https://discord.gg/cline"
+								href="https://discord.gg/guardian"
 								rel="noopener noreferrer"
 								target="_blank">
 								<DiscordIcon />
@@ -105,7 +105,7 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 							<a
 								aria-label="Star us on GitHub"
 								className="text-[var(--vscode-foreground)] hover:text-[var(--vscode-textLink-activeForeground)] transition-colors"
-								href="https://github.com/cline/cline"
+								href="https://github.com/guardian/guardian"
 								rel="noopener noreferrer"
 								target="_blank">
 								<GitHubIcon />
@@ -115,7 +115,7 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 							<a
 								aria-label="Join our subreddit"
 								className="text-[var(--vscode-foreground)] hover:text-[var(--vscode-textLink-activeForeground)] transition-colors"
-								href="https://www.reddit.com/r/cline/"
+								href="https://www.reddit.com/r/guardian/"
 								rel="noopener noreferrer"
 								target="_blank">
 								<RedditIcon />
@@ -125,7 +125,7 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 							<a
 								aria-label="Follow us on LinkedIn"
 								className="text-[var(--vscode-foreground)] hover:text-[var(--vscode-textLink-activeForeground)] transition-colors"
-								href="https://www.linkedin.com/company/clinebot/"
+								href="https://www.linkedin.com/company/guardianbot/"
 								rel="noopener noreferrer"
 								target="_blank">
 								<LinkedInIcon />
@@ -134,9 +134,9 @@ export const WhatsNewModal: React.FC<WhatsNewModalProps> = ({ open, onClose, ver
 
 						{/* GitHub Star CTA */}
 						<p className="text-sm text-center" style={{ color: "var(--vscode-descriptionForeground)" }}>
-							Please support Cline by{" "}
+							Please support Guardian by{" "}
 							<a
-								href="https://github.com/cline/cline"
+								href="https://github.com/guardian/guardian"
 								rel="noopener noreferrer"
 								style={{ color: "var(--vscode-textLink-foreground)" }}
 								target="_blank">

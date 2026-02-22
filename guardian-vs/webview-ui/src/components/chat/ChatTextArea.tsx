@@ -1,12 +1,12 @@
 import { PulsingBorder } from "@paper-design/shaders-react"
 import { mentionRegex, mentionRegexGlobal } from "@shared/context-mentions"
-import { StringRequest } from "@shared/proto/cline/common"
-import { FileSearchRequest, FileSearchType, RelativePathsRequest } from "@shared/proto/cline/file"
-import { PlanActMode, TogglePlanActModeRequest } from "@shared/proto/cline/state"
+import { StringRequest } from "@shared/proto/guardian/common"
+import { FileSearchRequest, FileSearchType, RelativePathsRequest } from "@shared/proto/guardian/file"
+import { PlanActMode, TogglePlanActModeRequest } from "@shared/proto/guardian/state"
 import { type SlashCommand } from "@shared/slashCommands"
 import { Mode } from "@shared/storage/types"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
-import { AtSignIcon, PlusIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import type React from "react"
 import { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import DynamicTextArea from "react-textarea-autosize"
@@ -17,7 +17,7 @@ import SlashCommandMenu from "@/components/chat/SlashCommandMenu"
 import Thumbnails from "@/components/common/Thumbnails"
 import { getModeSpecificFields, normalizeApiConfiguration } from "@/components/settings/utils/providerUtils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useClineAuth } from "@/context/ClineAuthContext"
+import { useGuardianAuth } from "@/context/GuardianAuthContext"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { usePlatform } from "@/context/PlatformContext"
 import { cn } from "@/lib/utils"
@@ -43,7 +43,7 @@ import {
 	slashCommandRegexGlobal,
 	validateSlashCommand,
 } from "@/utils/slash-commands"
-import ClineRulesToggleModal from "../cline-rules/ClineRulesToggleModal"
+import GuardianRulesToggleModal from "../guardian-rules/GuardianRulesToggleModal"
 import ServersToggleModal from "./ServersToggleModal"
 import VoiceRecorder from "./VoiceRecorder"
 
@@ -232,7 +232,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			dictationSettings,
 			mcpServers,
 		} = useExtensionState()
-		const { clineUser } = useClineAuth()
+		const { guardianUser } = useGuardianAuth()
 		const [isTextAreaFocused, setIsTextAreaFocused] = useState(false)
 		const [isDraggingOver, setIsDraggingOver] = useState(false)
 		const [gitCommits, setGitCommits] = useState<GitCommit[]>([])
@@ -1094,7 +1094,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 				return unknownModel
 			}
 			switch (selectedProvider) {
-				case "cline":
+				case "guardian":
 					return `${selectedProvider}:${selectedModelId}`
 				case "openai":
 					return `openai-compat:${selectedModelId}`
@@ -1561,7 +1561,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							{dictationSettings?.dictationEnabled === true && dictationSettings?.featureEnabled && (
 								<VoiceRecorder
 									disabled={sendingDisabled}
-									isAuthenticated={!!clineUser?.uid}
+									isAuthenticated={!!guardianUser?.uid}
 									language={dictationSettings?.dictationLanguage || "en"}
 									onProcessingStateChange={(isProcessing, message) => {
 										if (isProcessing && message) {
@@ -1635,21 +1635,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					<div className="relative flex-1 min-w-0 h-5">
 						{/* ButtonGroup - always in DOM but visibility controlled */}
 						<ButtonGroup className="absolute top-0 left-0 right-0 ease-in-out w-full h-5 z-10 flex items-center">
-							<Tooltip>
-								<TooltipContent>Add Context</TooltipContent>
-								<TooltipTrigger>
-									<VSCodeButton
-										appearance="icon"
-										aria-label="Add Context"
-										className="p-0 m-0 flex items-center"
-										data-testid="context-button"
-										onClick={handleContextButtonClick}>
-										<ButtonContainer>
-											<AtSignIcon size={12} />
-										</ButtonContainer>
-									</VSCodeButton>
-								</TooltipTrigger>
-							</Tooltip>
 
 							<Tooltip>
 								<TooltipContent>Add Files & Images</TooltipContent>
@@ -1674,7 +1659,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 							<ServersToggleModal />
 
-							<ClineRulesToggleModal />
+							<GuardianRulesToggleModal />
 
 							<ModelContainer>
 								<ModelButtonWrapper>
@@ -1696,7 +1681,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							className="text-xs px-2 flex flex-col gap-1"
 							hidden={shownTooltipMode === null}
 							side="top">
-							{`In ${shownTooltipMode === "act" ? "Act" : "Plan"}  mode, Cline will ${shownTooltipMode === "act" ? "complete the task immediately" : "gather information to architect a plan"}`}
+							{`In ${shownTooltipMode === "act" ? "Act" : "Plan"}  mode, Guardian will ${shownTooltipMode === "act" ? "complete the task immediately" : "gather information to architect a plan"}`}
 							<p className="text-description/80 text-xs mb-0">
 								Toggle w/ <kbd className="text-muted-foreground mx-1">{togglePlanActKeys}</kbd>
 							</p>

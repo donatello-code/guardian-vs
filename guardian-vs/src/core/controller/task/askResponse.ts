@@ -1,7 +1,7 @@
-import { Empty } from "@shared/proto/cline/common"
-import { AskResponseRequest } from "@shared/proto/cline/task"
+import { Empty } from "@shared/proto/guardian/common"
+import { AskResponseRequest } from "@shared/proto/guardian/task"
 import { Logger } from "@/shared/services/Logger"
-import { ClineAskResponse } from "../../../shared/WebviewMessage"
+import { GuardianAskResponse } from "../../../shared/WebviewMessage"
 import { Controller } from ".."
 
 /**
@@ -18,8 +18,8 @@ export async function askResponse(controller: Controller, request: AskResponseRe
 			return Empty.create()
 		}
 
-		// Map the string responseType to the ClineAskResponse enum
-		let responseType: ClineAskResponse
+		// Map the string responseType to the GuardianAskResponse enum
+		let responseType: GuardianAskResponse
 		switch (request.responseType) {
 			case "yesButtonClicked":
 				responseType = "yesButtonClicked"

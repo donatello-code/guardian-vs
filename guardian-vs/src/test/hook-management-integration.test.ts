@@ -12,7 +12,7 @@ import { toggleHook } from "../core/controller/file/toggleHook"
 import { HookDiscoveryCache } from "../core/hooks/HookDiscoveryCache"
 import { StateManager } from "../core/storage/StateManager"
 import { HostProvider } from "../hosts/host-provider"
-import { CreateHookRequest, DeleteHookRequest, ToggleHookRequest } from "../shared/proto/cline/file"
+import { CreateHookRequest, DeleteHookRequest, ToggleHookRequest } from "../shared/proto/guardian/file"
 
 /**
  * Integration tests for hook management
@@ -40,8 +40,8 @@ describe("Hook Management Integration", () => {
 
 		// Create temporary directories
 		tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "hook-integration-test-"))
-		globalHooksDir = path.join(tempDir, "global", "Documents", "Cline", "Hooks")
-		workspaceHooksDir = path.join(tempDir, "workspace", ".clinerules", "hooks")
+		globalHooksDir = path.join(tempDir, "global", "Documents", "Guardian", "Hooks")
+		workspaceHooksDir = path.join(tempDir, "workspace", ".guardianrules", "hooks")
 
 		await fs.mkdir(globalHooksDir, { recursive: true })
 		await fs.mkdir(workspaceHooksDir, { recursive: true })

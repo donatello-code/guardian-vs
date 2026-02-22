@@ -1,10 +1,10 @@
 {
-	"name": "cline",
+	"name": "guardian",
 	"version": "2.4.2",
 	"description": "Autonomous coding agent CLI - capable of creating/editing files, running commands, using the browser, and more",
 	"main": "dist/cli.mjs",
 	"bin": {
-		"cline": "./dist/cli.mjs"
+		"guardian": "./dist/cli.mjs"
 	},
 	"os": [
 		"darwin",
@@ -35,7 +35,7 @@
 		"test:run": "vitest run"
 	},
 	"keywords": [
-		"cline",
+		"guardian",
 		"claude",
 		"dev",
 		"mcp",

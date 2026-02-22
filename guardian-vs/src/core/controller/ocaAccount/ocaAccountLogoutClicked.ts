@@ -1,5 +1,5 @@
-import type { EmptyRequest } from "@shared/proto/cline/common"
-import { Empty } from "@shared/proto/cline/common"
+import type { EmptyRequest } from "@shared/proto/guardian/common"
+import { Empty } from "@shared/proto/guardian/common"
 import type { Controller } from "../index"
 
 /**

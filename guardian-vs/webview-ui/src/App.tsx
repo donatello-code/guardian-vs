@@ -1,4 +1,4 @@
-import type { Boolean, EmptyRequest } from "@shared/proto/cline/common"
+import type { Boolean, EmptyRequest } from "@shared/proto/guardian/common"
 import { useEffect } from "react"
 import AccountView from "./components/account/AccountView"
 import ChatView from "./components/chat/ChatView"
@@ -8,7 +8,7 @@ import OnboardingView from "./components/onboarding/OnboardingView"
 import SettingsView from "./components/settings/SettingsView"
 import WelcomeView from "./components/welcome/WelcomeView"
 import WorktreesView from "./components/worktrees/WorktreesView"
-import { useClineAuth } from "./context/ClineAuthContext"
+import { useGuardianAuth } from "./context/GuardianAuthContext"
 import { useExtensionState } from "./context/ExtensionStateContext"
 import { Providers } from "./Providers"
 import { UiServiceClient } from "./services/grpc-client"
@@ -38,7 +38,7 @@ const AppContent = () => {
 		hideAnnouncement,
 	} = useExtensionState()
 
-	const { clineUser, organizations, activeOrganization } = useClineAuth()
+	const { guardianUser, organizations, activeOrganization } = useGuardianAuth()
 
 	useEffect(() => {
 		if (shouldShowAnnouncement) {
@@ -71,7 +71,7 @@ const AppContent = () => {
 			{showAccount && (
 				<AccountView
 					activeOrganization={activeOrganization}
-					clineUser={clineUser}
+					guardianUser={guardianUser}
 					onDone={hideAccount}
 					organizations={organizations}
 				/>

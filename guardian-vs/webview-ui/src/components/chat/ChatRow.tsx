@@ -1,15 +1,15 @@
 import { COMMAND_OUTPUT_STRING } from "@shared/combineCommandSequences"
 import {
-	ClineApiReqInfo,
-	ClineAskQuestion,
-	ClineAskUseMcpServer,
-	ClineMessage,
-	ClinePlanModeResponse,
-	ClineSayGenerateExplanation,
-	ClineSayTool,
+	GuardianApiReqInfo,
+	GuardianAskQuestion,
+	GuardianAskUseMcpServer,
+	GuardianMessage,
+	GuardianPlanModeResponse,
+	GuardianSayGenerateExplanation,
+	GuardianSayTool,
 	COMPLETION_RESULT_CHANGES_FLAG,
 } from "@shared/ExtensionMessage"
-import { BooleanRequest, StringRequest } from "@shared/proto/cline/common"
+import { BooleanRequest, StringRequest } from "@shared/proto/guardian/common"
 import { Mode } from "@shared/storage/types"
 import deepEqual from "fast-deep-equal"
 import {
@@ -68,10 +68,10 @@ import UserMessage from "./UserMessage"
 const HEADER_CLASSNAMES = "flex items-center gap-2.5 mb-3"
 
 interface ChatRowProps {
-	message: ClineMessage
+	message: GuardianMessage
 	isExpanded: boolean
 	onToggleExpand: (ts: number) => void
-	lastModifiedMessage?: ClineMessage
+	lastModifiedMessage?: GuardianMessage
 	isLast: boolean
 	onHeightChange: (isTaller: boolean) => void
 	inputValue?: string
@@ -153,7 +153,7 @@ export const ChatRowContent = memo(
 			mcpMarketplaceCatalog,
 			onRelinquishControl,
 			vscodeTerminalExecutionMode,
-			clineMessages,
+			guardianMessages,
 		} = useExtensionState()
 		const [seeNewChangesDisabled, setSeeNewChangesDisabled] = useState(false)
 		const [explainChangesDisabled, setExplainChangesDisabled] = useState(false)
@@ -200,7 +200,7 @@ export const ChatRowContent = memo(
 
 		const [cost, apiReqCancelReason, apiReqStreamingFailedMessage] = useMemo(() => {
 			if (message.text != null && message.say === "api_req_started") {
-				const info: ClineApiReqInfo = JSON.parse(message.text)
+				const info: GuardianApiReqInfo = JSON.parse(message.text)
 				return [info.cost, info.cancelReason, info.streamingFailedMessage, info.retryStatus]
 			}
 			return [undefined, undefined, undefined, undefined, undefined]
@@ -318,7 +318,7 @@ export const ChatRowContent = memo(
 				case "mistake_limit_reached":
 					return [
 						<CircleXIcon className="text-error size-2" />,
-						<span className="text-error font-bold">Cline is having trouble...</span>,
+						<span className="text-error font-bold">Guardian is having trouble...</span>,
 					]
 				case "command":
 					return [
@@ -326,7 +326,7 @@ export const ChatRowContent = memo(
 						<span className="font-bold text-foreground">Guardian VS CLI Command:</span>,
 					]
 				case "use_mcp_server":
-					const mcpServerUse = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
+					const mcpServerUse = JSON.parse(message.text || "{}") as GuardianAskUseMcpServer
 					return [
 						isMcpServerResponding ? (
 							<ProgressIndicator />
@@ -334,7 +334,7 @@ export const ChatRowContent = memo(
 							<span className="codicon codicon-server text-foreground mb-[-1.5px]" />
 						),
 						<span className="ph-no-capture font-bold text-foreground break-words">
-							Cline wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on the{" "}
+							Guardian wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on the{" "}
 							<code className="break-all">
 								{getMcpServerDisplayName(mcpServerUse.serverName, mcpMarketplaceCatalog)}
 							</code>{" "}
@@ -353,7 +353,7 @@ export const ChatRowContent = memo(
 				case "followup":
 					return [
 						<span className="codicon codicon-question text-foreground mb-[-1.5px]" />,
-						<span className="font-bold text-foreground">Cline has a question:</span>,
+						<span className="font-bold text-foreground">Guardian has a question:</span>,
 					]
 				default:
 					return [null, null]
@@ -371,7 +371,7 @@ export const ChatRowContent = memo(
 
 		const tool = useMemo(() => {
 			if (message.ask === "tool" || message.say === "tool") {
-				return JSON.parse(message.text || "{}") as ClineSayTool
+				return JSON.parse(message.text || "{}") as GuardianSayTool
 			}
 			return null
 		}, [message.ask, message.say, message.text])
@@ -431,8 +431,8 @@ export const ChatRowContent = memo(
 					const content = tool?.content || ""
 					const isApplyingPatch = content?.startsWith("%%bash") && !content.endsWith("*** End Patch\nEOF")
 					const editToolTitle = isApplyingPatch
-						? "Cline is creating patches to edit this file:"
-						: "Cline wants to edit this file:"
+						? "Guardian is creating patches to edit this file:"
+						: "Guardian wants to edit this file:"
 					return (
 						<div>
 							<div className={HEADER_CLASSNAMES}>
@@ -466,7 +466,7 @@ export const ChatRowContent = memo(
 								<SquareMinusIcon className="size-2" />
 								{tool.operationIsLocatedInWorkspace === false &&
 									toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
-								<span style={{ fontWeight: "bold" }}>Cline wants to delete this file:</span>
+								<span style={{ fontWeight: "bold" }}>Guardian wants to delete this file:</span>
 							</div>
 							<CodeAccordian
 								// isLoading={message.partial}
@@ -484,7 +484,7 @@ export const ChatRowContent = memo(
 								<FilePlus2Icon className="size-2" />
 								{tool.operationIsLocatedInWorkspace === false &&
 									toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
-								<span className="font-bold">Cline wants to create a new file:</span>
+								<span className="font-bold">Guardian wants to create a new file:</span>
 							</div>
 							{backgroundEditEnabled && tool.path && tool.content ? (
 								<DiffEditRow patch={tool.content} path={tool.path} startLineNumbers={tool.startLineNumbers} />
@@ -507,7 +507,7 @@ export const ChatRowContent = memo(
 								{isImage ? <ImageUpIcon className="size-2" /> : <FileCode2Icon className="size-2" />}
 								{tool.operationIsLocatedInWorkspace === false &&
 									toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
-								<span className="font-bold">Cline wants to read this file:</span>
+								<span className="font-bold">Guardian wants to read this file:</span>
 							</div>
 							<div className="bg-code rounded-sm overflow-hidden border border-editor-group-border">
 								<div
@@ -541,8 +541,8 @@ export const ChatRowContent = memo(
 									toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 								<span style={{ fontWeight: "bold" }}>
 									{message.type === "ask"
-										? "Cline wants to view the top level files in this directory:"
-										: "Cline viewed the top level files in this directory:"}
+										? "Guardian wants to view the top level files in this directory:"
+										: "Guardian viewed the top level files in this directory:"}
 								</span>
 							</div>
 							<CodeAccordian
@@ -563,8 +563,8 @@ export const ChatRowContent = memo(
 									toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 								<span style={{ fontWeight: "bold" }}>
 									{message.type === "ask"
-										? "Cline wants to recursively view all files in this directory:"
-										: "Cline recursively viewed all files in this directory:"}
+										? "Guardian wants to recursively view all files in this directory:"
+										: "Guardian recursively viewed all files in this directory:"}
 								</span>
 							</div>
 							<CodeAccordian
@@ -585,8 +585,8 @@ export const ChatRowContent = memo(
 									toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
 								<span style={{ fontWeight: "bold" }}>
 									{message.type === "ask"
-										? "Cline wants to view source code definition names used in this directory:"
-										: "Cline viewed source code definition names used in this directory:"}
+										? "Guardian wants to view source code definition names used in this directory:"
+										: "Guardian viewed source code definition names used in this directory:"}
 								</span>
 							</div>
 							<CodeAccordian
@@ -605,7 +605,7 @@ export const ChatRowContent = memo(
 								{tool.operationIsLocatedInWorkspace === false &&
 									toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 								<span className="font-bold">
-									Cline wants to search this directory for <code className="break-all">{tool.regex}</code>:
+									Guardian wants to search this directory for <code className="break-all">{tool.regex}</code>:
 								</span>
 							</div>
 							<SearchResultsDisplay
@@ -622,7 +622,7 @@ export const ChatRowContent = memo(
 						<div>
 							<div className={HEADER_CLASSNAMES}>
 								<FoldVerticalIcon className="size-2" />
-								<span className="font-bold">Cline is condensing the conversation:</span>
+								<span className="font-bold">Guardian is condensing the conversation:</span>
 							</div>
 							<div className="bg-code overflow-hidden border border-editor-group-border rounded-[3px]">
 								<div
@@ -667,8 +667,8 @@ export const ChatRowContent = memo(
 									toolIcon("sign-out", "yellow", -90, "This URL is external")}
 								<span className="font-bold">
 									{message.type === "ask"
-										? "Cline wants to fetch content from this URL:"
-										: "Cline fetched content from this URL:"}
+										? "Guardian wants to fetch content from this URL:"
+										: "Guardian fetched content from this URL:"}
 								</span>
 							</div>
 							<div
@@ -696,8 +696,8 @@ export const ChatRowContent = memo(
 									toolIcon("sign-out", "yellow", -90, "This search is external")}
 								<span className="font-bold">
 									{message.type === "ask"
-										? "Cline wants to search the web for:"
-										: "Cline searched the web for:"}
+										? "Guardian wants to search the web for:"
+										: "Guardian searched the web for:"}
 								</span>
 							</div>
 							<div className="bg-code border border-editor-group-border overflow-hidden rounded-xs select-text py-[9px] px-2.5">
@@ -712,7 +712,7 @@ export const ChatRowContent = memo(
 						<div>
 							<div className={HEADER_CLASSNAMES}>
 								<LightbulbIcon className="size-2" />
-								<span className="font-bold">Cline loaded the skill:</span>
+								<span className="font-bold">Guardian loaded the skill:</span>
 							</div>
 							<div className="bg-code border border-editor-group-border overflow-hidden rounded-xs py-[9px] px-2.5">
 								<span className="ph-no-capture font-medium">{tool.path}</span>
@@ -770,7 +770,7 @@ export const ChatRowContent = memo(
 		}
 
 		if (message.ask === "use_mcp_server" || message.say === "use_mcp_server") {
-			const useMcpServer = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
+			const useMcpServer = JSON.parse(message.text || "{}") as GuardianAskUseMcpServer
 			const server = mcpServers.find((server) => server.name === useMcpServer.serverName)
 			return (
 				<div>
@@ -839,7 +839,7 @@ export const ChatRowContent = memo(
 							<RequestStartRow
 								apiReqStreamingFailedMessage={apiReqStreamingFailedMessage}
 								apiRequestFailedMessage={apiRequestFailedMessage}
-								clineMessages={clineMessages}
+								guardianMessages={guardianMessages}
 								cost={cost}
 								handleToggle={handleToggle}
 								isExpanded={isExpanded}
@@ -912,7 +912,7 @@ export const ChatRowContent = memo(
 							/>
 						)
 					case "user_feedback_diff":
-						const tool = JSON.parse(message.text || "{}") as ClineSayTool
+						const tool = JSON.parse(message.text || "{}") as GuardianSayTool
 						return (
 							<div className="w-full -mt-2.5">
 								<CodeAccordian
@@ -927,8 +927,8 @@ export const ChatRowContent = memo(
 						return <ErrorRow errorType="error" message={message} />
 					case "diff_error":
 						return <ErrorRow errorType="diff_error" message={message} />
-					case "clineignore_error":
-						return <ErrorRow errorType="clineignore_error" message={message} />
+					case "guardianignore_error":
+						return <ErrorRow errorType="guardianignore_error" message={message} />
 					case "checkpoint_created":
 						return <CheckmarkControl isCheckpointCheckedOut={message.isCheckpointCheckedOut} messageTs={message.ts} />
 					case "load_mcp_documentation":
@@ -939,7 +939,7 @@ export const ChatRowContent = memo(
 							</div>
 						)
 					case "generate_explanation": {
-						let explanationInfo: ClineSayGenerateExplanation = {
+						let explanationInfo: GuardianSayGenerateExplanation = {
 							title: "code changes",
 							fromRef: "",
 							toRef: "",
@@ -1032,13 +1032,13 @@ export const ChatRowContent = memo(
 									<span className="font-medium text-foreground">Shell Integration Unavailable</span>
 								</div>
 								<div className="text-foreground opacity-80">
-									Cline may have trouble viewing the command's output. Please update VSCode (
+									Guardian may have trouble viewing the command's output. Please update VSCode (
 									<code>CMD/CTRL + Shift + P</code> → "Update") and make sure you're using a supported shell:
 									zsh, bash, fish, or PowerShell (<code>CMD/CTRL + Shift + P</code> → "Terminal: Select Default
 									Profile").
 									<a
 										className="px-1"
-										href="https://github.com/cline/cline/wiki/Troubleshooting-%E2%80%90-Shell-Integration-Unavailable">
+										href="https://github.com/guardian/guardian/wiki/Troubleshooting-%E2%80%90-Shell-Integration-Unavailable">
 										Still having trouble?
 									</a>
 								</div>
@@ -1179,7 +1179,7 @@ export const ChatRowContent = memo(
 						let options: string[] | undefined
 						let selected: string | undefined
 						try {
-							const parsedMessage = JSON.parse(message.text || "{}") as ClineAskQuestion
+							const parsedMessage = JSON.parse(message.text || "{}") as GuardianAskQuestion
 							question = parsedMessage.question
 							options = parsedMessage.options
 							selected = parsedMessage.selected
@@ -1231,7 +1231,7 @@ export const ChatRowContent = memo(
 							<div>
 								<div className={HEADER_CLASSNAMES}>
 									<FilePlus2Icon className="size-2" />
-									<span className="text-foreground font-bold">Cline wants to start a new task:</span>
+									<span className="text-foreground font-bold">Guardian wants to start a new task:</span>
 								</div>
 								<NewTaskPreview context={message.text || ""} />
 							</div>
@@ -1241,7 +1241,7 @@ export const ChatRowContent = memo(
 							<div>
 								<div className={HEADER_CLASSNAMES}>
 									<FilePlus2Icon className="size-2" />
-									<span className="text-foreground font-bold">Cline wants to condense your conversation:</span>
+									<span className="text-foreground font-bold">Guardian wants to condense your conversation:</span>
 								</div>
 								<NewTaskPreview context={message.text || ""} />
 							</div>
@@ -1251,7 +1251,7 @@ export const ChatRowContent = memo(
 							<div>
 								<div className={HEADER_CLASSNAMES}>
 									<FilePlus2Icon className="size-2" />
-									<span className="text-foreground font-bold">Cline wants to create a Github issue:</span>
+									<span className="text-foreground font-bold">Guardian wants to create a Github issue:</span>
 								</div>
 								<ReportBugPreview data={message.text || ""} />
 							</div>
@@ -1261,7 +1261,7 @@ export const ChatRowContent = memo(
 						let options: string[] | undefined
 						let selected: string | undefined
 						try {
-							const parsedMessage = JSON.parse(message.text || "{}") as ClinePlanModeResponse
+							const parsedMessage = JSON.parse(message.text || "{}") as GuardianPlanModeResponse
 							response = parsedMessage.response
 							options = parsedMessage.options
 							selected = parsedMessage.selected

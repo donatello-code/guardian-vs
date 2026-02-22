@@ -1,5 +1,5 @@
-import { StringRequest } from "@shared/proto/cline/common"
-import { DeleteSkillRequest, RuleFileRequest } from "@shared/proto/index.cline"
+import { StringRequest } from "@shared/proto/guardian/common"
+import { DeleteSkillRequest, RuleFileRequest } from "@shared/proto/index.guardian"
 import { REMOTE_URI_SCHEME } from "@shared/remote-config/constants"
 import { EyeIcon, InfoIcon, PenIcon, Trash2Icon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -123,7 +123,7 @@ const RuleRow: React.FC<{
 				RuleFileRequest.create({
 					rulePath,
 					isGlobal,
-					type: ruleType || "cline",
+					type: ruleType || "guardian",
 				}),
 			).catch((err) => console.error("Failed to delete rule file:", err))
 		}

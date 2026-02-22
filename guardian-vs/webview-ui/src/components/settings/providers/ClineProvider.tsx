@@ -1,11 +1,11 @@
 import { Mode } from "@shared/storage/types"
-import { ClineAccountInfoCard } from "../ClineAccountInfoCard"
+import { GuardianAccountInfoCard } from "../GuardianAccountInfoCard"
 import OpenRouterModelPicker from "../OpenRouterModelPicker"
 
 /**
- * Props for the ClineProvider component
+ * Props for the GuardianProvider component
  */
-interface ClineProviderProps {
+interface GuardianProviderProps {
 	showModelOptions: boolean
 	isPopup?: boolean
 	currentMode: Mode
@@ -13,14 +13,14 @@ interface ClineProviderProps {
 }
 
 /**
- * The Cline provider configuration component
+ * The Guardian provider configuration component
  */
-export const ClineProvider = ({ showModelOptions, isPopup, currentMode, initialModelTab }: ClineProviderProps) => {
+export const GuardianProvider = ({ showModelOptions, isPopup, currentMode, initialModelTab }: GuardianProviderProps) => {
 	return (
 		<div>
-			{/* Cline Account Info Card */}
+			{/* Guardian Account Info Card */}
 			<div style={{ marginBottom: 14, marginTop: 4 }}>
-				<ClineAccountInfoCard />
+				<GuardianAccountInfoCard />
 			</div>
 
 			{showModelOptions && (

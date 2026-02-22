@@ -11,7 +11,7 @@ import { StateManager } from "@/core/storage/StateManager"
 import { openAiCodexOAuthManager } from "@/integrations/openai-codex/oauth"
 import { AuthService } from "@/services/auth/AuthService"
 import { openAiCodexDefaultModelId, openRouterDefaultModelId } from "@/shared/api"
-import { StringRequest } from "@/shared/proto/cline/common"
+import { StringRequest } from "@/shared/proto/guardian/common"
 import { openExternal } from "@/utils/env"
 import { COLORS } from "../constants/colors"
 import { useStdinContext } from "../context/StdinContext"
@@ -45,10 +45,10 @@ type AuthStep =
 	| "saving"
 	| "success"
 	| "error"
-	| "cline_auth"
+	| "guardian_auth"
 	| "oca_employee_check"
 	| "oca_auth"
-	| "cline_model"
+	| "guardian_model"
 	| "openai_codex_auth"
 	| "bedrock"
 	| "import"
@@ -171,7 +171,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 	const [errorMessage, setErrorMessage] = useState("")
 	const [providerSearch, setProviderSearch] = useState("")
 	const [providerIndex, setProviderIndex] = useState(0)
-	const [clineModelIndex, setClineModelIndex] = useState(0)
+	const [guardianModelIndex, setGuardianModelIndex] = useState(0)
 	const [importSources, setImportSources] = useState<DetectedSources>({ codex: false, opencode: false })
 	const [importSource, setImportSource] = useState<ImportSource | null>(null)
 	const [bedrockConfig, setBedrockConfig] = useState<BedrockConfig | null>(null)
@@ -204,7 +204,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 
 	// Main menu items - conditionally include import options
 	const mainMenuItems: SelectItem[] = useMemo(() => {
-		const items: SelectItem[] = [{ label: "Sign in with Cline", value: "cline_auth" }]
+		const items: SelectItem[] = [{ label: "Sign in with Guardian", value: "guardian_auth" }]
 
 		// Add OpenAI Codex option for ChatGPT subscribers
 		items.push({ label: "Sign in with ChatGPT Subscription", value: "openai_codex_auth" })
@@ -266,9 +266,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 		}
 	}, [step, selectedProvider])
 
-	// Subscribe to auth status updates when in cline_auth step
+	// Subscribe to auth status updates when in guardian_auth step
 	useEffect(() => {
-		if (step !== "cline_auth") {
+		if (step !== "guardian_auth") {
 			return
 		}
 
@@ -282,10 +282,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 
 			if (authState.user?.email) {
 				// Auth succeeded - save configuration and transition to model selection
-				await applyProviderConfig({ providerId: "cline", controller })
-				setSelectedProvider("cline")
+				await applyProviderConfig({ providerId: "guardian", controller })
+				setSelectedProvider("guardian")
 				setModelId(openRouterDefaultModelId)
-				setStep("cline_model")
+				setStep("guardian_model")
 			}
 		}
 
@@ -325,10 +325,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 		}
 	}, [])
 
-	// Start Cline auth flow
-	const startClineAuth = useCallback(async () => {
+	// Start Guardian auth flow
+	const startGuardianAuth = useCallback(async () => {
 		try {
-			setStep("cline_auth")
+			setStep("guardian_auth")
 			await AuthService.getInstance(controller).createAuthRequest()
 		} catch (error) {
 			setErrorMessage(error instanceof Error ? error.message : String(error))
@@ -346,8 +346,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 			if (value === "exit") {
 				exit()
 				onComplete?.()
-			} else if (value === "cline_auth") {
-				startClineAuth()
+			} else if (value === "guardian_auth") {
+				startGuardianAuth()
 			} else if (value === "openai_codex_auth") {
 				setStep("openai_codex_auth")
 				startOpenAiCodexAuth()
@@ -361,7 +361,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 				setStep("import")
 			}
 		},
-		[exit, onComplete, startClineAuth, startOpenAiCodexAuth],
+		[exit, onComplete, startGuardianAuth, startOpenAiCodexAuth],
 	)
 
 	const handleProviderSelect = useCallback(
@@ -486,7 +486,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 		[modelId, saveConfiguration],
 	)
 
-	const handleClineModelSelect = useCallback(
+	const handleGuardianModelSelect = useCallback(
 		(modelId: string) => {
 			setModelId(modelId)
 			setStep("saving")
@@ -567,9 +567,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 				break
 			case "modelid":
 				setModelId("")
-				// Go back to cline_model if we came from there (Cline provider)
-				if (selectedProvider === "cline") {
-					setStep("cline_model")
+				// Go back to guardian_model if we came from there (Guardian provider)
+				if (selectedProvider === "guardian") {
+					setStep("guardian_model")
 				} else if (selectedProvider === "bedrock") {
 					// Bedrock skips the API key step — go back to Bedrock setup
 					setStep("bedrock")
@@ -587,15 +587,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 			case "oca_auth":
 				setStep("oca_employee_check")
 				break
-			case "cline_auth":
+			case "guardian_auth":
 				setStep("menu")
 				break
 			case "openai_codex_auth":
 				openAiCodexOAuthManager.cancelAuthorizationFlow()
 				setStep("menu")
 				break
-			case "cline_model":
-				setClineModelIndex(0)
+			case "guardian_model":
+				setGuardianModelIndex(0)
 				setStep("menu")
 				break
 			case "bedrock":
@@ -729,7 +729,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 				return <OcaEmployeeCheck isActive={step === "oca_employee_check"} onCancel={goBack} onSignIn={startOcaAuth} />
 
 			case "oca_auth":
-			case "cline_auth":
+			case "guardian_auth":
 				return (
 					<Box flexDirection="column">
 						<Box>
@@ -762,12 +762,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 					</Box>
 				)
 
-			case "cline_model": {
+			case "guardian_model": {
 				return (
 					<Box flexDirection="column">
 						<Text color="white">Choose a model</Text>
 						<Text> </Text>
-						<FeaturedModelPicker selectedIndex={clineModelIndex} />
+						<FeaturedModelPicker selectedIndex={guardianModelIndex} />
 					</Box>
 				)
 			}
@@ -830,9 +830,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 		"provider",
 		"modelid",
 		"baseurl",
-		"cline_auth",
+		"guardian_auth",
 		"oca_auth",
-		"cline_model",
+		"guardian_model",
 		"openai_codex_auth",
 		"bedrock",
 		"error",
@@ -868,38 +868,38 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 				} else if (input && !key.ctrl && !key.meta) {
 					setProviderSearch((prev) => prev + input)
 				}
-			} else if (step === "cline_model") {
+			} else if (step === "guardian_model") {
 				const maxIndex = getFeaturedModelMaxIndex()
 
 				if (key.upArrow) {
-					setClineModelIndex((prev) => (prev > 0 ? prev - 1 : maxIndex))
+					setGuardianModelIndex((prev) => (prev > 0 ? prev - 1 : maxIndex))
 				} else if (key.downArrow) {
-					setClineModelIndex((prev) => (prev < maxIndex ? prev + 1 : 0))
+					setGuardianModelIndex((prev) => (prev < maxIndex ? prev + 1 : 0))
 				} else if (key.return) {
-					if (isBrowseAllSelected(clineModelIndex)) {
+					if (isBrowseAllSelected(guardianModelIndex)) {
 						setStep("modelid")
 					} else {
-						const selectedModel = getFeaturedModelAtIndex(clineModelIndex)
+						const selectedModel = getFeaturedModelAtIndex(guardianModelIndex)
 						if (selectedModel) {
-							handleClineModelSelect(selectedModel.id)
+							handleGuardianModelSelect(selectedModel.id)
 						}
 					}
 				}
 			}
 			// Note: modelid step input is handled by ModelPicker component
 		},
-		{ isActive: isRawModeSupported && (step === "menu" || step === "provider" || step === "cline_model" || canGoBack) },
+		{ isActive: isRawModeSupported && (step === "menu" || step === "provider" || step === "guardian_model" || canGoBack) },
 	)
 
 	return (
 		<Box flexDirection="column" paddingLeft={1} paddingRight={1} width="100%">
-			{/* Cline robot - centered */}
+			{/* Guardian robot - centered */}
 			<StaticRobotFrame />
 
 			{/* Welcome text - centered */}
 			<Box justifyContent="center" marginTop={1}>
 				<Text bold color="white">
-					Welcome to Cline
+					Welcome to Guardian
 				</Text>
 			</Box>
 
@@ -924,7 +924,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ controller, onComplete, onEr
 										{index === menuIndex ? "❯ " : "  "}
 										{item.label}
 									</Text>
-									{item.value === "cline_auth" && <Text color="yellow"> (try Opus 4.6!)</Text>}
+									{item.value === "guardian_auth" && <Text color="yellow"> (try Opus 4.6!)</Text>}
 								</Text>
 							</Box>
 						))}

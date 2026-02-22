@@ -5,7 +5,7 @@ import { getWorkspaceBasename, resolveWorkspacePath } from "@core/workspace"
 import { listFiles } from "@services/glob/list-files"
 import { arePathsEqual, getReadablePath, isLocatedInWorkspace } from "@utils/path"
 import { telemetryService } from "@/services/telemetry"
-import { ClineDefaultTool } from "@/shared/tools"
+import { GuardianDefaultTool } from "@/shared/tools"
 import type { ToolResponse } from "../../index"
 import { showNotificationForApproval } from "../../utils"
 import type { IFullyManagedTool } from "../ToolExecutorCoordinator"
@@ -15,7 +15,7 @@ import type { StronglyTypedUIHelpers } from "../types/UIHelpers"
 import { ToolResultUtils } from "../utils/ToolResultUtils"
 
 export class ListFilesToolHandler implements IFullyManagedTool {
-	readonly name = ClineDefaultTool.LIST_FILES
+	readonly name = GuardianDefaultTool.LIST_FILES
 
 	constructor(private validator: ToolValidator) {}
 
@@ -87,19 +87,19 @@ export class ListFilesToolHandler implements IFullyManagedTool {
 			resolutionMethod: (typeof pathResult !== "string" ? "hint" : "primary_fallback") as "hint" | "primary_fallback",
 		}
 
-		// Check clineignore access
-		const accessValidation = this.validator.checkClineIgnorePath(relDirPath!)
+		// Check guardianignore access
+		const accessValidation = this.validator.checkGuardianIgnorePath(relDirPath!)
 		if (!accessValidation.ok) {
 			if (!config.isSubagentExecution) {
-				await config.callbacks.say("clineignore_error", relDirPath)
+				await config.callbacks.say("guardianignore_error", relDirPath)
 			}
-			return formatResponse.toolError(formatResponse.clineIgnoreError(relDirPath!))
+			return formatResponse.toolError(formatResponse.guardianIgnoreError(relDirPath!))
 		}
 
 		// Execute the actual list files operation
 		const [files, didHitLimit] = await listFiles(absolutePath, recursive, 200)
 
-		const result = formatResponse.formatFilesList(absolutePath, files, didHitLimit, config.services.clineIgnoreController)
+		const result = formatResponse.formatFilesList(absolutePath, files, didHitLimit, config.services.guardianIgnoreController)
 
 		// Handle approval flow
 		const sharedMessageProps = {
@@ -133,7 +133,7 @@ export class ListFilesToolHandler implements IFullyManagedTool {
 			)
 		} else {
 			// Manual approval flow
-			const notificationMessage = `Cline wants to view directory ${getWorkspaceBasename(absolutePath, "ListFilesToolHandler.notification")}/`
+			const notificationMessage = `Guardian wants to view directory ${getWorkspaceBasename(absolutePath, "ListFilesToolHandler.notification")}/`
 
 			// Show notification
 			showNotificationForApproval(notificationMessage, config.autoApprovalSettings.enableNotifications)

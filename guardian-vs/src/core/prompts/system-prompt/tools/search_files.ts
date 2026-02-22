@@ -1,6 +1,6 @@
 import { ModelFamily } from "@/shared/prompts"
-import { ClineDefaultTool } from "@/shared/tools"
-import type { ClineToolSpec } from "../spec"
+import { GuardianDefaultTool } from "@/shared/tools"
+import type { GuardianToolSpec } from "../spec"
 import { TASK_PROGRESS_PARAMETER } from "../types"
 
 /**
@@ -18,9 +18,9 @@ Usage:
 </search_files>
  */
 
-const id = ClineDefaultTool.SEARCH
+const id = GuardianDefaultTool.SEARCH
 
-const generic: ClineToolSpec = {
+const generic: GuardianToolSpec = {
 	variant: ModelFamily.GENERIC,
 	id,
 	name: "search_files",
@@ -50,7 +50,7 @@ const generic: ClineToolSpec = {
 	],
 }
 
-const NATIVE_NEXT_GEN: ClineToolSpec = {
+const NATIVE_NEXT_GEN: GuardianToolSpec = {
 	variant: ModelFamily.NATIVE_NEXT_GEN,
 	id,
 	name: "search_files",
@@ -80,7 +80,7 @@ const NATIVE_NEXT_GEN: ClineToolSpec = {
 	],
 }
 
-const NATIVE_GPT_5: ClineToolSpec = {
+const NATIVE_GPT_5: GuardianToolSpec = {
 	...NATIVE_NEXT_GEN,
 	variant: ModelFamily.NATIVE_GPT_5,
 }

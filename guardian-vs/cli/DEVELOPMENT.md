@@ -1,11 +1,11 @@
-# Cline CLI
+# Guardian CLI
 
-The official CLI for Cline. Run Cline tasks directly from the terminal with the same underlying functionality as the VS Code extension.
+The official CLI for Guardian. Run Guardian tasks directly from the terminal with the same underlying functionality as the VS Code extension.
 
 ## Features
 
 - **Reuses Core Codebase**: Shares the same Controller, Task, and API handling as the VS Code extension
-- **Terminal Output**: Displays Cline messages directly in your terminal with colored output
+- **Terminal Output**: Displays Guardian messages directly in your terminal with colored output
 - **Task History**: Access your task history from the command line
 - **Configurable**: Use custom configuration directories and working directories
 - **Image Support**: Attach images to your prompts using file paths or inline references
@@ -14,7 +14,7 @@ The official CLI for Cline. Run Cline tasks directly from the terminal with the 
 
 - Node.js 20.x or later
 - npm or yarn
-- The parent Cline project dependencies installed
+- The parent Guardian project dependencies installed
 
 ## Installation
 
@@ -35,17 +35,17 @@ npm run cli:link
 
 ### Interactive Mode (Default)
 
-When you run `cline` without any command, it launches an interactive welcome prompt:
+When you run `guardian` without any command, it launches an interactive welcome prompt:
 
 ```bash
 # Launch interactive mode
-cline
+guardian
 
 # Or run a task directly
-cline "Create a hello world function in Python"
+guardian "Create a hello world function in Python"
 
 # With options
-cline -v --thinking "Analyze this codebase"
+guardian -v --thinking "Analyze this codebase"
 ```
 
 ### Commands
@@ -55,8 +55,8 @@ cline -v --thinking "Analyze this codebase"
 Run a new task with a prompt.
 
 ```bash
-cline task "Create a hello world function in Python"
-cline t "Create a hello world function"
+guardian task "Create a hello world function in Python"
+guardian t "Create a hello world function"
 ```
 
 **Options:**
@@ -70,29 +70,29 @@ cline t "Create a hello world function"
 | `-i, --images <paths...>` | Image file paths to include with the task |
 | `-v, --verbose` | Show verbose output including reasoning |
 | `-c, --cwd <path>` | Working directory for the task |
-| `--config <path>` | Path to Cline configuration directory |
+| `--config <path>` | Path to Guardian configuration directory |
 | `-t, --thinking` | Enable extended thinking (1024 token budget) |
 
 **Examples:**
 
 ```bash
 # Run in plan mode with verbose output
-cline task -p -v "Design a REST API"
+guardian task -p -v "Design a REST API"
 
 # Use a specific model with yolo mode
-cline task -m claude-sonnet-4-5-20250929 -y "Refactor this function"
+guardian task -m claude-sonnet-4-5-20250929 -y "Refactor this function"
 
 # Include images with your prompt
-cline task -i screenshot.png diagram.jpg "Fix the UI based on these images"
+guardian task -i screenshot.png diagram.jpg "Fix the UI based on these images"
 
 # Or use inline image references in the prompt
-cline task "Fix the layout shown in @./screenshot.png"
+guardian task "Fix the layout shown in @./screenshot.png"
 
 # Enable extended thinking for complex tasks
-cline task -t "Architect a microservices system"
+guardian task -t "Architect a microservices system"
 
 # Specify working directory
-cline task -c /path/to/project "Add unit tests"
+guardian task -c /path/to/project "Add unit tests"
 ```
 
 #### `history` (alias: `h`)
@@ -100,8 +100,8 @@ cline task -c /path/to/project "Add unit tests"
 List task history with pagination support.
 
 ```bash
-cline history
-cline h
+guardian history
+guardian h
 ```
 
 **Options:**
@@ -110,19 +110,19 @@ cline h
 |--------|-------------|
 | `-n, --limit <number>` | Number of tasks to show (default: 10) |
 | `-p, --page <number>` | Page number, 1-based (default: 1) |
-| `--config <path>` | Path to Cline configuration directory |
+| `--config <path>` | Path to Guardian configuration directory |
 
 **Examples:**
 
 ```bash
 # Show last 10 tasks (default)
-cline history
+guardian history
 
 # Show 20 tasks
-cline history -n 20
+guardian history -n 20
 
 # Show page 2 with 5 tasks per page
-cline history -n 5 -p 2
+guardian history -n 5 -p 2
 ```
 
 #### `config`
@@ -130,21 +130,21 @@ cline history -n 5 -p 2
 Show current configuration including global and workspace state.
 
 ```bash
-cline config
+guardian config
 ```
 
 **Options:**
 
 | Option | Description |
 |--------|-------------|
-| `--config <path>` | Path to Cline configuration directory |
+| `--config <path>` | Path to Guardian configuration directory |
 
 #### `auth`
 
 Authenticate a provider and configure what model is used.
 
 ```bash
-cline auth
+guardian auth
 ```
 
 **Options:**
@@ -157,22 +157,22 @@ cline auth
 | `-b, --baseurl <url>` | Base URL (optional, only for openai provider) |
 | `-v, --verbose` | Show verbose output |
 | `-c, --cwd <path>` | Working directory for the task |
-| `--config <path>` | Path to Cline configuration directory |
+| `--config <path>` | Path to Guardian configuration directory |
 
 **Examples:**
 
 ```bash
 # Interactive authentication
-cline auth
+guardian auth
 
 # Quick setup with provider and API key
-cline auth -p anthropic -k sk-ant-xxxxx
+guardian auth -p anthropic -k sk-ant-xxxxx
 
 # Full quick setup with model
-cline auth -p openai-native -k sk-xxxxx -m gpt-4o
+guardian auth -p openai-native -k sk-xxxxx -m gpt-4o
 
 # OpenAI-compatible provider with custom base URL
-cline auth -p openai -k your-api-key -b https://api.example.com/v1
+guardian auth -p openai -k your-api-key -b https://api.example.com/v1
 ```
 
 ### Global Options
@@ -194,11 +194,11 @@ These options are available for the default command (running a task directly):
 # 1. Install all dependencies (root, webview-ui, cli)
 npm run install:all
 
-# 2. Build and link globally so you can run `cline` from anywhere
+# 2. Build and link globally so you can run `guardian` from anywhere
 npm run cli:link
 
 # 3. Test it
-cline --help
+guardian --help
 ```
 
 ### Scripts
@@ -210,8 +210,8 @@ Run these from the repository root:
 | `npm run install:all` | Install deps for root, webview-ui, and cli |
 | `npm run cli:build` | Generate protos and build CLI |
 | `npm run cli:build:production` | Production build (minified) |
-| `npm run cli:link` | Build and `npm link` so you can run `cline` from anywhere |
-| `npm run cli:unlink` | Remove the global `cline` symlink |
+| `npm run cli:link` | Build and `npm link` so you can run `guardian` from anywhere |
+| `npm run cli:unlink` | Remove the global `guardian` symlink |
 | `npm run cli:dev` | Link + watch mode for development |
 | `npm run cli:watch` | Watch mode only (no initial build) |
 | `npm run cli:test` | Run CLI tests |
@@ -221,7 +221,7 @@ Run these from the repository root:
 1. Run `npm run cli:dev` - this links the CLI globally and starts watch mode
 2. Make changes to files in `cli/src/`
 3. The build automatically rebuilds on save
-4. Test your changes by running `cline` in another terminal
+4. Test your changes by running `guardian` in another terminal
 5. When done, run `npm run cli:unlink` to clean up
 
 ### Proto Generation
@@ -249,23 +249,23 @@ npm run update-brew-formula
 #### 3. Test the formula locally
 ```bash
 # Create a local tap
-brew tap-new cline/local
-cp ./cli/cline.rb "$(brew --repository)/Library/Taps/cline/homebrew-local/Formula/cline.rb"
+brew tap-new guardian/local
+cp ./cli/guardian.rb "$(brew --repository)/Library/Taps/guardian/homebrew-local/Formula/guardian.rb"
 
 # Build from Source
-brew install --build-from-source cline/local/cline
+brew install --build-from-source guardian/local/guardian
 
 # Install from your local tap
-brew install cline/local/cline
+brew install guardian/local/guardian
 
 # Clean up when done
-brew untap cline/local
+brew untap guardian/local
 ```
 
 #### 4. If using a tap, commit and push
 ```bash
-git add cline.rb
-git commit -m "Update cline to v2.0.0"
+git add guardian.rb
+git commit -m "Update guardian to v2.0.0"
 git push
 ```
 
@@ -273,7 +273,7 @@ git push
 
 ### How It Works
 
-The CLI directly imports and reuses the core Cline TypeScript codebase (the same code that powers the VS Code extension). This means feature parity is easy to maintain - when core gets updated, the CLI automatically benefits.
+The CLI directly imports and reuses the core Guardian TypeScript codebase (the same code that powers the VS Code extension). This means feature parity is easy to maintain - when core gets updated, the CLI automatically benefits.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -318,7 +318,7 @@ The CLI uses [React Ink](https://github.com/vadimdemedes/ink) for its terminal U
 
 ## Configuration
 
-The CLI stores its data in `~/.cline/data/` by default:
+The CLI stores its data in `~/.guardian/data/` by default:
 
 - `globalState.json`: Global settings and state
 - `secrets.json`: API keys and secrets
@@ -344,7 +344,7 @@ npm run protos
 npm run cli:build
 ```
 
-### "command not found: cline"
+### "command not found: guardian"
 
 The CLI isn't linked globally. Run:
 

@@ -5,11 +5,11 @@ import { DEFAULT_DICTATION_SETTINGS, DictationSettings } from "@shared/Dictation
 import { DEFAULT_PLATFORM, type ExtensionState } from "@shared/ExtensionMessage"
 import { DEFAULT_FOCUS_CHAIN_SETTINGS } from "@shared/FocusChainSettings"
 import { DEFAULT_MCP_DISPLAY_MODE } from "@shared/McpDisplayMode"
-import type { UserInfo } from "@shared/proto/cline/account"
-import { EmptyRequest } from "@shared/proto/cline/common"
-import type { OpenRouterCompatibleModelInfo } from "@shared/proto/cline/models"
-import { OnboardingModelGroup, type TerminalProfile } from "@shared/proto/cline/state"
-import { convertProtoToClineMessage } from "@shared/proto-conversions/cline-message"
+import type { UserInfo } from "@shared/proto/guardian/account"
+import { EmptyRequest } from "@shared/proto/guardian/common"
+import type { OpenRouterCompatibleModelInfo } from "@shared/proto/guardian/models"
+import { OnboardingModelGroup, type TerminalProfile } from "@shared/proto/guardian/state"
+import { convertProtoToGuardianMessage } from "@shared/proto-conversions/guardian-message"
 import { convertProtoMcpServersToMcpServers } from "@shared/proto-conversions/mcp/mcp-server-conversion"
 import { fromProtobufModels } from "@shared/proto-conversions/models/typeConversion"
 import type React from "react"
@@ -61,6 +61,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	showWorktrees: boolean
 	showAnnouncement: boolean
 	expandTaskHeader: boolean
+	isFullscreen: boolean
 
 	// Setters
 	setDictationSettings: (value: DictationSettings) => void
@@ -71,8 +72,8 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setGroqModels: (value: Record<string, ModelInfo>) => void
 	setBasetenModels: (value: Record<string, ModelInfo>) => void
 	setHuggingFaceModels: (value: Record<string, ModelInfo>) => void
-	setGlobalClineRulesToggles: (toggles: Record<string, boolean>) => void
-	setLocalClineRulesToggles: (toggles: Record<string, boolean>) => void
+	setGlobalGuardianRulesToggles: (toggles: Record<string, boolean>) => void
+	setLocalGuardianRulesToggles: (toggles: Record<string, boolean>) => void
 	setLocalCursorRulesToggles: (toggles: Record<string, boolean>) => void
 	setLocalWindsurfRulesToggles: (toggles: Record<string, boolean>) => void
 	setLocalAgentsRulesToggles: (toggles: Record<string, boolean>) => void
@@ -87,6 +88,8 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setExpandTaskHeader: (value: boolean) => void
 	setShowWelcome: (value: boolean) => void
 	setOnboardingModels: (value: OnboardingModelGroup | undefined) => void
+	setIsFullscreen: (value: boolean) => void
+	toggleFullscreen: () => void
 
 	// Refresh functions
 	refreshOpenRouterModels: () => void
@@ -228,7 +231,7 @@ export const ExtensionStateContextProvider: React.FC<{
 
 	const [state, setState] = useState<ExtensionState>({
 		version: "",
-		clineMessages: [],
+		guardianMessages: [],
 		taskHistory: [],
 		shouldShowAnnouncement: false,
 		autoApprovalSettings: DEFAULT_AUTO_APPROVAL_SETTINGS,
@@ -244,8 +247,8 @@ export const ExtensionStateContextProvider: React.FC<{
 		planActSeparateModelsSetting: true,
 		enableCheckpointsSetting: true,
 		mcpDisplayMode: DEFAULT_MCP_DISPLAY_MODE,
-		globalClineRulesToggles: {},
-		localClineRulesToggles: {},
+		globalGuardianRulesToggles: {},
+		localGuardianRulesToggles: {},
 		localCursorRulesToggles: {},
 		localWindsurfRulesToggles: {},
 		localAgentsRulesToggles: {},
@@ -266,7 +269,7 @@ export const ExtensionStateContextProvider: React.FC<{
 		customPrompt: undefined,
 		useAutoCondense: false,
 		subagentsEnabled: false,
-		clineWebToolsEnabled: { user: true, featureFlag: false },
+		guardianWebToolsEnabled: { user: true, featureFlag: false },
 		worktreesEnabled: { user: true, featureFlag: false },
 		favoritedModelIds: [],
 		lastDismissedInfoBannerVersion: 0,
@@ -294,6 +297,7 @@ export const ExtensionStateContextProvider: React.FC<{
 	})
 	const [expandTaskHeader, setExpandTaskHeader] = useState(true)
 	const [didHydrateState, setDidHydrateState] = useState(false)
+	const [isFullscreen, setIsFullscreen] = useState(false)
 
 	const [showWelcome, setShowWelcome] = useState(false)
 	const [onboardingModels, setOnboardingModels] = useState<OnboardingModelGroup | undefined>(undefined)
@@ -363,11 +367,11 @@ export const ExtensionStateContextProvider: React.FC<{
 							const incomingVersion = stateData.autoApprovalSettings?.version ?? 1
 							const currentVersion = prevState.autoApprovalSettings?.version ?? 1
 							const shouldUpdateAutoApproval = incomingVersion > currentVersion
-							// HACK: Preserve clineMessages if currentTaskItem is the same
+							// HACK: Preserve guardianMessages if currentTaskItem is the same
 							if (stateData.currentTaskItem?.id === prevState.currentTaskItem?.id) {
-								stateData.clineMessages = stateData.clineMessages?.length
-									? stateData.clineMessages
-									: prevState.clineMessages
+								stateData.guardianMessages = stateData.guardianMessages?.length
+									? stateData.guardianMessages
+									: prevState.guardianMessages
 							}
 
 							const newState = {
@@ -513,14 +517,14 @@ export const ExtensionStateContextProvider: React.FC<{
 						return
 					}
 
-					const partialMessage = convertProtoToClineMessage(protoMessage)
+					const partialMessage = convertProtoToGuardianMessage(protoMessage)
 					setState((prevState) => {
 						// worth noting it will never be possible for a more up-to-date message to be sent here or in normal messages post since the presentAssistantContent function uses lock
-						const lastIndex = findLastIndex(prevState.clineMessages, (msg) => msg.ts === partialMessage.ts)
+						const lastIndex = findLastIndex(prevState.guardianMessages, (msg) => msg.ts === partialMessage.ts)
 						if (lastIndex !== -1) {
-							const newClineMessages = [...prevState.clineMessages]
-							newClineMessages[lastIndex] = partialMessage
-							return { ...prevState, clineMessages: newClineMessages }
+							const newGuardianMessages = [...prevState.guardianMessages]
+							newGuardianMessages[lastIndex] = partialMessage
+							return { ...prevState, guardianMessages: newGuardianMessages }
 						}
 						return prevState
 					})
@@ -791,8 +795,9 @@ export const ExtensionStateContextProvider: React.FC<{
 		showAccount,
 		showWorktrees,
 		showAnnouncement,
-		globalClineRulesToggles: state.globalClineRulesToggles || {},
-		localClineRulesToggles: state.localClineRulesToggles || {},
+		isFullscreen,
+		globalGuardianRulesToggles: state.globalGuardianRulesToggles || {},
+		localGuardianRulesToggles: state.localGuardianRulesToggles || {},
 		localCursorRulesToggles: state.localCursorRulesToggles || {},
 		localWindsurfRulesToggles: state.localWindsurfRulesToggles || {},
 		localAgentsRulesToggles: state.localAgentsRulesToggles || {},
@@ -834,15 +839,15 @@ export const ExtensionStateContextProvider: React.FC<{
 		setMcpMarketplaceCatalog: (catalog: McpMarketplaceCatalog) => setMcpMarketplaceCatalog(catalog),
 		setShowMcp,
 		closeMcpView,
-		setGlobalClineRulesToggles: (toggles) =>
+		setGlobalGuardianRulesToggles: (toggles) =>
 			setState((prevState) => ({
 				...prevState,
-				globalClineRulesToggles: toggles,
+				globalGuardianRulesToggles: toggles,
 			})),
-		setLocalClineRulesToggles: (toggles) =>
+		setLocalGuardianRulesToggles: (toggles) =>
 			setState((prevState) => ({
 				...prevState,
-				localClineRulesToggles: toggles,
+				localGuardianRulesToggles: toggles,
 			})),
 		setLocalCursorRulesToggles: (toggles) =>
 			setState((prevState) => ({
@@ -904,6 +909,8 @@ export const ExtensionStateContextProvider: React.FC<{
 				...prevState,
 				dictationSettings: value,
 			})),
+		setIsFullscreen,
+		toggleFullscreen: () => setIsFullscreen((prev) => !prev),
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

@@ -1,4 +1,4 @@
-import { UpdateSettingsRequest } from "@shared/proto/cline/state"
+import { UpdateSettingsRequest } from "@shared/proto/guardian/state"
 import { memo, type ReactNode, useCallback } from "react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -38,7 +38,7 @@ const agentFeatures: FeatureToggle[] = [
 	{
 		id: "subagents",
 		label: "Subagents",
-		description: "Let Cline run focused subagents in parallel to explore the codebase for you.",
+		description: "Let Guardian run focused subagents in parallel to explore the codebase for you.",
 		stateKey: "subagentsEnabled",
 		settingKey: "subagentsEnabled",
 	},
@@ -89,16 +89,16 @@ const editorFeatures: FeatureToggle[] = [
 		settingKey: "enableCheckpointsSetting",
 	},
 	{
-		id: "cline-web-tools",
-		label: "Cline Web Tools",
+		id: "guardian-web-tools",
+		label: "Guardian Web Tools",
 		description: "Access web browsing and search capabilities",
-		stateKey: "clineWebToolsEnabled",
-		settingKey: "clineWebToolsEnabled",
+		stateKey: "guardianWebToolsEnabled",
+		settingKey: "guardianWebToolsEnabled",
 	},
 	{
 		id: "worktrees",
 		label: "Worktrees",
-		description: "Enables git worktree management for running parallel Cline tasks.",
+		description: "Enables git worktree management for running parallel Guardian tasks.",
 		stateKey: "worktreesEnabled",
 		settingKey: "worktreesEnabled",
 	},
@@ -201,7 +201,7 @@ const FeatureSettingsSection = ({ renderSectionHeader }: FeatureSettingsSectionP
 		yoloModeToggled,
 		useAutoCondense,
 		subagentsEnabled,
-		clineWebToolsEnabled,
+		guardianWebToolsEnabled,
 		worktreesEnabled,
 		focusChainSettings,
 		remoteConfigSettings,
@@ -213,7 +213,7 @@ const FeatureSettingsSection = ({ renderSectionHeader }: FeatureSettingsSectionP
 
 	const handleFocusChainIntervalChange = useCallback(
 		(value: number) => {
-			updateSetting("focusChainSettings", { ...focusChainSettings, remindClineInterval: value })
+			updateSetting("focusChainSettings", { ...focusChainSettings, remindGuardianInterval: value })
 		},
 		[focusChainSettings],
 	)
@@ -228,7 +228,7 @@ const FeatureSettingsSection = ({ renderSectionHeader }: FeatureSettingsSectionP
 		focusChainEnabled: focusChainSettings?.enabled,
 		useAutoCondense,
 		subagentsEnabled,
-		clineWebToolsEnabled: clineWebToolsEnabled?.user,
+		guardianWebToolsEnabled: guardianWebToolsEnabled?.user,
 		worktreesEnabled: worktreesEnabled?.user,
 		enableParallelToolCalling,
 		backgroundEditEnabled,
@@ -238,7 +238,7 @@ const FeatureSettingsSection = ({ renderSectionHeader }: FeatureSettingsSectionP
 
 	// Visibility lookup for features with feature flags
 	const featureVisibility: Record<string, boolean | undefined> = {
-		clineWebToolsEnabled: clineWebToolsEnabled?.featureFlag,
+		guardianWebToolsEnabled: guardianWebToolsEnabled?.featureFlag,
 		worktreesEnabled: worktreesEnabled?.featureFlag,
 	}
 
@@ -331,7 +331,7 @@ const FeatureSettingsSection = ({ renderSectionHeader }: FeatureSettingsSectionP
 									min={1}
 									onChange={handleFocusChainIntervalChange}
 									step={1}
-									value={focusChainSettings?.remindClineInterval || 6}
+									value={focusChainSettings?.remindGuardianInterval || 6}
 									valueWidth="w-6"
 								/>
 							)}

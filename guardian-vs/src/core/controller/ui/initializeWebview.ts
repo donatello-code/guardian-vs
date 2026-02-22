@@ -1,5 +1,5 @@
-import { Empty, EmptyRequest } from "@shared/proto/cline/common"
-import { OpenRouterCompatibleModelInfo } from "@shared/proto/cline/models"
+import { Empty, EmptyRequest } from "@shared/proto/guardian/common"
+import { OpenRouterCompatibleModelInfo } from "@shared/proto/guardian/models"
 import { readMcpMarketplaceCatalogFromCache } from "@/core/storage/disk"
 import { telemetryService } from "@/services/telemetry"
 import { Logger } from "@/shared/services/Logger"

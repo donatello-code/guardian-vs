@@ -17,7 +17,7 @@ import type {
 } from "@generated/hosts/host-bridge-client-types"
 import type { HostBridgeClientProvider, StreamingCallbacks } from "@hosts/host-provider-types"
 import * as proto from "@shared/proto/index"
-import { ClineClient } from "@/shared/cline"
+import { GuardianClient } from "@/shared/guardian"
 import { Logger } from "@/shared/services/Logger"
 
 /**
@@ -116,36 +116,36 @@ class ACPEnvServiceClient implements EnvServiceClientInterface {
 		this.version = version
 	}
 
-	async debugLog(request: proto.cline.StringRequest): Promise<proto.cline.Empty> {
+	async debugLog(request: proto.guardian.StringRequest): Promise<proto.guardian.Empty> {
 		Logger.debug(request.value)
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 
-	async clipboardWriteText(_request: proto.cline.StringRequest): Promise<proto.cline.Empty> {
+	async clipboardWriteText(_request: proto.guardian.StringRequest): Promise<proto.guardian.Empty> {
 		Logger.debug("[ACPEnvServiceClient] clipboardWriteText called (stub)")
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 
-	async clipboardReadText(_request: proto.cline.EmptyRequest): Promise<proto.cline.String> {
+	async clipboardReadText(_request: proto.guardian.EmptyRequest): Promise<proto.guardian.String> {
 		Logger.debug("[ACPEnvServiceClient] clipboardReadText called (stub)")
-		return proto.cline.String.create({ value: "" })
+		return proto.guardian.String.create({ value: "" })
 	}
 
-	async getHostVersion(_request: proto.cline.EmptyRequest): Promise<proto.host.GetHostVersionResponse> {
+	async getHostVersion(_request: proto.guardian.EmptyRequest): Promise<proto.host.GetHostVersionResponse> {
 		// Return version info for the ACP agent.
 		return proto.host.GetHostVersionResponse.create({
 			version: this.version,
-			platform: "Cline ACP Agent",
-			clineType: ClineClient.Cli,
+			platform: "Guardian ACP Agent",
+			guardianType: GuardianClient.Cli,
 		})
 	}
 
-	async getIdeRedirectUri(_request: proto.cline.EmptyRequest): Promise<proto.cline.String> {
+	async getIdeRedirectUri(_request: proto.guardian.EmptyRequest): Promise<proto.guardian.String> {
 		Logger.debug("[ACPEnvServiceClient] getIdeRedirectUri called (stub)")
-		return proto.cline.String.create({ value: "" })
+		return proto.guardian.String.create({ value: "" })
 	}
 
-	async getTelemetrySettings(_request: proto.cline.EmptyRequest): Promise<proto.host.GetTelemetrySettingsResponse> {
+	async getTelemetrySettings(_request: proto.guardian.EmptyRequest): Promise<proto.host.GetTelemetrySettingsResponse> {
 		// Return telemetry as disabled by default in ACP mode.
 		return proto.host.GetTelemetrySettingsResponse.create({
 			isEnabled: proto.host.Setting.DISABLED,
@@ -153,7 +153,7 @@ class ACPEnvServiceClient implements EnvServiceClientInterface {
 	}
 
 	subscribeToTelemetrySettings(
-		_request: proto.cline.EmptyRequest,
+		_request: proto.guardian.EmptyRequest,
 		callbacks: StreamingCallbacks<proto.host.TelemetrySettingsEvent>,
 	): () => void {
 		// Send initial telemetry settings (disabled) and return unsubscribe function.
@@ -166,21 +166,21 @@ class ACPEnvServiceClient implements EnvServiceClientInterface {
 		return () => {}
 	}
 
-	async shutdown(_request: proto.cline.EmptyRequest): Promise<proto.cline.Empty> {
+	async shutdown(_request: proto.guardian.EmptyRequest): Promise<proto.guardian.Empty> {
 		// Next phase: Graceful ACP connection shutdown.
 		// This would cleanly close the ACP connection and release resources.
 		Logger.debug("[ACPEnvServiceClient] shutdown called (stub)")
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 
-	async openExternal(request: proto.cline.StringRequest): Promise<proto.cline.Empty> {
+	async openExternal(request: proto.guardian.StringRequest): Promise<proto.guardian.Empty> {
 		const url = request.value || ""
 		if (url) {
 			Logger.debug(`[ACPEnvServiceClient] openExternal: ${url}`)
 			const { openUrlInBrowser } = await import("../utils/browser")
 			await openUrlInBrowser(url)
 		}
-		return proto.cline.Empty.create()
+		return proto.guardian.Empty.create()
 	}
 }
 
@@ -337,13 +337,13 @@ class ACPWorkspaceServiceClient implements WorkspaceServiceClientInterface {
 		return proto.host.OpenInFileExplorerPanelResponse.create({})
 	}
 
-	async openClineSidebarPanel(
-		_request: proto.host.OpenClineSidebarPanelRequest,
-	): Promise<proto.host.OpenClineSidebarPanelResponse> {
-		// Next phase: Send ACP extension notification to open Cline sidebar.
-		// This would show the Cline panel/sidebar in the editor.
-		Logger.debug("[ACPWorkspaceServiceClient] openClineSidebarPanel called (stub)")
-		return proto.host.OpenClineSidebarPanelResponse.create({})
+	async openGuardianSidebarPanel(
+		_request: proto.host.OpenGuardianSidebarPanelRequest,
+	): Promise<proto.host.OpenGuardianSidebarPanelResponse> {
+		// Next phase: Send ACP extension notification to open Guardian sidebar.
+		// This would show the Guardian panel/sidebar in the editor.
+		Logger.debug("[ACPWorkspaceServiceClient] openGuardianSidebarPanel called (stub)")
+		return proto.host.OpenGuardianSidebarPanelResponse.create({})
 	}
 
 	async openTerminalPanel(_request: proto.host.OpenTerminalRequest): Promise<proto.host.OpenTerminalResponse> {

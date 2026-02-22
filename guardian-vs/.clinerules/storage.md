@@ -1,16 +1,16 @@
 # Storage Architecture
 
-Global settings, secrets and workspace state are stored in **file-backed JSON stores** under `~/.cline/data/`. This is the shared storage layer used by VSCode, CLI, and JetBrains.
+Global settings, secrets and workspace state are stored in **file-backed JSON stores** under `~/.guardian/data/`. This is the shared storage layer used by VSCode, CLI, and JetBrains.
 
 ## Key Abstractions
 
 ### `StorageContext` (src/shared/storage/storage-context.ts)
-The entry point. Created via `createStorageContext()` and passed to `StateManager.initialize()`. Contains three `ClineFileStorage` instances:
-- `globalState` → `~/.cline/data/globalState.json`
-- `secrets` → `~/.cline/data/secrets.json` (mode 0o600)
-- `workspaceState` → `~/.cline/data/workspaces/<hash>/workspaceState.json`
+The entry point. Created via `createStorageContext()` and passed to `StateManager.initialize()`. Contains three `GuardianFileStorage` instances:
+- `globalState` → `~/.guardian/data/globalState.json`
+- `secrets` → `~/.guardian/data/secrets.json` (mode 0o600)
+- `workspaceState` → `~/.guardian/data/workspaces/<hash>/workspaceState.json`
 
-### `ClineFileStorage` (src/shared/storage/ClineFileStorage.ts)
+### `GuardianFileStorage` (src/shared/storage/GuardianFileStorage.ts)
 Synchronous JSON key-value store backed by a single file. Supports `get()`, `set()`, `setBatch()`, `delete()`. Writes are atomic (write-then-rename).
 
 ### `StateManager` (src/core/storage/StateManager.ts)
@@ -33,7 +33,7 @@ StateManager.get().setSecret("mySecretKey", value)
 StateManager.get().setWorkspaceState("myWsKey", value)
 ```
 
-Remember that your data may be read by a different client than the one that wrote it. For example, a value written by Cline in JetBrains may be read by Cline CLI.
+Remember that your data may be read by a different client than the one that wrote it. For example, a value written by Guardian in JetBrains may be read by Guardian CLI.
 
 ## VSCode Migration (src/hosts/vscode/vscode-to-file-migration.ts)
 
@@ -52,7 +52,7 @@ On VSCode startup, a migration copies data from VSCode's `ExtensionContext` stor
 ## File Layout
 
 ```
-~/.cline/
+~/.guardian/
   data/
     globalState.json          # Global settings & state
     secrets.json              # API keys (mode 0o600)

@@ -1,16 +1,16 @@
-import { EmptyRequest } from "@shared/proto/cline/common"
+import { EmptyRequest } from "@shared/proto/guardian/common"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import { useState } from "react"
-import { useClineAuth } from "@/context/ClineAuthContext"
+import { useGuardianAuth } from "@/context/GuardianAuthContext"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { AccountServiceClient } from "@/services/grpc-client"
 
-export const ClineAccountInfoCard = () => {
-	const { clineUser } = useClineAuth()
+export const GuardianAccountInfoCard = () => {
+	const { guardianUser } = useGuardianAuth()
 	const { navigateToAccount } = useExtensionState()
 	const [isLoading, setIsLoading] = useState(false)
 
-	const user = clineUser || undefined
+	const user = guardianUser || undefined
 
 	const handleLogin = () => {
 		setIsLoading(true)
@@ -34,7 +34,7 @@ export const ClineAccountInfoCard = () => {
 			) : (
 				<div>
 					<VSCodeButton className="mt-0" disabled={isLoading} onClick={handleLogin}>
-						Sign Up with Cline
+						Sign Up with Guardian
 						{isLoading && (
 							<span className="ml-1 animate-spin">
 								<span className="codicon codicon-refresh"></span>

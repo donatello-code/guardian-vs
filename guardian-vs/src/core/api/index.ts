@@ -1,8 +1,8 @@
 import { ApiConfiguration, ModelInfo, QwenApiRegions } from "@shared/api"
 import { Mode } from "@shared/storage/types"
-import { ClineStorageMessage } from "@/shared/messages/content"
+import { GuardianStorageMessage } from "@/shared/messages/content"
 import { Logger } from "@/shared/services/Logger"
-import { ClineTool } from "@/shared/tools"
+import { GuardianTool } from "@/shared/tools"
 import { AIhubmixHandler } from "./providers/aihubmix"
 import { AnthropicHandler } from "./providers/anthropic"
 import { AskSageHandler } from "./providers/asksage"
@@ -10,7 +10,7 @@ import { BasetenHandler } from "./providers/baseten"
 import { AwsBedrockHandler } from "./providers/bedrock"
 import { CerebrasHandler } from "./providers/cerebras"
 import { ClaudeCodeHandler } from "./providers/claude-code"
-import { ClineHandler } from "./providers/cline"
+import { GuardianHandler } from "./providers/guardian"
 import { DeepSeekHandler } from "./providers/deepseek"
 import { DifyHandler } from "./providers/dify"
 import { DoubaoHandler } from "./providers/doubao"
@@ -50,7 +50,7 @@ export type CommonApiHandlerOptions = {
 	onRetryAttempt?: ApiConfiguration["onRetryAttempt"]
 }
 export interface ApiHandler {
-	createMessage(systemPrompt: string, messages: ClineStorageMessage[], tools?: ClineTool[], useResponseApi?: boolean): ApiStream
+	createMessage(systemPrompt: string, messages: GuardianStorageMessage[], tools?: GuardianTool[], useResponseApi?: boolean): ApiStream
 	getModel(): ApiHandlerModel
 	getApiStreamUsage?(): Promise<ApiStreamUsageChunk | undefined>
 	abort?(): void
@@ -253,11 +253,11 @@ function createHandlerForProvider(
 				vsCodeLmModelSelector:
 					mode === "plan" ? options.planModeVsCodeLmModelSelector : options.actModeVsCodeLmModelSelector,
 			})
-		case "cline":
-			return new ClineHandler({
+		case "guardian":
+			return new GuardianHandler({
 				onRetryAttempt: options.onRetryAttempt,
-				clineAccountId: options.clineAccountId,
-				clineApiKey: options.clineApiKey,
+				guardianAccountId: options.guardianAccountId,
+				guardianApiKey: options.guardianApiKey,
 				ulid: options.ulid,
 				reasoningEffort: mode === "plan" ? options.planModeReasoningEffort : options.actModeReasoningEffort,
 				thinkingBudgetTokens:

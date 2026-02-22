@@ -1,7 +1,7 @@
 /**
- * Custom types and extensions for ACP integration with Cline CLI.
+ * Custom types and extensions for ACP integration with Guardian CLI.
  *
- * This file extends the base ACP types with Cline-specific functionality.
+ * This file extends the base ACP types with Guardian-specific functionality.
  */
 
 import type * as acp from "@agentclientprotocol/sdk"
@@ -49,7 +49,7 @@ export type PermissionHandler = (request: Omit<acp.RequestPermissionRequest, "se
  * Maps ACP SessionUpdate types to their event listener signatures.
  * Uses the sessionUpdate discriminator to derive event names and payload types.
  */
-export type ClineSessionEvents = {
+export type GuardianSessionEvents = {
 	[K in SessionUpdateType]: (payload: SessionUpdatePayload<K>) => void
 } & {
 	/** Error event for session-level errors (not part of ACP SessionUpdate) */
@@ -57,13 +57,13 @@ export type ClineSessionEvents = {
 }
 
 // ============================================================
-// ClineAgent Options (decoupled from connection)
+// GuardianAgent Options (decoupled from connection)
 // ============================================================
 
 /**
- * Options for creating a ClineAgent instance (decoupled from connection).
+ * Options for creating a GuardianAgent instance (decoupled from connection).
  */
-export interface ClineAgentOptions {
+export interface GuardianAgentOptions {
 	/** CLI version string */
 	version: string
 	/** Whether debug logging is enabled */
@@ -115,9 +115,9 @@ export type {
 } from "@agentclientprotocol/sdk"
 
 /**
- * Cline-specific agent capabilities extending the ACP base capabilities.
+ * Guardian-specific agent capabilities extending the ACP base capabilities.
  */
-export interface ClineAgentCapabilities {
+export interface GuardianAgentCapabilities {
 	/** Support for loading sessions from disk */
 	loadSession: boolean
 	/** Prompt capabilities for the agent */
@@ -139,19 +139,19 @@ export interface ClineAgentCapabilities {
 }
 
 /**
- * Cline agent info for ACP initialization response.
+ * Guardian agent info for ACP initialization response.
  */
-export interface ClineAgentInfo {
-	name: "cline"
-	title: "Cline"
+export interface GuardianAgentInfo {
+	name: "guardian"
+	title: "Guardian"
 	version: string
 }
 
 /**
- * Extended session data stored by Cline for ACP sessions.
- * Maps to Cline's task history structure.
+ * Extended session data stored by Guardian for ACP sessions.
+ * Maps to Guardian's task history structure.
  */
-export interface ClineAcpSession {
+export interface GuardianAcpSession {
 	/** Unique session/task ID */
 	sessionId: string
 	/** Working directory for the session */
@@ -177,16 +177,16 @@ export interface ClineAcpSession {
 /**
  * Permission option as presented to the ACP client.
  */
-export interface ClinePermissionOption {
+export interface GuardianPermissionOption {
 	kind: acp.PermissionOptionKind
 	name: string
 	optionId: string
 }
 
 /**
- * Mapping of Cline message types to their ACP session update equivalents.
+ * Mapping of Guardian message types to their ACP session update equivalents.
  */
-export type ClineToAcpUpdateMapping = {
+export type GuardianToAcpUpdateMapping = {
 	/** Text messages from the agent */
 	text: "agent_message_chunk"
 	/** Reasoning/thinking from the agent */
@@ -216,8 +216,8 @@ export interface AcpAgentOptions {
 }
 
 /**
- * Result of translating a Cline message to ACP session update(s).
- * A single Cline message may produce multiple ACP updates.
+ * Result of translating a Guardian message to ACP session update(s).
+ * A single Guardian message may produce multiple ACP updates.
  */
 export interface TranslatedMessage {
 	/** The session updates to send */
@@ -231,7 +231,7 @@ export interface TranslatedMessage {
 }
 
 /**
- * State tracking for an active ACP session within Cline.
+ * State tracking for an active ACP session within Guardian.
  */
 export interface AcpSessionState {
 	/** Session ID */

@@ -6,9 +6,9 @@
  * - ⎿ for tool results (indented)
  */
 
-import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/ClineAccount"
+import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@shared/GuardianAccount"
 import { COMMAND_OUTPUT_STRING } from "@shared/combineCommandSequences"
-import type { ClineAskUseMcpServer, ClineMessage } from "@shared/ExtensionMessage"
+import type { GuardianAskUseMcpServer, GuardianMessage } from "@shared/ExtensionMessage"
 import { Box, Text } from "ink"
 import Spinner from "ink-spinner"
 import React from "react"
@@ -118,7 +118,7 @@ const MarkdownText: React.FC<{ children: string; color?: string }> = ({ children
 }
 
 interface ChatMessageProps {
-	message: ClineMessage
+	message: GuardianMessage
 	isStreaming?: boolean
 	mode?: "act" | "plan"
 }
@@ -190,7 +190,7 @@ function getToolMainArg(_toolName: string, args: Record<string, unknown>): strin
 }
 
 /**
- * Render a tool call in webview style: "Cline wants to read this file:" / "Cline read this file:"
+ * Render a tool call in webview style: "Guardian wants to read this file:" / "Guardian read this file:"
  */
 const ToolCallText: React.FC<{
 	toolName: string
@@ -205,7 +205,7 @@ const ToolCallText: React.FC<{
 
 	return (
 		<Text>
-			<Text color={toolColor}>Cline {actionText}</Text>
+			<Text color={toolColor}>Guardian {actionText}</Text>
 			{mainArg && (
 				<Text>
 					<Text color={toolColor}>: </Text>
@@ -393,7 +393,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 	if ((type === "ask" && ask === "use_mcp_server") || say === "use_mcp_server") {
 		const isAsk = type === "ask"
 		const parsed = text
-			? jsonParseSafe<Partial<ClineAskUseMcpServer> & { serverName: string }>(text, {
+			? jsonParseSafe<Partial<GuardianAskUseMcpServer> & { serverName: string }>(text, {
 					type: undefined,
 					serverName: "unknown server",
 					toolName: undefined,
@@ -403,7 +403,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			: undefined
 
 		const serverName = parsed?.serverName || "unknown server"
-		const actionLabel = isAsk ? "Cline wants to use MCP" : "Cline used MCP"
+		const actionLabel = isAsk ? "Guardian wants to use MCP" : "Guardian used MCP"
 		const targetLine =
 			parsed?.type === "access_mcp_resource"
 				? `resource: ${parsed?.uri || "unknown"}`
@@ -473,12 +473,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 	}
 
 	// Error messages
-	if (say === "clineignore_error") {
+	if (say === "guardianignore_error") {
 		return (
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color="red">
 					<Text color="red" wrap="wrap">
-						Cline tried to access <Text bold>{text}</Text> which is blocked by the .clineignore file.
+						Guardian tried to access <Text bold>{text}</Text> which is blocked by the .guardianignore file.
 					</Text>
 				</DotRow>
 			</Box>
@@ -495,8 +495,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			}
 		}
 
-		// Check for Cline auth error to show sign-in instructions
-		const isClineAuthError = errorMessage.includes(CLINE_ACCOUNT_AUTH_ERROR_MESSAGE)
+		// Check for Guardian auth error to show sign-in instructions
+		const isGuardianAuthError = errorMessage.includes(CLINE_ACCOUNT_AUTH_ERROR_MESSAGE)
 
 		return (
 			<Box flexDirection="column" marginBottom={1} width="100%">
@@ -505,7 +505,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 						<Text bold>Error</Text>: {errorMessage}
 					</Text>
 				</DotRow>
-				{isClineAuthError && (
+				{isGuardianAuthError && (
 					<Box marginLeft={2} marginTop={1}>
 						<Text color="gray">
 							Run <Text color="cyan">/settings</Text> and go to Account to sign in.
@@ -601,7 +601,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color={toolColor} flashing={partial === true && isStreaming}>
 					<Text>
-						<Text color={toolColor}>Cline used the browser</Text>
+						<Text color={toolColor}>Guardian used the browser</Text>
 						{text && (
 							<Text>
 								<Text color={toolColor}>: </Text>
@@ -620,7 +620,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color={toolColor} flashing={partial === true && isStreaming}>
 					<Text>
-						<Text color={toolColor}>Cline is using an MCP tool</Text>
+						<Text color={toolColor}>Guardian is using an MCP tool</Text>
 						{text && (
 							<Text>
 								<Text color={toolColor}>: </Text>
@@ -732,7 +732,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color={COLORS.primaryBlue}>
 					<Text bold color={COLORS.primaryBlue}>
-						Cline wants to start a new task:
+						Guardian wants to start a new task:
 					</Text>
 				</DotRow>
 				<Box flexDirection="column" paddingLeft={2}>
@@ -748,7 +748,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color={COLORS.primaryBlue} flashing={partial === true && isStreaming}>
 					<Text bold color={COLORS.primaryBlue}>
-						Cline wants to condense your conversation:
+						Guardian wants to condense your conversation:
 					</Text>
 				</DotRow>
 				<Box flexDirection="column" paddingLeft={2}>
@@ -764,7 +764,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color={COLORS.primaryBlue} flashing={partial === true && isStreaming}>
 					<Text bold color={COLORS.primaryBlue}>
-						Cline wants to summarize the task:
+						Guardian wants to summarize the task:
 					</Text>
 				</DotRow>
 				<Box flexDirection="column" paddingLeft={2}>
@@ -780,7 +780,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
 			<Box flexDirection="column" marginBottom={1} width="100%">
 				<DotRow color={COLORS.primaryBlue} flashing={partial === true && isStreaming}>
 					<Text bold color={COLORS.primaryBlue}>
-						Cline wants to create a Github issue:
+						Guardian wants to create a Github issue:
 					</Text>
 				</DotRow>
 				<Box flexDirection="column" paddingLeft={2}>
@@ -798,7 +798,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, mode, isStrea
  * Render a list of messages in Claude Code style
  */
 interface ChatMessageListProps {
-	messages: ClineMessage[]
+	messages: GuardianMessage[]
 	maxMessages?: number
 }
 

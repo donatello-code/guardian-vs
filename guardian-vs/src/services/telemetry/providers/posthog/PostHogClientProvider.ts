@@ -1,5 +1,5 @@
 import { type EventMessage, PostHog } from "posthog-node"
-import { ClineEndpoint } from "@/config"
+import { GuardianEndpoint } from "@/config"
 import { fetch } from "@/shared/net"
 import { posthogConfig } from "@/shared/services/config/posthog-config"
 import { Logger } from "@/shared/services/Logger"
@@ -22,7 +22,7 @@ export class PostHogClientProvider {
 
 	private constructor() {
 		// Skip PostHog client initialization in self-hosted mode
-		if (ClineEndpoint.isSelfHosted()) {
+		if (GuardianEndpoint.isSelfHosted()) {
 			this.client = null
 			return
 		}
@@ -44,8 +44,8 @@ export class PostHogClientProvider {
 
 	/**
 	 * Filters PostHog events before they are sent.
-	 * For exceptions, we only capture those from the Cline extension.
-	 * this is specifically to avoid capturing errors from anything other than Cline
+	 * For exceptions, we only capture those from the Guardian extension.
+	 * this is specifically to avoid capturing errors from anything other than Guardian
 	 */
 	static eventFilter(event: EventMessage | null) {
 		if (!event || event?.event !== "$exception") {
@@ -55,14 +55,14 @@ export class PostHogClientProvider {
 		if (!exceptionList?.length) {
 			return null
 		}
-		// Check if any exception is from Cline
+		// Check if any exception is from Guardian
 		for (let i = 0; i < exceptionList.length; i++) {
 			const stacktrace = exceptionList[i].stacktrace
-			// Fast check: error message contains "cline"
-			if (stacktrace?.value?.toLowerCase().includes("cline")) {
+			// Fast check: error message contains "guardian"
+			if (stacktrace?.value?.toLowerCase().includes("guardian")) {
 				return event
 			}
-			// Check stack frames for Cline extension path
+			// Check stack frames for Guardian extension path
 			const frames = stacktrace?.frames
 			if (frames?.length) {
 				for (let j = 0; j < frames.length; j++) {

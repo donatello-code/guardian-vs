@@ -2,43 +2,43 @@
 title: CLINE
 section: 1
 header: User Commands
-footer: Cline CLI 2.0
+footer: Guardian CLI 2.0
 date: January 2026
 ---
 
 # NAME
 
-cline - AI coding assistant in your terminal
+guardian - AI coding assistant in your terminal
 
 # SYNOPSIS
 
-**cline** [*prompt*] [*options*]
+**guardian** [*prompt*] [*options*]
 
-**cline** *command* [*options*] [*arguments*]
+**guardian** *command* [*options*] [*arguments*]
 
 # DESCRIPTION
 
-**cline** is a command-line interface for the Cline AI coding assistant. It provides the same powerful AI capabilities as the VS Code extension, directly in your terminal.
+**guardian** is a command-line interface for the Guardian AI coding assistant. It provides the same powerful AI capabilities as the VS Code extension, directly in your terminal.
 
-Cline is an autonomous AI agent that can read, write, and execute code across your projects. He can create and edit files, run terminal commands, use a headless browser, and more—all while asking for your approval before taking actions.
+Guardian is an autonomous AI agent that can read, write, and execute code across your projects. He can create and edit files, run terminal commands, use a headless browser, and more—all while asking for your approval before taking actions.
 
 The CLI supports both interactive mode (with a rich terminal UI) and plain text mode (for piped input and scripted workflows).
 
 # MODES OF OPERATION
 
-**Interactive Mode** :   When you run **cline** without arguments, it launches an interactive welcome prompt with a rich terminal UI. You can type your task, view conversation history, and interact with Cline in real-time.
+**Interactive Mode** :   When you run **guardian** without arguments, it launches an interactive welcome prompt with a rich terminal UI. You can type your task, view conversation history, and interact with Guardian in real-time.
 
-**Task Mode** :   Run **cline "prompt"** or **cline task "prompt"** to immediately start a task. If stdin is a TTY, you'll see the interactive UI. If stdin is piped or output is redirected, the CLI automatically switches to plain text mode.
+**Task Mode** :   Run **guardian "prompt"** or **guardian task "prompt"** to immediately start a task. If stdin is a TTY, you'll see the interactive UI. If stdin is piped or output is redirected, the CLI automatically switches to plain text mode.
 
 **Plain Text Mode** :   Activated automatically when stdin is piped, output is redirected, or **\--json**/**\--yolo** flags are used. Outputs clean text without the Ink UI, suitable for scripting and CI/CD pipelines.
 
 # AGENT BEHAVIOR
 
-Cline operates in two primary modes:
+Guardian operates in two primary modes:
 
-**ACT MODE** :   Cline actively uses tools to accomplish tasks. He can read files, write code, execute commands, use a headless browser, and more. This is the default mode for task execution.
+**ACT MODE** :   Guardian actively uses tools to accomplish tasks. He can read files, write code, execute commands, use a headless browser, and more. This is the default mode for task execution.
 
-**PLAN MODE** :   Cline gathers information and creates a detailed plan before implementation. He explores the codebase, asks clarifying questions, and presents a strategy for user approval before switching to ACT MODE.
+**PLAN MODE** :   Guardian gathers information and creates a detailed plan before implementation. He explores the codebase, asks clarifying questions, and presents a strategy for user approval before switching to ACT MODE.
 
 # COMMANDS
 
@@ -46,9 +46,9 @@ Cline operates in two primary modes:
 
 Run a new task with a prompt.
 
-**cline task** *prompt* [*options*]
+**guardian task** *prompt* [*options*]
 
-**cline t** *prompt* [*options*] :   Create and run a new task. Options:
+**guardian t** *prompt* [*options*] :   Create and run a new task. Options:
 
 **-a**, **\--act** :   Run in act mode (default)
 
@@ -66,7 +66,7 @@ Run a new task with a prompt.
 
 **-c**, **\--cwd** *path* :   Working directory for the task
 
-**\--config** *path* :   Path to Cline configuration directory
+**\--config** *path* :   Path to Guardian configuration directory
 
 **\--thinking** :   Enable extended thinking (1024 token budget)
 
@@ -78,29 +78,29 @@ Run a new task with a prompt.
 
 List task history with pagination.
 
-**cline history** [*options*]
+**guardian history** [*options*]
 
-**cline h** [*options*] :   Display previous tasks. Options:
+**guardian h** [*options*] :   Display previous tasks. Options:
 
 **-n**, **\--limit** *number* :   Number of tasks to show (default: 10)
 
 **-p**, **\--page** *number* :   Page number, 1-based (default: 1)
 
-**\--config** *path* :   Path to Cline configuration directory
+**\--config** *path* :   Path to Guardian configuration directory
 
 ## config
 
 Show current configuration.
 
-**cline config** [*options*] :   Display global and workspace state. Options:
+**guardian config** [*options*] :   Display global and workspace state. Options:
 
-**\--config** *path* :   Path to Cline configuration directory
+**\--config** *path* :   Path to Guardian configuration directory
 
 ## auth
 
 Authenticate a provider and configure the model.
 
-**cline auth** [*options*] :   Launch interactive authentication wizard, or use quick setup flags. Options:
+**guardian auth** [*options*] :   Launch interactive authentication wizard, or use quick setup flags. Options:
 
 **-p**, **\--provider** *id* :   Provider ID for quick setup (e.g., openai-native, anthropic, openrouter)
 
@@ -114,13 +114,13 @@ Authenticate a provider and configure the model.
 
 **-c**, **\--cwd** *path* :   Working directory
 
-**\--config** *path* :   Path to Cline configuration directory
+**\--config** *path* :   Path to Guardian configuration directory
 
 ## update
 
 Check for updates and install if available.
 
-**cline update** [*options*] :   Check npm for newer versions. Options:
+**guardian update** [*options*] :   Check npm for newer versions. Options:
 
 **-v**, **\--verbose** :   Show verbose output
 
@@ -128,17 +128,17 @@ Check for updates and install if available.
 
 Show the CLI version number.
 
-**cline version**
+**guardian version**
 
 ## dev
 
 Developer tools and utilities.
 
-**cline dev log** :   Open the log file for debugging.
+**guardian dev log** :   Open the log file for debugging.
 
 # DEFAULT COMMAND OPTIONS
 
-When running **cline** with just a prompt (no subcommand), these options are available:
+When running **guardian** with just a prompt (no subcommand), these options are available:
 
 **-a**, **\--act** :   Run in act mode (default)
 
@@ -187,115 +187,115 @@ When using **\--json**, each message is output as a JSON object with these field
 
 ```bash
 # Launch interactive mode
-cline
+guardian
 
 # Run a task directly
-cline "Create a hello world function in Python"
+guardian "Create a hello world function in Python"
 
 # Run with verbose output and extended thinking
-cline -v --thinking "Analyze this codebase architecture"
+guardian -v --thinking "Analyze this codebase architecture"
 ```
 
 ## Mode Selection
 
 ```bash
 # Run in plan mode (gather info before acting)
-cline -p "Design a REST API for user management"
+guardian -p "Design a REST API for user management"
 
 # Run in act mode with auto-approval (yolo)
-cline -y "Fix the typo in README.md"
+guardian -y "Fix the typo in README.md"
 ```
 
 ## Using Specific Models
 
 ```bash
 # Use a specific model
-cline -m claude-sonnet-4-5-20250929 "Refactor this function"
+guardian -m claude-sonnet-4-5-20250929 "Refactor this function"
 
 # Quick auth setup with model
-cline auth -p anthropic -k sk-ant-xxxxx -m claude-sonnet-4-5-20250929
+guardian auth -p anthropic -k sk-ant-xxxxx -m claude-sonnet-4-5-20250929
 ```
 
 ## Including Images
 
 ```bash
 # Include images with explicit flag
-cline task -i screenshot.png diagram.jpg "Fix the UI based on these images"
+guardian task -i screenshot.png diagram.jpg "Fix the UI based on these images"
 
 # Or use inline image references in the prompt
-cline "Fix the layout shown in @./screenshot.png"
+guardian "Fix the layout shown in @./screenshot.png"
 ```
 
 ## Piped Input
 
 ```bash
-# Pipe file contents to Cline
-cat README.md | cline "Summarize this document"
+# Pipe file contents to Guardian
+cat README.md | guardian "Summarize this document"
 
 # Pipe with additional prompt
-echo "function add(a, b) { return a + b }" | cline "Add TypeScript types to this"
+echo "function add(a, b) { return a + b }" | guardian "Add TypeScript types to this"
 
 # Combine piped input with a prompt
-git diff | cline "Review these changes and suggest improvements"
+git diff | guardian "Review these changes and suggest improvements"
 ```
 
 ## Scripting and Automation
 
 ```bash
 # JSON output for parsing
-cline --json "What files are in this directory?" | jq '.text'
+guardian --json "What files are in this directory?" | jq '.text'
 
 # Yolo mode for automated workflows (auto-approves all actions), forces plain text output
-cline -y "Run the test suite and fix any failures"
+guardian -y "Run the test suite and fix any failures"
 ```
 
 ## Task History
 
 ```bash
 # List recent tasks
-cline history
+guardian history
 
 # Show more tasks with pagination
-cline history -n 20 -p 2
+guardian history -n 20 -p 2
 ```
 
 ## Resuming Tasks
 
 ```bash
-# Resume a task by ID (get IDs from cline history)
-cline -T abc123def
+# Resume a task by ID (get IDs from guardian history)
+guardian -T abc123def
 
 # Resume a task with a follow-up message
-cline -T abc123def "Now add unit tests for the changes"
+guardian -T abc123def "Now add unit tests for the changes"
 
 # Resume in plan mode to review before continuing
-cline -T abc123def -p "What's left to do?"
+guardian -T abc123def -p "What's left to do?"
 
 # Resume with yolo mode for automated continuation
-cline -T abc123def -y "Continue with the implementation"
+guardian -T abc123def -y "Continue with the implementation"
 ```
 
 ## Authentication
 
 ```bash
 # Interactive authentication wizard
-cline auth
+guardian auth
 
 # Quick setup for Anthropic
-cline auth -p anthropic -k sk-ant-api-xxxxx
+guardian auth -p anthropic -k sk-ant-api-xxxxx
 
 # Quick setup for OpenAI
-cline auth -p openai-native -k sk-xxxxx -m gpt-4o
+guardian auth -p openai-native -k sk-xxxxx -m gpt-4o
 
 # OpenAI-compatible provider with custom base URL
-cline auth -p openai -k your-api-key -b https://api.example.com/v1
+guardian auth -p openai -k your-api-key -b https://api.example.com/v1
 ```
 
 # ENVIRONMENT
 
-**CLINE_DIR** :   Override the default configuration directory. When set, Cline stores all data in this directory instead of `~/.cline/data/`.
+**CLINE_DIR** :   Override the default configuration directory. When set, Guardian stores all data in this directory instead of `~/.guardian/data/`.
 
-**CLINE_COMMAND_PERMISSIONS** :   JSON configuration for restricting which shell commands Cline can execute. When set, commands are validated against allow/deny patternks before execution. When not set, all commands are allowed.
+**CLINE_COMMAND_PERMISSIONS** :   JSON configuration for restricting which shell commands Guardian can execute. When set, commands are validated against allow/deny patternks before execution. When not set, all commands are allowed.
 
 Format: `{"allow": ["pattern1", "pattern2"], "deny": ["pattern3"], "allowRedirects": true}`
 
@@ -331,7 +331,7 @@ export CLINE_COMMAND_PERMISSIONS='{"allow": ["cat *", "echo *"], "allowRedirects
 # CONFIGURATION FILES
 
 ```
-~/.cline/
+~/.guardian/
 ├── data/                    # Default configuration directory
 │   ├── globalState.json     # Global settings and state
 │   ├── secrets.json         # API keys and secrets (stored securely)
@@ -340,25 +340,25 @@ export CLINE_COMMAND_PERMISSIONS='{"allow": ["cat *", "echo *"], "allowRedirects
 └── log/                     # Log files for debugging
 ```
 
-View logs with `cline dev log`.
+View logs with `guardian dev log`.
 
 
 # BUGS
 
-Report bugs at: <https://github.com/cline/cline/issues>
+Report bugs at: <https://github.com/guardian/guardian/issues>
 
-For real-time help, join the Discord community at: <https://discord.gg/cline>
+For real-time help, join the Discord community at: <https://discord.gg/guardian>
 
 # SEE ALSO
 
-Full documentation: <https://docs.cline.bot>
+Full documentation: <https://docs.guardian.bot>
 
 VS Code extension: <https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev>
 
 # AUTHORS
 
-Cline is developed by Cline Bot Inc. and the open source community.
+Guardian is developed by Guardian Bot Inc. and the open source community.
 
 # COPYRIGHT
 
-Copyright © 2025 Cline Bot Inc. Licensed under the Apache License 2.0.
+Copyright © 2025 Guardian Bot Inc. Licensed under the Apache License 2.0.

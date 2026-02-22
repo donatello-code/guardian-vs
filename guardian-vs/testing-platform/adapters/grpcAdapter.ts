@@ -1,31 +1,31 @@
-import { AccountServiceClient } from "@cline-grpc/account"
-import { BrowserServiceClient } from "@cline-grpc/browser"
-import { CheckpointsServiceClient } from "@cline-grpc/checkpoints"
-import { CommandsServiceClient } from "@cline-grpc/commands"
-import { FileServiceClient } from "@cline-grpc/file"
-import { McpServiceClient } from "@cline-grpc/mcp"
-import { ModelsServiceClient } from "@cline-grpc/models"
-import { SlashServiceClient } from "@cline-grpc/slash"
-import { StateServiceClient } from "@cline-grpc/state"
-import { TaskServiceClient } from "@cline-grpc/task"
-import { UiServiceClient } from "@cline-grpc/ui"
-import { WebServiceClient } from "@cline-grpc/web"
+import { AccountServiceClient } from "@guardian-grpc/account"
+import { BrowserServiceClient } from "@guardian-grpc/browser"
+import { CheckpointsServiceClient } from "@guardian-grpc/checkpoints"
+import { CommandsServiceClient } from "@guardian-grpc/commands"
+import { FileServiceClient } from "@guardian-grpc/file"
+import { McpServiceClient } from "@guardian-grpc/mcp"
+import { ModelsServiceClient } from "@guardian-grpc/models"
+import { SlashServiceClient } from "@guardian-grpc/slash"
+import { StateServiceClient } from "@guardian-grpc/state"
+import { TaskServiceClient } from "@guardian-grpc/task"
+import { UiServiceClient } from "@guardian-grpc/ui"
+import { WebServiceClient } from "@guardian-grpc/web"
 import { credentials } from "@grpc/grpc-js"
 import { promisify } from "util"
 
 const serviceRegistry = {
-	"cline.AccountService": AccountServiceClient,
-	"cline.BrowserService": BrowserServiceClient,
-	"cline.CheckpointsService": CheckpointsServiceClient,
-	"cline.CommandsService": CommandsServiceClient,
-	"cline.FileService": FileServiceClient,
-	"cline.McpService": McpServiceClient,
-	"cline.ModelsService": ModelsServiceClient,
-	"cline.SlashService": SlashServiceClient,
-	"cline.StateService": StateServiceClient,
-	"cline.TaskService": TaskServiceClient,
-	"cline.UiService": UiServiceClient,
-	"cline.WebService": WebServiceClient,
+	"guardian.AccountService": AccountServiceClient,
+	"guardian.BrowserService": BrowserServiceClient,
+	"guardian.CheckpointsService": CheckpointsServiceClient,
+	"guardian.CommandsService": CommandsServiceClient,
+	"guardian.FileService": FileServiceClient,
+	"guardian.McpService": McpServiceClient,
+	"guardian.ModelsService": ModelsServiceClient,
+	"guardian.SlashService": SlashServiceClient,
+	"guardian.StateService": StateServiceClient,
+	"guardian.TaskService": TaskServiceClient,
+	"guardian.UiService": UiServiceClient,
+	"guardian.WebService": WebServiceClient,
 } as const
 
 export type ServiceClients = {

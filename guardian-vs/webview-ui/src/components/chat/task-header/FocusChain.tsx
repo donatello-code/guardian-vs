@@ -1,8 +1,8 @@
 import { cn } from "@heroui/react"
 import { isCompletedFocusChainItem, isFocusChainItem } from "@shared/focus-chain-utils"
-import { StringRequest } from "@shared/proto/cline/common"
+import { StringRequest } from "@shared/proto/guardian/common"
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react"
-import React, { memo, useCallback, useMemo, useState } from "react"
+import React, { memo, useCallback, useMemo, useState, useEffect, useRef } from "react"
 import ChecklistRenderer from "@/components/common/ChecklistRenderer"
 import LightMarkdown from "@/components/common/LightMarkdown"
 import { FileServiceClient } from "@/services/grpc-client"
@@ -20,6 +20,8 @@ interface FocusChainProps {
 	readonly lastProgressMessageText?: string
 	readonly currentTaskItemId?: string
 	readonly showPlaceholderWhenEmpty?: boolean
+	readonly isExpanded?: boolean
+	readonly onExpandedChange?: (isExpanded: boolean) => void
 }
 
 // Static strings to avoid recreating them
@@ -158,8 +160,21 @@ const parseCurrentTodoInfo = (text: string): TodoInfo | null => {
 
 // Main component with aggressive optimization
 export const FocusChain: React.FC<FocusChainProps> = memo(
-	({ currentTaskItemId, lastProgressMessageText, showPlaceholderWhenEmpty }) => {
-		const [isExpanded, setIsExpanded] = useState(false)
+	({ currentTaskItemId, lastProgressMessageText, showPlaceholderWhenEmpty, isExpanded: externalIsExpanded, onExpandedChange }) => {
+		// Internal state for when component is not controlled externally
+		const [internalIsExpanded, setInternalIsExpanded] = useState(false)
+		
+		// Determine if we're using external control or internal state
+		const isControlled = externalIsExpanded !== undefined
+		const isExpanded = isControlled ? externalIsExpanded : internalIsExpanded
+		
+		const setIsExpanded = useCallback((value: boolean) => {
+			if (isControlled && onExpandedChange) {
+				onExpandedChange(value)
+			} else {
+				setInternalIsExpanded(value)
+			}
+		}, [isControlled, onExpandedChange])
 
 		// Parse todo info with caching
 		const todoInfo = useMemo(
@@ -167,8 +182,25 @@ export const FocusChain: React.FC<FocusChainProps> = memo(
 			[lastProgressMessageText],
 		)
 
+		// Detect when a new todo list is populated and auto-expand
+		const prevLastProgressMessageTextRef = useRef<string | undefined>()
+		useEffect(() => {
+			// Check if we have a new todo list (previously empty/null, now has content)
+			const hadTodoListBefore = prevLastProgressMessageTextRef.current && 
+				parseCurrentTodoInfo(prevLastProgressMessageTextRef.current)
+			const hasTodoListNow = lastProgressMessageText && 
+				parseCurrentTodoInfo(lastProgressMessageText)
+			
+			// If we didn't have a todo list before but now we do, auto-expand
+			if (!hadTodoListBefore && hasTodoListNow) {
+				setIsExpanded(true)
+			}
+			
+			prevLastProgressMessageTextRef.current = lastProgressMessageText
+		}, [lastProgressMessageText, setIsExpanded])
+
 		// Static callbacks that don't change
-		const handleToggle = useCallback(() => setIsExpanded((prev) => !prev), [])
+		const handleToggle = useCallback(() => setIsExpanded(!isExpanded), [isExpanded, setIsExpanded])
 
 		const handleEditClick = useCallback(
 			(e: React.MouseEvent) => {
@@ -236,7 +268,8 @@ export const FocusChain: React.FC<FocusChainProps> = memo(
 		return (
 			prevProps.lastProgressMessageText === nextProps.lastProgressMessageText &&
 			prevProps.currentTaskItemId === nextProps.currentTaskItemId &&
-			prevProps.showPlaceholderWhenEmpty === nextProps.showPlaceholderWhenEmpty
+			prevProps.showPlaceholderWhenEmpty === nextProps.showPlaceholderWhenEmpty &&
+			prevProps.isExpanded === nextProps.isExpanded
 		)
 	},
 )

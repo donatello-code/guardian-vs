@@ -1,6 +1,6 @@
-import { ClineMessage } from "@shared/ExtensionMessage"
+import { GuardianMessage } from "@shared/ExtensionMessage"
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react"
-import React, { useCallback, useLayoutEffect, useMemo, useState } from "react"
+import React, { useCallback, useLayoutEffect, useMemo, useState, useEffect, useRef } from "react"
 import Thumbnails from "@/components/common/Thumbnails"
 import { getModeSpecificFields, normalizeApiConfiguration } from "@/components/settings/utils/providerUtils"
 import { useExtensionState } from "@/context/ExtensionStateContext"
@@ -17,7 +17,7 @@ import { highlightText } from "./Highlights"
 
 const IS_DEV = process.env.IS_DEV === '"true"'
 interface TaskHeaderProps {
-	task: ClineMessage
+	task: GuardianMessage
 	tokensIn: number
 	tokensOut: number
 	doesModelSupportPromptCache: boolean
@@ -88,6 +88,30 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 		document.addEventListener("mousedown", handleClickOutside)
 		return () => document.removeEventListener("mousedown", handleClickOutside)
 	}, [isHighlightedTextExpanded])
+
+	// Detect when a new todo list is populated and minimize task header
+	const prevLastProgressMessageTextRef = useRef<string | undefined>()
+	useEffect(() => {
+		// Helper function to check if text contains todo items
+		const hasTodoItems = (text?: string): boolean => {
+			if (!text) return false
+			// Check if text contains markdown checklist items
+			return text.includes('- [ ]') || text.includes('- [x]') || text.includes('* [ ]') || text.includes('* [x]')
+		}
+		
+		// Check if we have a new todo list (previously empty/non-todo, now has todo items)
+		const hadTodoListBefore = prevLastProgressMessageTextRef.current && 
+			hasTodoItems(prevLastProgressMessageTextRef.current)
+		const hasTodoListNow = lastProgressMessageText && 
+			hasTodoItems(lastProgressMessageText)
+		
+		// If we didn't have a todo list before but now we do, minimize task header
+		if (!hadTodoListBefore && hasTodoListNow) {
+			setIsTaskExpanded(false)
+		}
+		
+		prevLastProgressMessageTextRef.current = lastProgressMessageText
+	}, [lastProgressMessageText, setIsTaskExpanded])
 
 	// Simplified computed values
 	const { selectedModelInfo } = normalizeApiConfiguration(apiConfiguration, mode)

@@ -1,11 +1,11 @@
 import { ModelFamily } from "@/shared/prompts"
-import { ClineDefaultTool } from "@/shared/tools"
-import type { ClineToolSpec } from "../spec"
+import { GuardianDefaultTool } from "@/shared/tools"
+import type { GuardianToolSpec } from "../spec"
 
 // HACK: Placeholder to act as tool dependency
-const generic: ClineToolSpec = {
+const generic: GuardianToolSpec = {
 	variant: ModelFamily.GENERIC,
-	id: ClineDefaultTool.TODO,
+	id: GuardianDefaultTool.TODO,
 	name: "focus_chain",
 	description: "",
 	contextRequirements: (context) => context.focusChainSettings?.enabled === true,

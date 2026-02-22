@@ -2,7 +2,7 @@
  * Shared types and interfaces for the chat view components
  */
 
-import { ClineAsk, ClineMessage } from "@shared/ExtensionMessage"
+import { GuardianAsk, GuardianMessage } from "@shared/ExtensionMessage"
 import { ListRange, VirtuosoHandle } from "react-virtuoso"
 import { ButtonActionType } from "../shared/buttonConfig"
 
@@ -46,10 +46,10 @@ export interface ChatState {
 	textAreaRef: React.RefObject<HTMLTextAreaElement>
 
 	// Derived values
-	lastMessage: ClineMessage | undefined
-	secondLastMessage: ClineMessage | undefined
-	clineAsk: ClineAsk | undefined
-	task: ClineMessage | undefined
+	lastMessage: GuardianMessage | undefined
+	secondLastMessage: GuardianMessage | undefined
+	guardianAsk: GuardianAsk | undefined
+	task: GuardianMessage | undefined
 
 	// Handlers
 	handleFocusChange: (isFocused: boolean) => void
@@ -91,7 +91,7 @@ export interface ScrollBehavior {
 	setIsAtBottom: React.Dispatch<React.SetStateAction<boolean>>
 	pendingScrollToMessage: number | null
 	setPendingScrollToMessage: React.Dispatch<React.SetStateAction<number | null>>
-	scrolledPastUserMessage: ClineMessage | null
+	scrolledPastUserMessage: GuardianMessage | null
 	handleRangeChanged: (range: ListRange) => void
 }
 
@@ -119,8 +119,8 @@ export interface InputState {
  * Task section props
  */
 export interface TaskSectionProps {
-	task: ClineMessage
-	messages: ClineMessage[]
+	task: GuardianMessage
+	messages: GuardianMessage[]
 	scrollBehavior: ScrollBehavior
 	buttonState: ButtonState
 	messageHandlers: MessageHandlers
@@ -138,8 +138,8 @@ export interface TaskSectionProps {
 		supportsImages: boolean
 	}
 	isStreaming: boolean
-	clineAsk?: ClineAsk
-	modifiedMessages: ClineMessage[]
+	guardianAsk?: GuardianAsk
+	modifiedMessages: GuardianMessage[]
 }
 
 /**

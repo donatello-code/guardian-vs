@@ -1,19 +1,19 @@
 /**
- * Message translator for converting Cline messages to ACP session updates.
+ * Message translator for converting Guardian messages to ACP session updates.
  *
- * This module handles the translation between Cline's internal message format
- * (ClineMessage) and the ACP protocol's session update format. A single Cline
+ * This module handles the translation between Guardian's internal message format
+ * (GuardianMessage) and the ACP protocol's session update format. A single Guardian
  * message may produce multiple ACP updates.
  *
  * @module acp/messageTranslator
  */
 
 import type * as acp from "@agentclientprotocol/sdk"
-import type { ClineMessage, ClineSayBrowserAction, ClineSayTool } from "@shared/ExtensionMessage"
+import type { GuardianMessage, GuardianSayBrowserAction, GuardianSayTool } from "@shared/ExtensionMessage"
 import type { AcpSessionState, TranslatedMessage } from "./types.js"
 
 /**
- * Maps Cline tool types to ACP ToolKind values.
+ * Maps Guardian tool types to ACP ToolKind values.
  */
 const TOOL_KIND_MAP: Record<string, acp.ToolKind> = {
 	// File operations
@@ -136,15 +136,15 @@ export interface TranslateMessageOptions {
 }
 
 /**
- * Translate a single Cline message to ACP session updates.
+ * Translate a single Guardian message to ACP session updates.
  *
- * @param message - The Cline message to translate
+ * @param message - The Guardian message to translate
  * @param sessionState - The current session state for tracking tool calls
  * @param options - Optional translation options (e.g., existing toolCallId for updates)
  * @returns The translated message with ACP updates and permission requirements
  */
 export function translateMessage(
-	message: ClineMessage,
+	message: GuardianMessage,
 	sessionState: AcpSessionState,
 	options?: TranslateMessageOptions,
 ): TranslatedMessage {
@@ -174,10 +174,10 @@ export function translateMessage(
 }
 
 /**
- * Translate a "say" type Cline message to ACP updates.
+ * Translate a "say" type Guardian message to ACP updates.
  */
 function translateSayMessage(
-	message: ClineMessage,
+	message: GuardianMessage,
 	sessionState: AcpSessionState,
 	_options?: TranslateMessageOptions,
 ): TranslatedMessage {
@@ -241,7 +241,7 @@ function translateSayMessage(
 		case "error":
 		case "error_retry":
 		case "diff_error":
-		case "clineignore_error":
+		case "guardianignore_error":
 			// Error messages → agent_message_chunk (errors are displayed as text)
 			if (message.text) {
 				updates.push({
@@ -387,11 +387,11 @@ function translateSayMessage(
 }
 
 /**
- * Translate a "ask" type Cline message to ACP updates.
+ * Translate a "ask" type Guardian message to ACP updates.
  * Ask messages typically require permission from the client.
  */
 function translateAskMessage(
-	message: ClineMessage,
+	message: GuardianMessage,
 	sessionState: AcpSessionState,
 	options?: TranslateMessageOptions,
 ): TranslatedMessage {
@@ -651,13 +651,13 @@ function translateAskMessage(
 /**
  * Translate a tool message to ACP tool_call updates.
  */
-function translateToolMessage(message: ClineMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
+function translateToolMessage(message: GuardianMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
 	const updates: acp.SessionUpdate[] = []
 
 	if (!message.text) return updates
 
 	try {
-		const toolInfo = JSON.parse(message.text) as ClineSayTool
+		const toolInfo = JSON.parse(message.text) as GuardianSayTool
 		const toolCallId = sessionState.currentToolCallId || generateToolCallId()
 
 		// Determine tool kind
@@ -736,7 +736,7 @@ function translateToolMessage(message: ClineMessage, sessionState: AcpSessionSta
 /**
  * Translate a command message to ACP tool_call.
  */
-function translateCommandMessage(message: ClineMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
+function translateCommandMessage(message: GuardianMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
 	const updates: acp.SessionUpdate[] = []
 
 	const command = extractCommandFromText(message.text)
@@ -765,7 +765,7 @@ function translateCommandMessage(message: ClineMessage, sessionState: AcpSession
 /**
  * Translate command output to ACP tool_call_update.
  */
-function translateCommandOutputMessage(message: ClineMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
+function translateCommandOutputMessage(message: GuardianMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
 	const updates: acp.SessionUpdate[] = []
 
 	if (sessionState.currentToolCallId) {
@@ -806,11 +806,11 @@ function translateCommandOutputMessage(message: ClineMessage, sessionState: AcpS
 /**
  * Translate browser action to ACP tool_call.
  */
-function translateBrowserActionMessage(message: ClineMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
+function translateBrowserActionMessage(message: GuardianMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
 	const updates: acp.SessionUpdate[] = []
 
 	try {
-		const action = message.text ? (JSON.parse(message.text) as ClineSayBrowserAction) : null
+		const action = message.text ? (JSON.parse(message.text) as GuardianSayBrowserAction) : null
 		const toolCallId = sessionState.currentToolCallId || generateToolCallId()
 
 		if (!sessionState.currentToolCallId) {
@@ -841,7 +841,7 @@ function translateBrowserActionMessage(message: ClineMessage, sessionState: AcpS
 /**
  * Translate MCP server message to ACP tool_call.
  */
-function translateMcpMessage(message: ClineMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
+function translateMcpMessage(message: GuardianMessage, sessionState: AcpSessionState): acp.SessionUpdate[] {
 	const updates: acp.SessionUpdate[] = []
 
 	try {
@@ -873,7 +873,7 @@ function translateMcpMessage(message: ClineMessage, sessionState: AcpSessionStat
 /**
  * Translate task progress (focus chain/todos) to ACP plan update.
  */
-function translateTaskProgressMessage(message: ClineMessage): acp.SessionUpdate[] {
+function translateTaskProgressMessage(message: GuardianMessage): acp.SessionUpdate[] {
 	const updates: acp.SessionUpdate[] = []
 
 	if (!message.text) return updates
@@ -938,7 +938,7 @@ function parseTaskProgressToEntries(text: string): acp.PlanEntry[] {
 /**
  * Build a human-readable title for a tool operation.
  */
-function buildToolTitle(toolInfo: ClineSayTool): string {
+function buildToolTitle(toolInfo: GuardianSayTool): string {
 	switch (toolInfo.tool) {
 		case "editedExistingFile":
 			return `Edit file: ${toolInfo.path || "unknown"}`
@@ -983,7 +983,7 @@ function extractCommandFromText(text?: string): string {
  */
 function parseToolInfo(text: string): { title: string; kind: acp.ToolKind; path?: string; input?: unknown } | null {
 	try {
-		const info = JSON.parse(text) as ClineSayTool
+		const info = JSON.parse(text) as GuardianSayTool
 		return {
 			title: buildToolTitle(info),
 			kind: TOOL_KIND_MAP[info.tool] || "other",
@@ -996,13 +996,13 @@ function parseToolInfo(text: string): { title: string; kind: acp.ToolKind; path?
 }
 
 /**
- * Translate multiple Cline messages to ACP session updates.
+ * Translate multiple Guardian messages to ACP session updates.
  *
- * @param messages - Array of Cline messages to translate
+ * @param messages - Array of Guardian messages to translate
  * @param sessionState - The current session state
  * @returns Combined array of ACP session updates
  */
-export function translateMessages(messages: ClineMessage[], sessionState: AcpSessionState): acp.SessionUpdate[] {
+export function translateMessages(messages: GuardianMessage[], sessionState: AcpSessionState): acp.SessionUpdate[] {
 	const allUpdates: acp.SessionUpdate[] = []
 
 	for (const message of messages) {

@@ -2,13 +2,13 @@
  * Entry point for ACP (Agent Client Protocol) mode.
  *
  * When the CLI is invoked with `--acp`, this module sets up the ACP connection
- * and runs Cline as an ACP-compliant agent communicating over stdio.
+ * and runs Guardian as an ACP-compliant agent communicating over stdio.
  *
  * This module exports:
- * - `ClineAgent` - Decoupled agent for programmatic use (no stdio dependency)
- * - `AcpAgent` - Thin wrapper that bridges stdio connection to ClineAgent
- * - `ClineSessionEmitter` - Typed EventEmitter for per-session events
- * - `runAcpMode` - Function to run Cline in stdio-based ACP mode
+ * - `GuardianAgent` - Decoupled agent for programmatic use (no stdio dependency)
+ * - `AcpAgent` - Thin wrapper that bridges stdio connection to GuardianAgent
+ * - `GuardianSessionEmitter` - Typed EventEmitter for per-session events
+ * - `runAcpMode` - Function to run Guardian in stdio-based ACP mode
  *
  * @module acp
  */
@@ -20,15 +20,15 @@ import { AcpAgent } from "./AcpAgent.js"
 import { nodeToWebReadable, nodeToWebWritable } from "./streamUtils.js"
 
 // Re-export classes for programmatic use
-export { ClineAgent } from "../agent/ClineAgent.js"
-export { ClineSessionEmitter } from "../agent/ClineSessionEmitter.js"
+export { GuardianAgent } from "../agent/GuardianAgent.js"
+export { GuardianSessionEmitter } from "../agent/GuardianSessionEmitter.js"
 // Re-export types
 export type {
 	AcpAgentOptions,
 	AcpSessionState,
-	ClineAcpSession,
-	ClineAgentOptions,
-	ClineSessionEvents,
+	GuardianAcpSession,
+	GuardianAgentOptions,
+	GuardianSessionEvents,
 	PermissionHandler,
 	PermissionResolver,
 } from "../agent/types.js"
@@ -69,7 +69,7 @@ export function restoreConsole(): void {
 }
 
 export interface AcpModeOptions {
-	/** Path to Cline configuration directory */
+	/** Path to Guardian configuration directory */
 	config?: string
 	/** Working directory (default: process.cwd()) */
 	cwd?: string
@@ -78,7 +78,7 @@ export interface AcpModeOptions {
 }
 
 /**
- * Run Cline in ACP mode.
+ * Run Guardian in ACP mode.
  *
  * This function:
  * 1. Redirects console output to stderr (stdout reserved for JSON-RPC)

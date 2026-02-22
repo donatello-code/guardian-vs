@@ -12,7 +12,7 @@ import { sendMcpButtonClickedEvent } from "./core/controller/ui/subscribeToMcpBu
 import { sendSettingsButtonClickedEvent } from "./core/controller/ui/subscribeToSettingsButtonClicked"
 import { sendWorktreesButtonClickedEvent } from "./core/controller/ui/subscribeToWorktreesButtonClicked"
 import { WebviewProvider } from "./core/webview"
-import { createClineAPI } from "./exports"
+import { createGuardianAPI } from "./exports"
 import { initializeTestMode } from "./services/test/TestMode"
 import "./utils/path" // necessary to have access to String.prototype.toPosix
 import path from "node:path"
@@ -22,10 +22,10 @@ import { vscodeHostBridgeClient } from "@/hosts/vscode/hostbridge/client/host-gr
 import { createStorageContext } from "@/shared/storage/storage-context"
 import { readTextFromClipboard, writeTextToClipboard } from "@/utils/env"
 import { initialize, tearDown } from "./common"
-import { addToCline } from "./core/controller/commands/addToCline"
-import { explainWithCline } from "./core/controller/commands/explainWithCline"
-import { fixWithCline } from "./core/controller/commands/fixWithCline"
-import { improveWithCline } from "./core/controller/commands/improveWithCline"
+import { addToGuardian } from "./core/controller/commands/addToGuardian"
+import { explainWithGuardian } from "./core/controller/commands/explainWithGuardian"
+import { fixWithGuardian } from "./core/controller/commands/fixWithGuardian"
+import { improveWithGuardian } from "./core/controller/commands/improveWithGuardian"
 import { sendAddToInputEvent } from "./core/controller/ui/subscribeToAddToInput"
 import { sendShowWebviewEvent } from "./core/controller/ui/subscribeToShowWebview"
 import { HookDiscoveryCache } from "./core/hooks/HookDiscoveryCache"
@@ -40,7 +40,7 @@ import {
 import { workspaceResolver } from "./core/workspace"
 import { findMatchingNotebookCell, getContextForCommand, showWebview } from "./hosts/vscode/commandUtils"
 import { abortCommitGeneration, generateCommitMsg } from "./hosts/vscode/commit-message-generator"
-import { registerClineOutputChannel } from "./hosts/vscode/hostbridge/env/debugLog"
+import { registerGuardianOutputChannel } from "./hosts/vscode/hostbridge/env/debugLog"
 import {
 	disposeVscodeCommentReviewController,
 	getVscodeCommentReviewController,
@@ -56,6 +56,7 @@ import { telemetryService } from "./services/telemetry"
 import { SharedUriHandler, TASK_URI_PATH } from "./services/uri/SharedUriHandler"
 import { ShowMessageType } from "./shared/proto/host/window"
 import { fileExistsAtPath } from "./utils/fs"
+import { initializeGuardianApiServer } from "./services/guardian/GuardianApiService"
 
 // This method is called when the VS Code extension is activated.
 // NOTE: This is VS Code specific - services that should be registered
@@ -73,7 +74,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	await cleanupLegacyVSCodeStorage(context)
 
 	// 3. One-time export of VSCode's native storage to shared file-backed stores.
-	// After this, all platforms (VSCode, CLI, JetBrains) read from ~/.cline/data/.
+	// After this, all platforms (VSCode, CLI, JetBrains) read from ~/.guardian/data/.
 	const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
 	const storageContext = createStorageContext({ workspacePath })
 	await exportVSCodeStorageToSharedFiles(context, storageContext)
@@ -86,6 +87,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Initialize test mode and add disposables to context
 	const testModeWatchers = await initializeTestMode(webview)
 	context.subscriptions.push(...testModeWatchers)
+
+	// Initialize Guardian API Server
+	await initializeGuardianApiServer()
 
 	// Initialize hook discovery cache for performance optimization
 	HookDiscoveryCache.getInstance().initialize(
@@ -163,14 +167,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		const isTaskUri = getUriPath(url) === TASK_URI_PATH
 
 		if (isTaskUri) {
-			await openClineSidebarForTaskUri()
+			await openGuardianSidebarForTaskUri()
 		}
 
 		let success = await SharedUriHandler.handleUri(url)
 
 		// Task deeplinks can race with first-time sidebar initialization.
 		if (!success && isTaskUri) {
-			await openClineSidebarForTaskUri()
+			await openGuardianSidebarForTaskUri()
 			success = await SharedUriHandler.handleUri(url)
 		}
 
@@ -182,16 +186,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// Register size testing commands in development mode
 	if (IS_DEV) {
-		vscode.commands.executeCommand("setContext", "cline.isDevMode", IS_DEV)
+		vscode.commands.executeCommand("setContext", "guardian.isDevMode", IS_DEV)
 		// Use dynamic import to avoid loading the module in production
 		import("./dev/commands/tasks")
 			.then((module) => {
 				const devTaskCommands = module.registerTaskCommands(webview.controller)
 				context.subscriptions.push(...devTaskCommands)
-				Logger.log("[Cline Dev] Dev mode activated & dev commands registered")
+				Logger.log("[Guardian Dev] Dev mode activated & dev commands registered")
 			})
 			.catch((error) => {
-				Logger.log("[Cline Dev] Failed to register dev commands: " + error)
+				Logger.log("[Guardian Dev] Failed to register dev commands: " + error)
 			})
 	}
 
@@ -316,7 +320,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						const fixAction = new vscode.CodeAction("Fix with Guardian VS", vscode.CodeActionKind.QuickFix)
 						fixAction.isPreferred = true
 						fixAction.command = {
-							command: commands.FixWithCline,
+							command: commands.FixWithGuardian,
 							title: "Fix with Guardian VS",
 							arguments: [expandedRange, context.diagnostics],
 						}
@@ -342,16 +346,16 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!context) {
 				return
 			}
-			await addToCline(context.controller, context.commandContext)
+			await addToGuardian(context.controller, context.commandContext)
 		}),
 	)
 	context.subscriptions.push(
-		vscode.commands.registerCommand(commands.FixWithCline, async (range: vscode.Range, diagnostics: vscode.Diagnostic[]) => {
+		vscode.commands.registerCommand(commands.FixWithGuardian, async (range: vscode.Range, diagnostics: vscode.Diagnostic[]) => {
 			const context = await getContextForCommand(range, diagnostics)
 			if (!context) {
 				return
 			}
-			await fixWithCline(context.controller, context.commandContext)
+			await fixWithGuardian(context.controller, context.commandContext)
 		}),
 	)
 	context.subscriptions.push(
@@ -360,7 +364,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!context) {
 				return
 			}
-			await explainWithCline(context.controller, context.commandContext)
+			await explainWithGuardian(context.controller, context.commandContext)
 		}),
 	)
 	context.subscriptions.push(
@@ -369,7 +373,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!context) {
 				return
 			}
-			await improveWithCline(context.controller, context.commandContext)
+			await improveWithGuardian(context.controller, context.commandContext)
 		}),
 	)
 
@@ -449,7 +453,7 @@ Current Notebook Cell Context (JSON, sanitized of image data):
 ${ctx.cellJson || "{}"}
 \`\`\``
 
-				await addToCline(ctx.controller, ctx.commandContext, notebookContext)
+				await addToGuardian(ctx.controller, ctx.commandContext, notebookContext)
 			},
 		),
 	)
@@ -465,7 +469,7 @@ ${ctx.cellJson || "{}"}
 					? `\n\nCurrent Notebook Cell Context (JSON, sanitized of image data):\n\`\`\`json\n${ctx.cellJson}\n\`\`\``
 					: undefined
 
-				await explainWithCline(ctx.controller, ctx.commandContext, notebookContext)
+				await explainWithGuardian(ctx.controller, ctx.commandContext, notebookContext)
 			},
 		),
 	)
@@ -491,7 +495,7 @@ Current Notebook Cell Context (JSON, sanitized of image data):
 ${ctx.cellJson || "{}"}
 \`\`\``
 
-				await improveWithCline(ctx.controller, ctx.commandContext, notebookContext)
+				await improveWithGuardian(ctx.controller, ctx.commandContext, notebookContext)
 			},
 		),
 	)
@@ -525,7 +529,7 @@ ${ctx.cellJson || "{}"}
 
 	// Listen for secrets changes (e.g., cross-window login/logout sync)
 	const unsubSecrets = storageContext.secrets.onDidChange((event) => {
-		if (event.key === "cline:clineAccountId") {
+		if (event.key === "guardian:guardianAccountId") {
 			const secretValue = storageContext.secrets.get<string>(event.key)
 			const activeWebview = WebviewProvider.getVisibleInstance()
 			const controller = activeWebview?.controller
@@ -544,7 +548,7 @@ ${ctx.cellJson || "{}"}
 
 	Logger.log(`[Guardian VS] extension activated in ${performance.now() - activationStartTime} ms`)
 
-	return createClineAPI(webview.controller)
+	return createGuardianAPI(webview.controller)
 }
 
 async function showJupyterPromptInput(title: string, placeholder: string): Promise<string | undefined> {
@@ -594,7 +598,7 @@ async function showJupyterPromptInput(title: string, placeholder: string): Promi
 }
 
 function setupHostProvider(context: ExtensionContext) {
-	const outputChannel = registerClineOutputChannel(context)
+	const outputChannel = registerGuardianOutputChannel(context)
 		outputChannel.appendLine("[Guardian VS] Setting up VS Code host...")
 
 	const createWebview = () => new VscodeWebviewProvider(context)
@@ -639,7 +643,7 @@ function getUriPath(url: string): string | undefined {
 	}
 }
 
-async function openClineSidebarForTaskUri(): Promise<void> {
+async function openGuardianSidebarForTaskUri(): Promise<void> {
 	const sidebarWaitTimeoutMs = 3000
 	const sidebarWaitIntervalMs = 50
 
@@ -653,7 +657,7 @@ async function openClineSidebarForTaskUri(): Promise<void> {
 		await new Promise((resolve) => setTimeout(resolve, sidebarWaitIntervalMs))
 	}
 
-	Logger.warn("Task URI handling timed out waiting for Cline sidebar visibility")
+	Logger.warn("Task URI handling timed out waiting for Guardian sidebar visibility")
 }
 
 async function getBinaryLocation(name: string): Promise<string> {
@@ -725,7 +729,7 @@ async function cleanupLegacyVSCodeStorage(context: ExtensionContext): Promise<vo
 
 		Logger.info("[VS Code Storage Migrations] Starting")
 
-		// Migrate custom instructions to global Cline rules (one-time cleanup)
+		// Migrate custom instructions to global Guardian rules (one-time cleanup)
 		await migrateCustomInstructionsToGlobalRules(context)
 
 		// Migrate welcomeViewCompleted setting based on existing API keys (one-time cleanup)

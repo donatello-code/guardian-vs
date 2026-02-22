@@ -1,7 +1,7 @@
-import type { ClineMessage } from "@shared/ExtensionMessage"
-import { EmptyRequest, StringRequest } from "@shared/proto/cline/common"
-import { AskResponseRequest, NewTaskRequest } from "@shared/proto/cline/task"
-import { AddToQueueRequest } from "@shared/proto/cline/state"
+import type { GuardianMessage } from "@shared/ExtensionMessage"
+import { EmptyRequest, StringRequest } from "@shared/proto/guardian/common"
+import { AskResponseRequest, NewTaskRequest } from "@shared/proto/guardian/task"
+import { AddToQueueRequest } from "@shared/proto/guardian/state"
 import { useCallback, useRef } from "react"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { SlashServiceClient, StateServiceClient, TaskServiceClient } from "@/services/grpc-client"
@@ -12,7 +12,7 @@ import type { ChatState, MessageHandlers } from "../types/chatTypes"
  * Custom hook for managing message handlers
  * Handles sending messages, button clicks, and task management
  */
-export function useMessageHandlers(messages: ClineMessage[], chatState: ChatState): MessageHandlers {
+export function useMessageHandlers(messages: GuardianMessage[], chatState: ChatState): MessageHandlers {
 	const { backgroundCommandRunning } = useExtensionState()
 	const {
 		setInputValue,
@@ -22,7 +22,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 		setSelectedFiles,
 		setSendingDisabled,
 		setEnableButtons,
-		clineAsk,
+		guardianAsk,
 		lastMessage,
 	} = chatState
 	const cancelInFlightRef = useRef(false)
@@ -54,10 +54,10 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 						}),
 					)
 					messageSent = true
-				} else if (clineAsk) {
+				} else if (guardianAsk) {
 					// For resume_task and resume_completed_task, use yesButtonClicked to match Resume button behavior
 					// This ensures Enter key and Resume button work identically
-					if (clineAsk === "resume_task" || clineAsk === "resume_completed_task") {
+					if (guardianAsk === "resume_task" || guardianAsk === "resume_completed_task") {
 						await TaskServiceClient.askResponse(
 							AskResponseRequest.create({
 								responseType: "yesButtonClicked",
@@ -69,7 +69,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 						messageSent = true
 					} else {
 						// All other ask types use messageResponse
-						switch (clineAsk) {
+						switch (guardianAsk) {
 							case "followup":
 							case "plan_mode_respond":
 							case "tool":
@@ -97,7 +97,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 						}
 					}
 				} else if (messages.length > 0) {
-					// No clineAsk set - check if task is actively running
+					// No guardianAsk set - check if task is actively running
 					// If so, allow interrupting it with feedback
 					const lastMessage = messages[messages.length - 1]
 					const isTaskRunning =
@@ -135,7 +135,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 		},
 		[
 			messages.length,
-			clineAsk,
+			guardianAsk,
 			activeQuote,
 			setInputValue,
 			setActiveQuote,
@@ -238,7 +238,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 					break
 
 				case "new_task":
-					if (clineAsk === "new_task") {
+					if (guardianAsk === "new_task") {
 						await TaskServiceClient.newTask(
 							NewTaskRequest.create({
 								text: lastMessage?.text,
@@ -275,7 +275,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 				}
 
 				case "utility":
-					switch (clineAsk) {
+					switch (guardianAsk) {
 						case "condense":
 							await SlashServiceClient.condense(StringRequest.create({ value: lastMessage?.text })).catch((err) =>
 								console.error(err),
@@ -295,7 +295,7 @@ export function useMessageHandlers(messages: ClineMessage[], chatState: ChatStat
 			}
 		},
 		[
-			clineAsk,
+			guardianAsk,
 			lastMessage,
 			messages,
 			clearInputState,

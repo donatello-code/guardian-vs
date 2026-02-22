@@ -3,7 +3,7 @@ import type { BrowserSettings } from "@shared/BrowserSettings"
 import { ShowMessageType } from "@shared/proto/host/window"
 import type { TaskFeedbackType } from "@shared/WebviewMessage"
 import * as os from "os"
-import { ClineAccountUserInfo } from "@/services/auth/AuthService"
+import { GuardianAccountUserInfo } from "@/services/auth/AuthService"
 import { Setting } from "@/shared/proto/index.host"
 import { Logger } from "@/shared/services/Logger"
 import { Mode } from "@/shared/storage/types"
@@ -68,17 +68,17 @@ export enum TerminalHangStage {
 
 export type TelemetryMetadata = {
 	/**
-	 * The extension or cline-core version. JetBrains and CLI have different
-	 * versioning than the VSCode Extension, but on those platforms this will be the _cline-core version_
+	 * The extension or guardian-core version. JetBrains and CLI have different
+	 * versioning than the VSCode Extension, but on those platforms this will be the _guardian-core version_
 	 * which uses the same as the versioning as the VSCode extension.
 	 */
 	extension_version: string
 	/**
-	 * The type of cline distribution, e.g VSCode Extension, JetBrains Plugin or CLI. This
+	 * The type of guardian distribution, e.g VSCode Extension, JetBrains Plugin or CLI. This
 	 * is different than the `platform` because there are many variants of VSCode and JetBrains but they
 	 * all use the same extension or plugin.
 	 */
-	cline_type: string
+	guardian_type: string
 	/** The name of the host IDE or environment e.g. VSCode, Cursor, IntelliJ Professional Edition, etc. */
 	platform: string
 	/** The version of the host environment */
@@ -98,7 +98,7 @@ export type TelemetryMetadata = {
 const MAX_ERROR_MESSAGE_LENGTH = 500
 
 /**
- * TelemetryService handles telemetry event tracking for the Cline extension
+ * TelemetryService handles telemetry event tracking for the Guardian extension
  * Uses an abstracted telemetry provider to support multiple analytics backends
  * Respects user privacy settings and VSCode's global telemetry configuration
  */
@@ -125,42 +125,42 @@ export class TelemetryService {
 	private taskErrorCounts = new Map<string, number>()
 	public static readonly METRICS = {
 		TASK: {
-			TURNS_TOTAL: "cline.turns.total",
-			TURNS_PER_TASK: "cline.turns.per_task",
-			TOKENS_INPUT_TOTAL: "cline.tokens.input.total",
-			TOKENS_INPUT_PER_RESPONSE: "cline.tokens.input.per_response",
-			TOKENS_OUTPUT_TOTAL: "cline.tokens.output.total",
-			TOKENS_OUTPUT_PER_RESPONSE: "cline.tokens.output.per_response",
-			COST_TOTAL: "cline.cost.total",
-			COST_PER_EVENT: "cline.cost.per_event",
+			TURNS_TOTAL: "guardian.turns.total",
+			TURNS_PER_TASK: "guardian.turns.per_task",
+			TOKENS_INPUT_TOTAL: "guardian.tokens.input.total",
+			TOKENS_INPUT_PER_RESPONSE: "guardian.tokens.input.per_response",
+			TOKENS_OUTPUT_TOTAL: "guardian.tokens.output.total",
+			TOKENS_OUTPUT_PER_RESPONSE: "guardian.tokens.output.per_response",
+			COST_TOTAL: "guardian.cost.total",
+			COST_PER_EVENT: "guardian.cost.per_event",
 		},
 		CACHE: {
-			WRITE_TOTAL: "cline.cache.write.tokens.total",
-			WRITE_PER_EVENT: "cline.cache.write.tokens.per_event",
-			READ_TOTAL: "cline.cache.read.tokens.total",
-			READ_PER_EVENT: "cline.cache.read.tokens.per_event",
-			HITS_TOTAL: "cline.cache.hits.total",
+			WRITE_TOTAL: "guardian.cache.write.tokens.total",
+			WRITE_PER_EVENT: "guardian.cache.write.tokens.per_event",
+			READ_TOTAL: "guardian.cache.read.tokens.total",
+			READ_PER_EVENT: "guardian.cache.read.tokens.per_event",
+			HITS_TOTAL: "guardian.cache.hits.total",
 		},
 		TOOLS: {
-			CALLS_TOTAL: "cline.tool.calls.total",
-			CALLS_PER_TASK: "cline.tool.calls.per_task",
+			CALLS_TOTAL: "guardian.tool.calls.total",
+			CALLS_PER_TASK: "guardian.tool.calls.per_task",
 		},
 		ERRORS: {
-			TOTAL: "cline.errors.total",
-			PER_TASK: "cline.errors.per_task",
+			TOTAL: "guardian.errors.total",
+			PER_TASK: "guardian.errors.per_task",
 		},
 		API: {
-			TTFT_SECONDS: "cline.api.ttft.seconds",
-			DURATION_SECONDS: "cline.api.duration.seconds",
-			THROUGHPUT_TOKENS_PER_SECOND: "cline.api.throughput.tokens_per_second",
+			TTFT_SECONDS: "guardian.api.ttft.seconds",
+			DURATION_SECONDS: "guardian.api.duration.seconds",
+			THROUGHPUT_TOKENS_PER_SECOND: "guardian.api.throughput.tokens_per_second",
 		},
 		HOOKS: {
-			EXECUTIONS_TOTAL: "cline.hooks.executions.total",
-			DURATION_SECONDS: "cline.hooks.duration.seconds",
-			FAILURES_TOTAL: "cline.hooks.failures.total",
-			CANCELLATIONS_TOTAL: "cline.hooks.cancellations.total",
-			CONTEXT_MODIFICATIONS_TOTAL: "cline.hooks.context_modifications.total",
-			CACHE_ACCESSES_TOTAL: "cline.hooks.cache.accesses.total",
+			EXECUTIONS_TOTAL: "guardian.hooks.executions.total",
+			DURATION_SECONDS: "guardian.hooks.duration.seconds",
+			FAILURES_TOTAL: "guardian.hooks.failures.total",
+			CANCELLATIONS_TOTAL: "guardian.hooks.cancellations.total",
+			CONTEXT_MODIFICATIONS_TOTAL: "guardian.hooks.context_modifications.total",
+			CACHE_ACCESSES_TOTAL: "guardian.hooks.cache.accesses.total",
 		},
 	}
 	// Event constants for tracking user interactions and system events
@@ -266,14 +266,14 @@ export class TelemetryService {
 			SLASH_COMMAND_USED: "task.slash_command_used",
 			// Tracks when a feature is toggled on/off
 			FEATURE_TOGGLED: "task.feature_toggled",
-			// Tracks when individual Cline rules are toggled on/off
+			// Tracks when individual Guardian rules are toggled on/off
 			RULE_TOGGLED: "task.rule_toggled",
 			// Tracks when auto condense setting is toggled on/off
 			AUTO_CONDENSE_TOGGLED: "task.auto_condense_toggled",
 			// Tracks when yolo mode setting is toggled on/off
 			YOLO_MODE_TOGGLED: "task.yolo_mode_toggled",
-			// Tracks when Cline web tools setting is toggled on/off
-			CLINE_WEB_TOOLS_TOGGLED: "task.cline_web_tools_toggled",
+			// Tracks when Guardian web tools setting is toggled on/off
+			CLINE_WEB_TOOLS_TOGGLED: "task.guardian_web_tools_toggled",
 			// Tracks task initialization timing
 			INITIALIZATION: "task.initialization",
 			// Terminal execution telemetry events
@@ -341,7 +341,7 @@ export class TelemetryService {
 			extension_version: extensionVersion,
 			platform: hostVersion.platform || "unknown",
 			platform_version: hostVersion.version || "unknown",
-			cline_type: hostVersion.clineType || "unknown",
+			guardian_type: hostVersion.guardianType || "unknown",
 			os_type: os.platform(),
 			os_version: os.version(),
 			is_dev: process.env.IS_DEV,
@@ -380,13 +380,13 @@ export class TelemetryService {
 		// We only enable telemetry if global host telemetry is enabled
 		const hostSetting = await HostProvider.env.getTelemetrySettings({})
 		if (hostSetting.isEnabled === Setting.DISABLED) {
-			// Only show warning if user has opted in to Cline telemetry but host telemetry is disabled
+			// Only show warning if user has opted in to Guardian telemetry but host telemetry is disabled
 			if (didUserOptIn) {
 				void HostProvider.window
 					.showMessage({
 						type: ShowMessageType.WARNING,
 						message:
-							"Anonymous Cline error and usage reporting is enabled, but IDE telemetry is disabled. To enable error and usage reporting for this extension, enable telemetry in IDE settings.",
+							"Anonymous Guardian error and usage reporting is enabled, but IDE telemetry is disabled. To enable error and usage reporting for this extension, enable telemetry in IDE settings.",
 						options: {
 							items: ["Open Settings"],
 						},
@@ -618,7 +618,7 @@ export class TelemetryService {
 	 * Identifies the accounts user
 	 * @param userInfo The user's information
 	 */
-	public identifyAccount(userInfo: ClineAccountUserInfo) {
+	public identifyAccount(userInfo: GuardianAccountUserInfo) {
 		const propertiesWithMetadata: TelemetryProperties = {
 			...this.telemetryMetadata,
 		}
@@ -799,7 +799,7 @@ export class TelemetryService {
 	}
 
 	/**
-	 * Records when cline calls the task completion_result tool signifying that cline is done with the task
+	 * Records when guardian calls the task completion_result tool signifying that guardian is done with the task
 	 * @param ulid Unique identifier for the task
 	 */
 	public captureTaskCompleted(ulid: string) {
@@ -1598,13 +1598,13 @@ export class TelemetryService {
 	}
 
 	/**
-	 * Records when individual Cline rules are toggled on/off
+	 * Records when individual Guardian rules are toggled on/off
 	 * @param ulid Unique identifier for the task (to track rule changes within task context)
 	 * @param ruleFileName The filename of the rule (sanitized to exclude full path)
 	 * @param enabled Whether the rule is being enabled (true) or disabled (false)
 	 * @param isGlobal Whether this is a global rule or workspace-specific rule
 	 */
-	public captureClineRuleToggled(ulid: string, ruleFileName: string, enabled: boolean, isGlobal: boolean) {
+	public captureGuardianRuleToggled(ulid: string, ruleFileName: string, enabled: boolean, isGlobal: boolean) {
 		// Sanitize filename to remove any path information for privacy
 		const sanitizedFileName = ruleFileName.split("/").pop() || ruleFileName.split("\\").pop() || ruleFileName
 
@@ -1652,11 +1652,11 @@ export class TelemetryService {
 	}
 
 	/**
-	 * Records when Cline web tools are enabled/disabled by the user
+	 * Records when Guardian web tools are enabled/disabled by the user
 	 * @param ulid Unique identifier for the task
-	 * @param enabled Whether Cline web tools are enabled (true) or disabled (false)
+	 * @param enabled Whether Guardian web tools are enabled (true) or disabled (false)
 	 */
-	public captureClineWebToolsToggle(ulid: string, enabled: boolean) {
+	public captureGuardianWebToolsToggle(ulid: string, enabled: boolean) {
 		this.capture({
 			event: TelemetryService.EVENTS.TASK.CLINE_WEB_TOOLS_TOGGLED,
 			properties: {
@@ -1812,11 +1812,11 @@ export class TelemetryService {
 		})
 
 		const isMultiRoot = rootCount > 1
-		this.recordGauge("cline.workspace.active_roots", rootCount, {
+		this.recordGauge("guardian.workspace.active_roots", rootCount, {
 			is_multi_root: isMultiRoot,
 		})
 		// Retire the previous series to avoid leaking gauge entries when the flag flips.
-		this.recordGauge("cline.workspace.active_roots", null, {
+		this.recordGauge("guardian.workspace.active_roots", null, {
 			is_multi_root: !isMultiRoot,
 		})
 	}

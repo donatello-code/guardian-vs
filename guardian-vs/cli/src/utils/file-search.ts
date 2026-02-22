@@ -88,7 +88,7 @@ async function listFilesWithNodeFs(workspacePath: string, limit: number): Promis
 				if (entry.isDirectory() && EXCLUDED_DIRS.has(name)) {
 					continue
 				}
-				if (name.startsWith(".") && !name.startsWith(".cline")) {
+				if (name.startsWith(".") && !name.startsWith(".guardian")) {
 					continue
 				}
 

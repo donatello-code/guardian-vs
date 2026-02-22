@@ -1,7 +1,7 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import { EnvironmentMetadataEntry, TaskMetadata } from "@core/context/context-tracking/ContextTrackerTypes"
 import { execa } from "@packages/execa"
-import { ClineMessage } from "@shared/ExtensionMessage"
+import { GuardianMessage } from "@shared/ExtensionMessage"
 import { HistoryItem } from "@shared/HistoryItem"
 import { RemoteConfig } from "@shared/remote-config/schema"
 import { GlobalState, Settings } from "@shared/storage/state-keys"
@@ -50,12 +50,12 @@ export const GlobalFileNames = {
 	groqModels: "groq_models.json",
 	basetenModels: "baseten_models.json",
 	hicapModels: "hicap_models.json",
-	mcpSettings: "cline_mcp_settings.json",
-	clineRules: ".clinerules",
-	workflows: ".clinerules/workflows",
-	hooksDir: ".clinerules/hooks",
-	clineruleSkillsDir: ".clinerules/skills",
-	clineSkillsDir: ".cline/skills",
+	mcpSettings: "guardian_mcp_settings.json",
+	guardianRules: ".guardianrules",
+	workflows: ".guardianrules/workflows",
+	hooksDir: ".guardianrules/hooks",
+	guardianruleSkillsDir: ".guardianrules/skills",
+	guardianSkillsDir: ".guardian/skills",
 	claudeSkillsDir: ".claude/skills",
 	agentsSkillsDir: ".agents/skills",
 	cursorRulesDir: ".cursor/rules",
@@ -104,16 +104,16 @@ export async function getDocumentsPath(): Promise<string> {
 }
 
 /**
- * Returns the cross-platform path to the Cline home directory (~/.cline).
+ * Returns the cross-platform path to the Guardian home directory (~/.guardian).
  * This works on macOS, Linux, and Windows:
- * - macOS: /Users/username/.cline
- * - Linux: /home/username/.cline
- * - Windows: C:\Users\username\.cline
+ * - macOS: /Users/username/.guardian
+ * - Linux: /home/username/.guardian
+ * - Windows: C:\Users\username\.guardian
  *
- * This is intended to eventually replace ~/Documents/Cline as the global config location.
+ * This is intended to eventually replace ~/Documents/Guardian as the global config location.
  */
-export function getClineHomePath(): string {
-	return path.join(os.homedir(), ".cline")
+export function getGuardianHomePath(): string {
+	return path.join(os.homedir(), ".guardian")
 }
 
 export async function ensureTaskDirectoryExists(taskId: string): Promise<string> {
@@ -122,53 +122,53 @@ export async function ensureTaskDirectoryExists(taskId: string): Promise<string>
 
 export async function ensureRulesDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const clineRulesDir = path.join(userDocumentsPath, "Cline", "Rules")
+	const guardianRulesDir = path.join(userDocumentsPath, "Guardian", "Rules")
 	try {
-		await fs.mkdir(clineRulesDir, { recursive: true })
+		await fs.mkdir(guardianRulesDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "Rules") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
+		return path.join(os.homedir(), "Documents", "Guardian", "Rules") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
 	}
-	return clineRulesDir
+	return guardianRulesDir
 }
 
 export async function ensureWorkflowsDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const clineWorkflowsDir = path.join(userDocumentsPath, "Cline", "Workflows")
+	const guardianWorkflowsDir = path.join(userDocumentsPath, "Guardian", "Workflows")
 	try {
-		await fs.mkdir(clineWorkflowsDir, { recursive: true })
+		await fs.mkdir(guardianWorkflowsDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "Workflows") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
+		return path.join(os.homedir(), "Documents", "Guardian", "Workflows") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
 	}
-	return clineWorkflowsDir
+	return guardianWorkflowsDir
 }
 
 export async function ensureMcpServersDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const mcpServersDir = path.join(userDocumentsPath, "Cline", "MCP")
+	const mcpServersDir = path.join(userDocumentsPath, "Guardian", "MCP")
 	try {
 		await fs.mkdir(mcpServersDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "MCP") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine since this path is only ever used in the system prompt
+		return path.join(os.homedir(), "Documents", "Guardian", "MCP") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine since this path is only ever used in the system prompt
 	}
 	return mcpServersDir
 }
 
 export async function ensureHooksDirectoryExists(): Promise<string> {
 	const userDocumentsPath = await getDocumentsPath()
-	const clineHooksDir = path.join(userDocumentsPath, "Cline", "Hooks")
+	const guardianHooksDir = path.join(userDocumentsPath, "Guardian", "Hooks")
 	try {
-		await fs.mkdir(clineHooksDir, { recursive: true })
+		await fs.mkdir(guardianHooksDir, { recursive: true })
 	} catch (_error) {
-		return path.join(os.homedir(), "Documents", "Cline", "Hooks") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
+		return path.join(os.homedir(), "Documents", "Guardian", "Hooks") // in case creating a directory in documents fails for whatever reason (e.g. permissions) - this is fine because we will fail gracefully with a path that does not exist
 	}
-	return clineHooksDir
+	return guardianHooksDir
 }
 
 /**
- * Returns the global skills directory path (~/.cline/skills) without creating it.
+ * Returns the global skills directory path (~/.guardian/skills) without creating it.
  */
-function getClineSkillsDirectoryPath(): string {
-	return path.join(getClineHomePath(), "skills")
+function getGuardianSkillsDirectoryPath(): string {
+	return path.join(getGuardianHomePath(), "skills")
 }
 
 function getAgentSkillsDirectoryPath(): string {
@@ -204,11 +204,11 @@ export type SkillsScanDirectory = {
  */
 export function getSkillsDirectoriesForScan(cwd: string): SkillsScanDirectory[] {
 	return [
-		{ path: path.join(cwd, GlobalFileNames.clineruleSkillsDir), source: "project" },
-		{ path: path.join(cwd, GlobalFileNames.clineSkillsDir), source: "project" },
+		{ path: path.join(cwd, GlobalFileNames.guardianruleSkillsDir), source: "project" },
+		{ path: path.join(cwd, GlobalFileNames.guardianSkillsDir), source: "project" },
 		{ path: path.join(cwd, GlobalFileNames.claudeSkillsDir), source: "project" },
 		{ path: path.join(cwd, GlobalFileNames.agentsSkillsDir), source: "project" },
-		{ path: getClineSkillsDirectoryPath(), source: "global" },
+		{ path: getGuardianSkillsDirectoryPath(), source: "global" },
 		{ path: getAgentSkillsDirectoryPath(), source: "global" },
 	]
 }
@@ -257,7 +257,7 @@ export async function saveApiConversationHistory(taskId: string, apiConversation
 	}
 }
 
-export async function getSavedClineMessages(taskId: string): Promise<ClineMessage[]> {
+export async function getSavedGuardianMessages(taskId: string): Promise<GuardianMessage[]> {
 	const filePath = path.join(await ensureTaskDirectoryExists(taskId), GlobalFileNames.uiMessages)
 	if (await fileExistsAtPath(filePath)) {
 		return JSON.parse(await fs.readFile(filePath, "utf8"))
@@ -272,7 +272,7 @@ export async function getSavedClineMessages(taskId: string): Promise<ClineMessag
 	return []
 }
 
-export async function saveClineMessages(taskId: string, uiMessages: ClineMessage[]) {
+export async function saveGuardianMessages(taskId: string, uiMessages: GuardianMessage[]) {
 	try {
 		const taskDir = await ensureTaskDirectoryExists(taskId)
 		const filePath = path.join(taskDir, GlobalFileNames.uiMessages)
@@ -297,7 +297,7 @@ export async function collectEnvironmentMetadata(): Promise<Omit<EnvironmentMeta
 			os_arch: os.arch(),
 			host_name: hostVersion.platform || "Unknown",
 			host_version: hostVersion.version || "Unknown",
-			cline_version: ExtensionRegistryInfo.version,
+			guardian_version: ExtensionRegistryInfo.version,
 		}
 	} catch (error) {
 		Logger.error("Failed to collect environment metadata:", error)
@@ -308,7 +308,7 @@ export async function collectEnvironmentMetadata(): Promise<Omit<EnvironmentMeta
 			os_arch: os.arch(),
 			host_name: "Unknown",
 			host_version: "Unknown",
-			cline_version: "Unknown",
+			guardian_version: "Unknown",
 		}
 	}
 }
@@ -509,7 +509,7 @@ export async function getGlobalHooksDir(): Promise<string | undefined> {
 /**
  * Gets the paths to all hooks directories to search for hooks, including:
  * 1. The global hooks directory (if it exists)
- * 2. Each workspace root's .clinerules/hooks directory (if they exist)
+ * 2. Each workspace root's .guardianrules/hooks directory (if they exist)
  *
  * Note: Hooks from different directories may be executed concurrently.
  * No execution order is guaranteed between hooks from different directories.
@@ -533,7 +533,7 @@ export async function getAllHooksDirs(): Promise<string[]> {
 }
 
 /**
- * Gets the paths to the workspace's .clinerules/hooks directories to search for
+ * Gets the paths to the workspace's .guardianrules/hooks directories to search for
  * hooks. A workspace may not use hooks, and the resulting array will be empty. A
  * multi-root workspace may have multiple hooks directories.
  */
@@ -546,7 +546,7 @@ export async function getWorkspaceHooksDirs(): Promise<string[]> {
 	return (
 		await Promise.all(
 			workspaceRootPaths.map(async (workspaceRootPath) => {
-				// Look for a .clinerules/hooks folder in this workspace root.
+				// Look for a .guardianrules/hooks folder in this workspace root.
 				const candidate = path.join(workspaceRootPath, GlobalFileNames.hooksDir)
 				return (await isDirectory(candidate)) ? candidate : undefined
 			}),

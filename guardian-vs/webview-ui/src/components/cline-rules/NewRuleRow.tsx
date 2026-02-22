@@ -1,4 +1,4 @@
-import { CreateHookRequest, CreateSkillRequest, RuleFileRequest } from "@shared/proto/index.cline"
+import { CreateHookRequest, CreateSkillRequest, RuleFileRequest } from "@shared/proto/index.guardian"
 import { PlusIcon } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useClickAway } from "react-use"
@@ -125,7 +125,7 @@ const NewRuleRow: React.FC<NewRuleRowProps> = ({ isGlobal, ruleType, existingHoo
 					RuleFileRequest.create({
 						isGlobal,
 						filename: finalFilename,
-						type: ruleType || "cline",
+						type: ruleType || "guardian",
 					}),
 				)
 			} catch (err) {
@@ -167,7 +167,7 @@ const NewRuleRow: React.FC<NewRuleRowProps> = ({ isGlobal, ruleType, existingHoo
 								Select hook type to create
 							</label>
 							<span className="sr-only" id="hook-select-description">
-								Choose a hook type to create. Hooks execute at specific points in Cline's lifecycle. Available:{" "}
+								Choose a hook type to create. Hooks execute at specific points in Guardian's lifecycle. Available:{" "}
 								{availableHookTypes.map((h) => h.name).join(", ")}
 							</span>
 							<select

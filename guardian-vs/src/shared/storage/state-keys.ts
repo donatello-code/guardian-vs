@@ -8,7 +8,7 @@ import {
 	OpenAiCompatibleModelInfo,
 } from "@shared/api"
 import { BrowserSettings, DEFAULT_BROWSER_SETTINGS } from "@shared/BrowserSettings"
-import { ClineRulesToggles } from "@shared/cline-rules"
+import { GuardianRulesToggles } from "@shared/guardian-rules"
 import { DEFAULT_DICTATION_SETTINGS, DictationSettings } from "@shared/DictationSettings"
 import { DEFAULT_FOCUS_CHAIN_SETTINGS, FocusChainSettings } from "@shared/FocusChainSettings"
 import { HistoryItem } from "@shared/HistoryItem"
@@ -19,14 +19,14 @@ import { Mode } from "@shared/storage/types"
 import { TelemetrySetting } from "@shared/TelemetrySetting"
 import { UserInfo } from "@shared/UserInfo"
 import { LanguageModelChatSelector } from "vscode"
-import { BlobStoreSettings } from "./ClineBlobStorage"
+import { BlobStoreSettings } from "./GuardianBlobStorage"
 
 // ============================================================================
 // SINGLE SOURCE OF TRUTH FOR STORAGE KEYS
 //
 // Property definitions with types, default values, and metadata
 // NOTE: When adding a new field, the scripts/generate-state-proto.mjs will be
-// executed automatically to regenerate the proto/cline/state.proto file with the
+// executed automatically to regenerate the proto/guardian/state.proto file with the
 // new fields once the file is staged and committed.
 // ============================================================================
 
@@ -65,8 +65,8 @@ const REMOTE_CONFIG_EXTRA_FIELDS = {
 } satisfies FieldDefinitions
 
 const GLOBAL_STATE_FIELDS = {
-	clineVersion: { default: undefined as string | undefined },
-	"cline.generatedMachineId": { default: undefined as string | undefined }, // Note, distinctId reads/writes this directly from/to StorageContext before StateManager is initialized.
+	guardianVersion: { default: undefined as string | undefined },
+	"guardian.generatedMachineId": { default: undefined as string | undefined }, // Note, distinctId reads/writes this directly from/to StorageContext before StateManager is initialized.
 	lastShownAnnouncementId: { default: undefined as string | undefined },
 	taskHistory: { default: [] as HistoryItem[], isAsync: true },
 	userInfo: { default: undefined as UserInfo | undefined },
@@ -87,10 +87,10 @@ const GLOBAL_STATE_FIELDS = {
 	lastDismissedModelBannerVersion: { default: 0 as number },
 	lastDismissedCliBannerVersion: { default: 0 as number },
 	nativeToolCallEnabled: { default: true as boolean },
-	remoteRulesToggles: { default: {} as ClineRulesToggles },
-	remoteWorkflowToggles: { default: {} as ClineRulesToggles },
+	remoteRulesToggles: { default: {} as GuardianRulesToggles },
+	remoteWorkflowToggles: { default: {} as GuardianRulesToggles },
 	dismissedBanners: { default: [] as Array<{ bannerId: string; dismissedAt: number }> },
-	// Path to worktree that should auto-open Cline sidebar when launched
+	// Path to worktree that should auto-open Guardian sidebar when launched
 	worktreeAutoOpenPath: { default: undefined as string | undefined },
 	// Queue system for staging multiple prompts
 	queuedPrompts: { default: [] as string[] },
@@ -242,8 +242,8 @@ const USER_SETTINGS_FIELDS = {
 	autoApprovalSettings: {
 		default: DEFAULT_AUTO_APPROVAL_SETTINGS as AutoApprovalSettings,
 	},
-	globalClineRulesToggles: { default: {} as ClineRulesToggles },
-	globalWorkflowToggles: { default: {} as ClineRulesToggles },
+	globalGuardianRulesToggles: { default: {} as GuardianRulesToggles },
+	globalWorkflowToggles: { default: {} as GuardianRulesToggles },
 	globalSkillsToggles: { default: {} as Record<string, boolean> },
 	browserSettings: {
 		default: DEFAULT_BROWSER_SETTINGS as BrowserSettings,
@@ -261,7 +261,7 @@ const USER_SETTINGS_FIELDS = {
 	autoApproveAllToggled: { default: false as boolean },
 	useAutoCondense: { default: false as boolean },
 	subagentsEnabled: { default: false as boolean },
-	clineWebToolsEnabled: { default: true as boolean },
+	guardianWebToolsEnabled: { default: true as boolean },
 	worktreesEnabled: { default: false as boolean },
 	preferredLanguage: { default: "English" as string },
 	mode: { default: "act" as Mode },
@@ -303,9 +303,9 @@ const GLOBAL_STATE_AND_SETTINGS_FIELDS = { ...GLOBAL_STATE_FIELDS, ...SETTINGS_F
 // Secret keys used in Api Configuration
 const SECRETS_KEYS = [
 	"apiKey",
-	"clineApiKey",
-	"clineAccountId", // Cline Account ID for Firebase
-	"cline:clineAccountId",
+	"guardianApiKey",
+	"guardianAccountId", // Guardian Account ID for Firebase
+	"guardian:guardianAccountId",
 	"openRouterApiKey",
 	"awsAccessKey",
 	"awsSecretKey",
@@ -353,7 +353,7 @@ const SECRETS_KEYS = [
 // WARNING, these are not ALL of the local state keys in practice. For example, FileContextTracker
 // uses dynamic keys like pendingFileContextWarning_${taskId}.
 export const LocalStateKeys = [
-	"localClineRulesToggles",
+	"localGuardianRulesToggles",
 	"localCursorRulesToggles",
 	"localWindsurfRulesToggles",
 	"localAgentsRulesToggles",
@@ -381,7 +381,7 @@ export type RemoteConfigFields = GlobalStateAndSettings & RemoteConfigExtra
 // ============================================================================
 
 export type Secrets = { [K in (typeof SecretKeys)[number]]: string | undefined }
-export type LocalState = { [K in (typeof LocalStateKeys)[number]]: ClineRulesToggles }
+export type LocalState = { [K in (typeof LocalStateKeys)[number]]: GuardianRulesToggles }
 export type SecretKey = (typeof SecretKeys)[number]
 export type GlobalStateKey = keyof GlobalState
 export type LocalStateKey = keyof LocalState

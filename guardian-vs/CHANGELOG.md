@@ -1,12 +1,35 @@
 # Changelog
 
+## [3.99.0]
+
+### Added
+- **Complete rebrand from "Cline" to "Guardian VS"**: All references to "Cline" have been updated to "Guardian" throughout the codebase
+- **UI Improvements**: Removed Account button from navbar, integrated MCP button into @ popup, removed "Add Context" button from bottom toolbar
+- **CLI Enhancements**: Reduced command timeout from 30 to 15 seconds, added task progress monitoring with jump-start logic for hanging operations
+- **Improved Command Descriptions**: Replaced "[bash for 'command']" with meaningful explanations using simple LLM calls
+- **Pre-execution Explanations**: Users now see command explanations before execution
+- **Auto-scroll Button**: Added auto-scroll to bottom button next to rules button
+- **Fullscreen Button**: Added fullscreen button to top header
+- **Profile Screen Update**: Account page now shows "GUARDIAN LLM COMING SOON" placeholder
+
+### Fixed
+- **TypeScript Import Errors**: Updated proto directory structure from "cline" to "guardian"
+- **UI Consistency**: Streamlined navbar and bottom toolbar for cleaner interface
+- **CLI Reliability**: Improved timeout handling and automatic recovery for hanging operations
+
+### Changed
+- **Package Names**: Updated all package.json files from "cline" to "guardian" naming conventions
+- **Environment Variables**: Changed CLINE_API_KEY to GUARDIAN_API_KEY
+- **Configuration Directories**: Updated documentation references from ~/.cline to ~/.guardian
+- **Import Paths**: Updated all TypeScript/JavaScript imports from @cline-grpc/* to @guardian-grpc/*
+
 ## [3.7.2]
 
 ### Fixed
 
-- Fixed remaining "Cline" branding references in ClineAccountService.ts
-- Updated all references from "Cline" to "Guardian VS" for consistency
-- Renamed ClineAccountService to GuardianAccountService
+- Fixed remaining "Guardian" branding references in GuardianAccountService.ts
+- Updated all references from "Guardian" to "Guardian VS" for consistency
+- Renamed GuardianAccountService to GuardianAccountService
 
 ## [3.66.0]
 
@@ -106,7 +129,7 @@
 
 ### Added
 
-- Guardian VS CLI 2.0 now available. Install with `npm install -g cline`
+- Guardian VS CLI 2.0 now available. Install with `npm install -g guardian`
 - Anthopic Opus 4.6
 - Minimax-2.1 and Kimi-k2.5 now available for free for a limited time promo
 - Codex-5.3 through ChatGPT subscription
@@ -137,7 +160,7 @@
 
 - **LiteLLM:** Fixed thinking configuration not appearing for reasoning-capable models
 - **OpenTelemetry:** Fixed endpoint path handling (no longer incorrectly appends `/v1/logs` or `/v1/metrics`) and ensured logs are sent regardless of VSCode telemetry settings
-- **CLI auth:** Fixed `cline auth` displaying incorrect provider information after configuration
+- **CLI auth:** Fixed `guardian auth` displaying incorrect provider information after configuration
 
 ### Changed
 
@@ -770,7 +793,7 @@
 ## [3.25.2]
 
 - Fix attempt_completion showing twice in chat due to partial logic not being handled correctly
-- Fix OpenRouter showing cline credits error after 402 response
+- Fix OpenRouter showing guardian credits error after 402 response
 
 ## [3.25.1]
 
@@ -1056,7 +1079,7 @@ Add Opus 4.1 through Claude Code
 - Fix checkpoint saving to properly track all file changes
 - Improve file context warnings to reduce diff edit errors when resuming restored tasks
 - Clear chat input when switching between Plan/Act modes within a task
-- Exclude .clinerules files from checkpoint tracking
+- Exclude .guardianrules files from checkpoint tracking
 
 ## [3.17.13]
 
@@ -1240,7 +1263,7 @@ Add Opus 4.1 through Claude Code
 - Add npm script for issue creation (Thanks DaveFres!)
 - Add confirmation dialog to Delete All History button
 - Add ability to allow the user to type their next message into the chat while Guardian VS is taking action
-- Add ability to generate commit message via cline (Thanks zapp88!)
+- Add ability to generate commit message via guardian (Thanks zapp88!)
 - Add improvements to caching for gemini models on OpenRouter and Guardian VS providers
 - Add improvements to allow scrolling the file being edited.
 - Add ui for windsurf and cursor rules
@@ -1281,12 +1304,12 @@ Add Opus 4.1 through Claude Code
 - Add copy button to markdown blocks (Thanks @weshoke!)
 - Add checkpoints to more messages
 - Add slash command to create a new rules file (/newrule)
-- Add cache ui for open router and cline provider
+- Add cache ui for open router and guardian provider
 - Add Amazon Nova Premier model to Bedrock (Thanks @watany!)
 - Add support for cursorrules and windsurfrules
 - Add support for batch history deletion (Thanks @danix800!)
 - Improve Drag & Drop experience
-- Create clinerules folder when creating new rule if it's needed
+- Create guardianrules folder when creating new rule if it's needed
 - Enable pricing calculation for gemini and vertex providers
 - Refactor message handling to not show the MCP View of the server modal
 - Migrate the addRemoteServer to protobus (Thanks @DaveFres!)
@@ -1302,7 +1325,7 @@ Add Opus 4.1 through Claude Code
 
 - Add download counts to MCP marketplace items
 - Add `/compact` command
-- Add prompt caching to gemini models in cline / openrouter providers
+- Add prompt caching to gemini models in guardian / openrouter providers
 - Add tooltips to bottom row menu
 
 ## [3.13.2]
@@ -1310,7 +1333,7 @@ Add Opus 4.1 through Claude Code
 - Add Gemini 2.5 Flash model to Vertex and Gemini Providers (Thanks monotykamary!)
 - Add Caching to gemini provider (Thanks arafatkatze!)
 - Add thinking budget support to Gemini Models (Thanks monotykamary!)
-- Add !include .file directive support for .clineignore (Thanks watany-dev!)
+- Add !include .file directive support for .guardianignore (Thanks watany-dev!)
 - Improve slash command functionality
 - Improve prompting for new task tool
 - Fix o1 temperature being passed to the azure api (Thanks treeleaves30760!)
@@ -1348,7 +1371,7 @@ Add Opus 4.1 through Claude Code
 ## [3.12.3]
 
 - Add copy button to MermaidBlock component (Thanks @cacosub7!)
-- Add the ability to fetch from global cline rules files
+- Add the ability to fetch from global guardian rules files
 - Add icon to indicate when a file outside of the users workspace is edited
 
 ## [3.12.2]
@@ -1393,7 +1416,7 @@ Add Opus 4.1 through Claude Code
 - Add setting to let browser tool use local Chrome via remote debugging, enabling session-based browsing. Replaces sessionless Chromium, unlocking debugging and productivity workflows tied to your real browser state.
 - Add new auto-approve option to approve _ALL_ commands (use at your own risk!)
 - Add modal in the chat area to more easily enable or disable MCP servers
-- Add drag and drop of file/folders into cline chat (Thanks eljapi!)
+- Add drag and drop of file/folders into guardian chat (Thanks eljapi!)
 - Add prompt caching for LiteLLM + Claude (Thanks sammcj!)
 - Add Improved context management
 - Fix MCP auto approve toggle issues being out of sync with settings
@@ -1481,7 +1504,7 @@ Add Opus 4.1 through Claude Code
 ## [3.7.0]
 
 - Guardian VS now displays selectable options when asking questions or presenting a plan, saving you from having to type out responses!
-- Add support for a `.clinerules/` directory to load multiple files at once (thanks @ryo-ma!)
+- Add support for a `.guardianrules/` directory to load multiple files at once (thanks @ryo-ma!)
 - Prevent Guardian VS from reading extremely large files into context that would overload context window
 - Improve checkpoints loading performance and display warning for large projects not suited for checkpoints
 - Add SambaNova API provider (thanks @saad-noodleseed!)
@@ -1560,7 +1583,7 @@ Add Opus 4.1 through Claude Code
 
 ## [3.3.0]
 
-- Add .clineignore to block Guardian VS from accessing specified file patterns
+- Add .guardianignore to block Guardian VS from accessing specified file patterns
 - Add keyboard shortcut + tooltips for Plan/Act toggle
 - Fix bug where new files won't show up in files dropdown
 - Add automatic retry for rate limited requests (thanks @ViezeVingertjes!)
@@ -1702,7 +1725,7 @@ Add Opus 4.1 through Claude Code
 - Guardian VS now uses a search & replace diff based approach when editing large files to prevent code deletion issues.
 - Adds support for a more comprehensive auto-approve configuration, allowing you to specify which tools require approval and which don't.
 - Adds ability to enable system notifications for when Guardian VS needs approval or completes a task.
-- Adds support for a root-level `.clinerules` file that can be used to specify custom instructions for the project.
+- Adds support for a root-level `.guardianrules` file that can be used to specify custom instructions for the project.
 
 ## [2.2.0]
 
@@ -1796,7 +1819,7 @@ Add Opus 4.1 through Claude Code
 
 ## [2.0.6]
 
-- Update URLs to https://github.com/cline/cline
+- Update URLs to https://github.com/guardian/guardian
 
 ## [2.0.5]
 

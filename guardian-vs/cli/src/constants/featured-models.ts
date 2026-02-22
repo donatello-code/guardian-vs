@@ -1,6 +1,6 @@
 /**
- * Featured models shown in the Cline model picker during onboarding
- * These are curated models that work well with Cline
+ * Featured models shown in the Guardian model picker during onboarding
+ * These are curated models that work well with Guardian
  */
 
 export interface FeaturedModel {

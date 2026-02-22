@@ -1,8 +1,8 @@
-# Cline Evals Architecture
+# Guardian Evals Architecture
 
 ## Overview
 
-The evals system provides multi-layered testing for Cline's AI capabilities.
+The evals system provides multi-layered testing for Guardian's AI capabilities.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -11,14 +11,14 @@ The evals system provides multi-layered testing for Cline's AI capabilities.
 │                                                                             │
 │                              ┌─────────┐                                    │
 │                             /   E2E    \         Layer 3: Full Agent        │
-│                            /  cline-   \         - Real coding tasks        │
+│                            /  guardian-   \         - Real coding tasks        │
 │                           /   bench     \        - Harbor execution         │
 │                          /_______________\       - Nightly runs             │
 │                                                                             │
 │                        ┌───────────────────┐                                │
 │                       /    Smoke Tests     \     Layer 2: Provider          │
 │                      /   run-smoke-tests    \    - 5 curated scenarios      │
-│                     /    (cline provider)    \   - 3 models via Vercel      │
+│                     /    (guardian provider)    \   - 3 models via Vercel      │
 │                    /_________________________\   - pass@k metrics           │
 │                                                                             │
 │              ┌─────────────────────────────────┐                            │
@@ -65,10 +65,10 @@ evals/
 │                   └── workspace-trial-1/    # Kept for failures only
 │
 ├── e2e/                     # Layer 3: Full agent E2E
-│   ├── run-cline-bench.ts   # Harbor runner
+│   ├── run-guardian-bench.ts   # Harbor runner
 │   └── README.md
 │
-└── cline-bench/             # Git submodule with real coding tasks
+└── guardian-bench/             # Git submodule with real coding tasks
     └── tasks/               # SWE-bench style problems
 ```
 
@@ -102,12 +102,12 @@ evals/
 │  │  │           RUN 3 TRIALS SEQUENTIALLY               │  │  │
 │  │  │                                                   │  │  │
 │  │  │  Trial 1 ──► Trial 2 ──► Trial 3 ──► Results      │  │  │
-│  │  │  (Sequential - Cline instance handles one at a time)  │  │
+│  │  │  (Sequential - Guardian instance handles one at a time)  │  │
 │  │  │                                                   │  │  │
 │  │  │  Each trial:                                      │  │  │
 │  │  │  1. Create workspace-trial-N/                     │  │  │
 │  │  │  2. Copy template files (if any)                  │  │  │
-│  │  │  3. Run: cline -y -o "prompt"                     │  │  │
+│  │  │  3. Run: guardian -y -o "prompt"                     │  │  │
 │  │  │  4. Verify expected files exist                   │  │  │
 │  │  │  5. Verify expected content                       │  │  │
 │  │  │  6. Save trial-N.log                              │  │  │
@@ -142,12 +142,12 @@ evals/
 │   │   Runner    │                                               │
 │   └──────┬──────┘                                               │
 │          │                                                      │
-│          │  cline -y -o "prompt" --model <model>                │
+│          │  guardian -y -o "prompt" --model <model>                │
 │          │                                                      │
 │          ▼                                                      │
 │   ┌─────────────┐                                               │
-│   │   Cline     │                                               │
-│   │  Provider   │ ◄─── Uses your Cline auth (cline auth)        │
+│   │   Guardian     │                                               │
+│   │  Provider   │ ◄─── Uses your Guardian auth (guardian auth)        │
 │   └──────┬──────┘                                               │
 │          │                                                      │
 │          │ Routes to backend                                    │
@@ -220,7 +220,7 @@ ls evals/smoke-tests/results/latest/<scenario>/<model>/workspace-trial-1/
 
 ## CI Integration
 
-Smoke tests run automatically on merge to `main` via `.github/workflows/cline-evals-regression.yml`.
+Smoke tests run automatically on merge to `main` via `.github/workflows/guardian-evals-regression.yml`.
 
 **Triggers:**
 - Push to `main` branch (paths: `src/core/**`, `src/shared/**`, `proto/**`)
@@ -250,7 +250,7 @@ npm run eval:smoke:ci
 
 # Or manually:
 npm run protos-go
-cd cli && go build -o cline ./cmd/cline
+cd cli && go build -o guardian ./cmd/guardian
 export PATH="$(pwd)/cli:$PATH"
 npx tsx evals/smoke-tests/run-smoke-tests.ts --trials 1
 ```

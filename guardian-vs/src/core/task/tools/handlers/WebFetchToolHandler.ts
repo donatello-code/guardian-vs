@@ -1,12 +1,12 @@
-import { ClineAsk, ClineSayTool } from "@shared/ExtensionMessage"
-import { ClineDefaultTool } from "@shared/tools"
+import { GuardianAsk, GuardianSayTool } from "@shared/ExtensionMessage"
+import { GuardianDefaultTool } from "@shared/tools"
 import axios from "axios"
-import { ClineEnv } from "@/config"
+import { GuardianEnv } from "@/config"
 import { AuthService } from "@/services/auth/AuthService"
-import { buildClineExtraHeaders } from "@/services/EnvUtils"
+import { buildGuardianExtraHeaders } from "@/services/EnvUtils"
 import { featureFlagsService } from "@/services/feature-flags"
 import { telemetryService } from "@/services/telemetry"
-import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@/shared/ClineAccount"
+import { CLINE_ACCOUNT_AUTH_ERROR_MESSAGE } from "@/shared/GuardianAccount"
 import { getAxiosSettings } from "@/shared/net"
 import { ToolUse } from "../../../assistant-message"
 import { formatResponse } from "../../../prompts/responses"
@@ -18,7 +18,7 @@ import type { StronglyTypedUIHelpers } from "../types/UIHelpers"
 import { ToolResultUtils } from "../utils/ToolResultUtils"
 
 export class WebFetchToolHandler implements IFullyManagedTool {
-	readonly name = ClineDefaultTool.WEB_FETCH
+	readonly name = GuardianDefaultTool.WEB_FETCH
 
 	getDescription(block: ToolUse): string {
 		return `[${block.name} for '${block.params.url}']`
@@ -26,19 +26,19 @@ export class WebFetchToolHandler implements IFullyManagedTool {
 
 	async handlePartialBlock(block: ToolUse, uiHelpers: StronglyTypedUIHelpers): Promise<void> {
 		const url = block.params.url || ""
-		const sharedMessageProps: ClineSayTool = {
+		const sharedMessageProps: GuardianSayTool = {
 			tool: "webFetch",
 			path: uiHelpers.removeClosingTag(block, "url", url),
 			content: `Fetching URL: ${uiHelpers.removeClosingTag(block, "url", url)}`,
 			operationIsLocatedInWorkspace: false, // web_fetch is always external
-		} satisfies ClineSayTool
+		} satisfies GuardianSayTool
 
 		const partialMessage = JSON.stringify(sharedMessageProps)
 
 		// For partial blocks, we'll let the ToolExecutor handle auto-approval logic
 		// Just stream the UI update for now
 		await uiHelpers.removeLastPartialMessageIfExistsWithType("say", "tool")
-		await uiHelpers.ask("tool" as ClineAsk, partialMessage, block.partial).catch(() => {})
+		await uiHelpers.ask("tool" as GuardianAsk, partialMessage, block.partial).catch(() => {})
 	}
 
 	async execute(config: TaskConfig, block: ToolUse): Promise<ToolResponse> {
@@ -51,11 +51,11 @@ export class WebFetchToolHandler implements IFullyManagedTool {
 			const currentMode = config.services.stateManager.getGlobalSettingsKey("mode")
 			const provider = (currentMode === "plan" ? apiConfig.planModeApiProvider : apiConfig.actModeApiProvider) as string
 
-			// Check if Cline web tools are enabled (both user setting and feature flag)
-			const clineWebToolsEnabled = config.services.stateManager.getGlobalSettingsKey("clineWebToolsEnabled")
+			// Check if Guardian web tools are enabled (both user setting and feature flag)
+			const guardianWebToolsEnabled = config.services.stateManager.getGlobalSettingsKey("guardianWebToolsEnabled")
 			const featureFlagEnabled = featureFlagsService.getWebtoolsEnabled()
-			if (provider !== "cline" || !clineWebToolsEnabled || !featureFlagEnabled) {
-				return formatResponse.toolError("Cline web tools are currently disabled.")
+			if (provider !== "guardian" || !guardianWebToolsEnabled || !featureFlagEnabled) {
+				return formatResponse.toolError("Guardian web tools are currently disabled.")
 			}
 
 			// Validate required parameters
@@ -70,7 +70,7 @@ export class WebFetchToolHandler implements IFullyManagedTool {
 			config.taskState.consecutiveMistakeCount = 0
 
 			// Create message for approval
-			const sharedMessageProps: ClineSayTool = {
+			const sharedMessageProps: GuardianSayTool = {
 				tool: "webFetch",
 				path: url,
 				content: `Fetching URL: ${url}`,
@@ -95,7 +95,7 @@ export class WebFetchToolHandler implements IFullyManagedTool {
 			} else {
 				// Manual approval flow
 				showNotificationForApproval(
-					`Cline wants to fetch content from ${url}`,
+					`Guardian wants to fetch content from ${url}`,
 					config.autoApprovalSettings.enableNotifications,
 				)
 				await config.callbacks.removeLastPartialMessageIfExistsWithType("say", "tool")
@@ -140,7 +140,7 @@ export class WebFetchToolHandler implements IFullyManagedTool {
 			}
 
 			// Execute the actual fetch
-			const baseUrl = ClineEnv.config().apiBaseUrl
+			const baseUrl = GuardianEnv.config().apiBaseUrl
 			const authToken = await AuthService.getInstance().getAuthToken()
 
 			if (!authToken) {
@@ -158,7 +158,7 @@ export class WebFetchToolHandler implements IFullyManagedTool {
 						Authorization: `Bearer ${authToken}`,
 						"Content-Type": "application/json",
 						"X-Task-ID": config.ulid || "",
-						...(await buildClineExtraHeaders()),
+						...(await buildGuardianExtraHeaders()),
 					},
 					timeout: 15000,
 					...getAxiosSettings(),

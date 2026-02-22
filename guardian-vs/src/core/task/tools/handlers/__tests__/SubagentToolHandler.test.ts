@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert"
 import { setTimeout as delay } from "node:timers/promises"
-import { ClineSubagentUsageInfo } from "@shared/ExtensionMessage"
-import { ClineDefaultTool } from "@shared/tools"
+import { GuardianSubagentUsageInfo } from "@shared/ExtensionMessage"
+import { GuardianDefaultTool } from "@shared/tools"
 import { afterEach, describe, it } from "mocha"
 import sinon from "sinon"
 import { TaskState } from "../../../TaskState"
@@ -113,7 +113,7 @@ describe("SubagentToolHandler", () => {
 
 		const result = await handler.execute(config, {
 			type: "tool_use",
-			name: ClineDefaultTool.USE_SUBAGENTS,
+			name: GuardianDefaultTool.USE_SUBAGENTS,
 			params: {},
 			partial: false,
 		})
@@ -129,7 +129,7 @@ describe("SubagentToolHandler", () => {
 
 		const result = await handler.execute(config, {
 			type: "tool_use",
-			name: ClineDefaultTool.USE_SUBAGENTS,
+			name: GuardianDefaultTool.USE_SUBAGENTS,
 			params: {
 				prompt_1: "first prompt",
 			},
@@ -150,7 +150,7 @@ describe("SubagentToolHandler", () => {
 		await handler.handlePartialBlock(
 			{
 				type: "tool_use",
-				name: ClineDefaultTool.USE_SUBAGENTS,
+				name: GuardianDefaultTool.USE_SUBAGENTS,
 				params: {
 					prompt_1: "first prompt",
 					prompt_2: "second prompt",
@@ -178,7 +178,7 @@ describe("SubagentToolHandler", () => {
 		await handler.handlePartialBlock(
 			{
 				type: "tool_use",
-				name: ClineDefaultTool.USE_SUBAGENTS,
+				name: GuardianDefaultTool.USE_SUBAGENTS,
 				params: {
 					prompt_1: "first prompt",
 					prompt_2: "second prompt",
@@ -205,7 +205,7 @@ describe("SubagentToolHandler", () => {
 
 		const result = await handler.execute(config, {
 			type: "tool_use",
-			name: ClineDefaultTool.USE_SUBAGENTS,
+			name: GuardianDefaultTool.USE_SUBAGENTS,
 			params: {
 				prompt_1: "one",
 				prompt_2: "two",
@@ -241,7 +241,7 @@ describe("SubagentToolHandler", () => {
 		const handler = new UseSubagentsToolHandler()
 		await handler.execute(config, {
 			type: "tool_use",
-			name: ClineDefaultTool.USE_SUBAGENTS,
+			name: GuardianDefaultTool.USE_SUBAGENTS,
 			params: {
 				prompt_1: "one",
 			},
@@ -297,7 +297,7 @@ describe("SubagentToolHandler", () => {
 		const handler = new UseSubagentsToolHandler()
 		const result = await handler.execute(config, {
 			type: "tool_use",
-			name: ClineDefaultTool.USE_SUBAGENTS,
+			name: GuardianDefaultTool.USE_SUBAGENTS,
 			params: {
 				prompt_1: "one",
 				prompt_2: "two",
@@ -317,7 +317,7 @@ describe("SubagentToolHandler", () => {
 
 		const usageCalls = callbacks.say.getCalls().filter((call) => call.args[0] === "subagent_usage")
 		assert.equal(usageCalls.length, 1)
-		const usagePayload = JSON.parse(usageCalls[0].args[1]) as ClineSubagentUsageInfo
+		const usagePayload = JSON.parse(usageCalls[0].args[1]) as GuardianSubagentUsageInfo
 		assert.equal(usagePayload.source, "subagents")
 		assert.equal(usagePayload.tokensIn, 6)
 		assert.equal(usagePayload.tokensOut, 9)
@@ -367,7 +367,7 @@ describe("SubagentToolHandler", () => {
 		const handler = new UseSubagentsToolHandler()
 		const result = await handler.execute(config, {
 			type: "tool_use",
-			name: ClineDefaultTool.USE_SUBAGENTS,
+			name: GuardianDefaultTool.USE_SUBAGENTS,
 			params: {
 				prompt_1: "succeed",
 				prompt_2: "fail",

@@ -1,4 +1,4 @@
-# Cline
+# Guardian
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/7123f9d1-afeb-48d5-93fa-e750dec0ebba" width="70%" />
@@ -8,36 +8,36 @@
 <table>
 <tbody>
 <td align="center">
-<a href="https://www.npmjs.com/package/cline" target="_blank"><strong>NPM</strong></a>
+<a href="https://www.npmjs.com/package/guardian" target="_blank"><strong>NPM</strong></a>
 </td>
 <td align="center">
-<a href="https://discord.gg/cline" target="_blank"><strong>Discord</strong></a>
+<a href="https://discord.gg/guardian" target="_blank"><strong>Discord</strong></a>
 </td>
 <td align="center">
-<a href="https://www.reddit.com/r/cline/" target="_blank"><strong>r/cline</strong></a>
+<a href="https://www.reddit.com/r/guardian/" target="_blank"><strong>r/guardian</strong></a>
 </td>
 <td align="center">
-<a href="https://github.com/cline/cline/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop" target="_blank"><strong>Feature Requests</strong></a>
+<a href="https://github.com/guardian/guardian/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop" target="_blank"><strong>Feature Requests</strong></a>
 </td>
 <td align="center">
-<a href="https://docs.cline.bot/getting-started/for-new-coders" target="_blank"><strong>Getting Started</strong></a>
+<a href="https://docs.guardian.bot/getting-started/for-new-coders" target="_blank"><strong>Getting Started</strong></a>
 </td>
 </tbody>
 </table>
 </div>
 
-Meet Cline, an AI assistant that lives in your terminal.
+Meet Guardian, an AI assistant that lives in your terminal.
 
-Cline can handle complex software development tasks step-by-step. With tools that let him create & edit files, explore large projects, use the browser, and execute terminal commands (after you grant permission), he can assist you in ways that go beyond code completion or tech support.
+Guardian can handle complex software development tasks step-by-step. With tools that let him create & edit files, explore large projects, use the browser, and execute terminal commands (after you grant permission), he can assist you in ways that go beyond code completion or tech support.
 
 ```bash
-npm i -g cline
+npm i -g guardian
 
 # cd into your project and run:
-cline
+guardian
 ```
 
-> Move your mouse around under the Cline icon for a surprise!
+> Move your mouse around under the Guardian icon for a surprise!
 
 ---
 
@@ -45,7 +45,7 @@ cline
 
 ### Use any API and Model
 
-Cline supports API providers like ChatGPT, Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure, GCP Vertex, Cerebras, Groq, and Moonshot. You can also configure any OpenAI compatible API, or use a local model through LM Studio/Ollama. If you're using a Cline Account, you'll always have access to the newest models as soon as they're available.
+Guardian supports API providers like ChatGPT, Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure, GCP Vertex, Cerebras, Groq, and Moonshot. You can also configure any OpenAI compatible API, or use a local model through LM Studio/Ollama. If you're using a Guardian Account, you'll always have access to the newest models as soon as they're available.
 
 <!-- Transparent pixel to create line break after floating image -->
 
@@ -55,7 +55,7 @@ Cline supports API providers like ChatGPT, Anthropic, OpenAI, Google Gemini, AWS
 
 ### Stay in Control with Human-in-the-Loop
 
-Cline asks for your approval before running commands, editing files, or taking any action. Review each step and approve or reject as you go—or enable auto-approve to let Cline work autonomously to completion.
+Guardian asks for your approval before running commands, editing files, or taking any action. Review each step and approve or reject as you go—or enable auto-approve to let Guardian work autonomously to completion.
 
 <!-- Transparent pixel to create line break after floating image -->
 
@@ -65,7 +65,7 @@ Cline asks for your approval before running commands, editing files, or taking a
 
 ### Plan & Act Modes
 
-Toggle to Plan Mode to discuss implementation and architecture with Cline. He'll ask clarifying questions, explore your codebase, and present a plan for you to align on. Once you're satisfied, switch to Act Mode and let Cline execute the plan.
+Toggle to Plan Mode to discuss implementation and architecture with Guardian. He'll ask clarifying questions, explore your codebase, and present a plan for you to align on. Once you're satisfied, switch to Act Mode and let Guardian execute the plan.
 
 <!-- Transparent pixel to create line break after floating image -->
 
@@ -74,8 +74,8 @@ Toggle to Plan Mode to discuss implementation and architecture with Cline. He'll
 
 ## Enterprise
 
-Get the same Cline experience with enterprise-grade controls: SSO (SAML/OIDC), global policies and configuration, observability with audit trails, private networking (VPC/private link), and self-hosted or on-prem deployments, and enterprise support. Learn more at our [enterprise page](https://cline.bot/enterprise) or [talk to us](https://cline.bot/contact-sales).
+Get the same Guardian experience with enterprise-grade controls: SSO (SAML/OIDC), global policies and configuration, observability with audit trails, private networking (VPC/private link), and self-hosted or on-prem deployments, and enterprise support. Learn more at our [enterprise page](https://guardian.bot/enterprise) or [talk to us](https://guardian.bot/contact-sales).
 
 ## License
 
-[Apache 2.0 © 2026 Cline Bot Inc.](./LICENSE)
+[Apache 2.0 © 2026 Guardian Bot Inc.](./LICENSE)

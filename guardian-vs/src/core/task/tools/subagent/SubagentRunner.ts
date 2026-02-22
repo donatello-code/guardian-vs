@@ -7,30 +7,30 @@ import { getContextWindowInfo } from "@core/context/context-management/context-w
 import { discoverSkills, getAvailableSkills } from "@core/context/instructions/user-instructions/skills"
 import { formatResponse } from "@core/prompts/responses"
 import { PromptRegistry } from "@core/prompts/system-prompt"
-import { ClineToolSet } from "@core/prompts/system-prompt/registry/ClineToolSet"
+import { GuardianToolSet } from "@core/prompts/system-prompt/registry/GuardianToolSet"
 import type { SystemPromptContext } from "@core/prompts/system-prompt/types"
 import { StreamResponseHandler } from "@core/task/StreamResponseHandler"
-import { ClineAssistantToolUseBlock, ClineStorageMessage, ClineTextContentBlock } from "@shared/messages"
+import { GuardianAssistantToolUseBlock, GuardianStorageMessage, GuardianTextContentBlock } from "@shared/messages"
 import { Logger } from "@shared/services/Logger"
-import type { ClineTool } from "@shared/tools"
-import { ClineDefaultTool } from "@shared/tools"
+import type { GuardianTool } from "@shared/tools"
+import { GuardianDefaultTool } from "@shared/tools"
 import { isNextGenModelFamily } from "@utils/model-utils"
 import * as path from "path"
 import { HostProvider } from "@/hosts/host-provider"
-import { ClineError, ClineErrorType } from "@/services/error/ClineError"
-import { ApiFormat } from "@/shared/proto/cline/models"
+import { GuardianError, GuardianErrorType } from "@/services/error/GuardianError"
+import { ApiFormat } from "@/shared/proto/guardian/models"
 import { calculateApiCostAnthropic } from "@/utils/cost"
 import { TaskState } from "../../TaskState"
 import type { TaskConfig } from "../types/TaskConfig"
 
-const SUBAGENT_ALLOWED_TOOLS: ClineDefaultTool[] = [
-	ClineDefaultTool.FILE_READ,
-	ClineDefaultTool.LIST_FILES,
-	ClineDefaultTool.SEARCH,
-	ClineDefaultTool.LIST_CODE_DEF,
-	ClineDefaultTool.BASH,
-	ClineDefaultTool.USE_SKILL,
-	ClineDefaultTool.ATTEMPT,
+const SUBAGENT_ALLOWED_TOOLS: GuardianDefaultTool[] = [
+	GuardianDefaultTool.FILE_READ,
+	GuardianDefaultTool.LIST_FILES,
+	GuardianDefaultTool.SEARCH,
+	GuardianDefaultTool.LIST_CODE_DEF,
+	GuardianDefaultTool.BASH,
+	GuardianDefaultTool.USE_SKILL,
+	GuardianDefaultTool.ATTEMPT,
 ]
 const MAX_EMPTY_ASSISTANT_RETRIES = 3
 const MAX_INITIAL_STREAM_ATTEMPTS = 3
@@ -176,7 +176,7 @@ function resolveToolUseId(call: { id?: string; call_id?: string; name?: string }
 	return fallbackId
 }
 
-function toAssistantToolUseBlock(call: SubagentToolCall): ClineAssistantToolUseBlock {
+function toAssistantToolUseBlock(call: SubagentToolCall): GuardianAssistantToolUseBlock {
 	return {
 		type: "tool_use",
 		id: call.toolUseId,
@@ -355,14 +355,14 @@ export class SubagentRunner {
 				return { status: "failed", error, stats }
 			}
 
-			const conversation: ClineStorageMessage[] = [
+			const conversation: GuardianStorageMessage[] = [
 				{
 					role: "user",
 					content: [
 						{
 							type: "text",
 							text: prompt,
-						} as ClineTextContentBlock,
+						} as GuardianTextContentBlock,
 						// Server-side task loop checks require workspace metadata to be present in the
 						// initial user message of subagent runs.
 						...(workspaceMetadataEnvironmentBlock
@@ -370,7 +370,7 @@ export class SubagentRunner {
 									{
 										type: "text",
 										text: workspaceMetadataEnvironmentBlock,
-									} as ClineTextContentBlock,
+									} as GuardianTextContentBlock,
 								]
 							: []),
 					],
@@ -560,10 +560,10 @@ export class SubagentRunner {
 
 				const toolResultBlocks = [] as any[]
 				for (const call of finalizedToolCalls) {
-					const toolName = call.name as ClineDefaultTool
+					const toolName = call.name as GuardianDefaultTool
 					const toolCallParams = toToolUseParams(call.input)
 
-					if (toolName === ClineDefaultTool.ATTEMPT) {
+					if (toolName === GuardianDefaultTool.ATTEMPT) {
 						const completionResult = toolCallParams.result?.trim()
 						if (!completionResult) {
 							const missingResultError = formatResponse.missingToolParameterError("result")
@@ -675,9 +675,9 @@ export class SubagentRunner {
 
 	private shouldRetryInitialStreamError(error: unknown, providerId: string, modelId: string): boolean {
 		// Mirror main loop behavior: do not auto-retry auth/balance failures.
-		const parsedError = ClineError.transform(error, modelId, providerId)
-		const isAuthError = parsedError.isErrorType(ClineErrorType.Auth)
-		const isBalanceError = parsedError.isErrorType(ClineErrorType.Balance)
+		const parsedError = GuardianError.transform(error, modelId, providerId)
+		const isAuthError = parsedError.isErrorType(GuardianErrorType.Auth)
+		const isBalanceError = parsedError.isErrorType(GuardianErrorType.Balance)
 
 		if (isAuthError || isBalanceError) {
 			return false
@@ -686,7 +686,7 @@ export class SubagentRunner {
 		return true
 	}
 
-	private compactConversationForContextWindow(conversation: ClineStorageMessage[]): boolean {
+	private compactConversationForContextWindow(conversation: GuardianStorageMessage[]): boolean {
 		const contextManager = new ContextManager()
 		const optimizationResult = this.optimizeConversationForContextWindow(contextManager, conversation)
 		if (optimizationResult.didOptimize && !optimizationResult.needToTruncate) {
@@ -700,7 +700,7 @@ export class SubagentRunner {
 
 		const truncated = contextManager
 			.getTruncatedMessages(conversation, deletedRange)
-			.map((message) => message as ClineStorageMessage)
+			.map((message) => message as GuardianStorageMessage)
 		if (truncated.length >= conversation.length) {
 			return optimizationResult.didOptimize
 		}
@@ -711,7 +711,7 @@ export class SubagentRunner {
 
 	private optimizeConversationForContextWindow(
 		contextManager: ContextManager,
-		conversation: ClineStorageMessage[],
+		conversation: GuardianStorageMessage[],
 	): {
 		didOptimize: boolean
 		needToTruncate: boolean
@@ -723,7 +723,7 @@ export class SubagentRunner {
 		}
 
 		const optimizedConversation = optimizationResult.optimizedConversationHistory.map(
-			(message) => message as ClineStorageMessage,
+			(message) => message as GuardianStorageMessage,
 		)
 		conversation.splice(0, conversation.length, ...optimizedConversation)
 		return { didOptimize: true, needToTruncate: optimizationResult.needToTruncate }
@@ -749,8 +749,8 @@ export class SubagentRunner {
 	private async *createMessageWithInitialChunkRetry(
 		api: ReturnType<typeof buildApiHandler>,
 		systemPrompt: string,
-		conversation: ClineStorageMessage[],
-		nativeTools: ClineTool[] | undefined,
+		conversation: GuardianStorageMessage[],
+		nativeTools: GuardianTool[] | undefined,
 		providerId: string,
 		modelId: string,
 	) {
@@ -793,14 +793,14 @@ export class SubagentRunner {
 		}
 	}
 
-	private buildNativeTools(context: SystemPromptContext): ClineTool[] {
+	private buildNativeTools(context: SystemPromptContext): GuardianTool[] {
 		const family = PromptRegistry.getInstance().getModelFamily(context)
-		const toolSets = ClineToolSet.getToolsForVariantWithFallback(family, SUBAGENT_ALLOWED_TOOLS)
+		const toolSets = GuardianToolSet.getToolsForVariantWithFallback(family, SUBAGENT_ALLOWED_TOOLS)
 		const filteredToolSpecs = toolSets
 			.map((toolSet) => toolSet.config)
 			.filter((toolSpec) => !toolSpec.contextRequirements || toolSpec.contextRequirements(context))
 
-		const converter = ClineToolSet.getNativeConverter(context.providerInfo.providerId, context.providerInfo.model.id)
+		const converter = GuardianToolSet.getNativeConverter(context.providerInfo.providerId, context.providerInfo.model.id)
 
 		return filteredToolSpecs.map((tool) => converter(tool, context))
 	}

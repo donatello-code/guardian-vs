@@ -7,8 +7,8 @@ import type { TaskConfig } from "@core/task/tools/types/TaskConfig"
 import { afterEach, describe, it } from "mocha"
 import sinon from "sinon"
 import { HostProvider } from "@/hosts/host-provider"
-import { ApiFormat } from "@/shared/proto/cline/models"
-import { ClineDefaultTool } from "@/shared/tools"
+import { ApiFormat } from "@/shared/proto/guardian/models"
+import { GuardianDefaultTool } from "@/shared/tools"
 import { TaskState } from "../../../TaskState"
 import { SubagentRunner } from "../SubagentRunner"
 
@@ -123,8 +123,8 @@ function createTaskConfig(
 			runUserPromptSubmitHook: sinon.stub().resolves({}),
 		},
 		coordinator: {
-			getHandler: sinon.stub().callsFake((toolName: ClineDefaultTool) => {
-				if (toolName === ClineDefaultTool.LIST_FILES) {
+			getHandler: sinon.stub().callsFake((toolName: GuardianDefaultTool) => {
+				if (toolName === GuardianDefaultTool.LIST_FILES) {
 					return {
 						execute: sinon.stub().resolves("ok"),
 						getDescription: sinon.stub().returns("list_files"),
@@ -151,7 +151,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_1",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -168,7 +168,7 @@ describe("SubagentRunner", () => {
 			const toolUse = assistantMessage.content.find((block) => block.type === "tool_use")
 			assert.ok(toolUse, "assistant message should include tool_use block")
 			assert.equal(toolUse.id, "toolu_subagent_1")
-			assert.equal(toolUse.name, ClineDefaultTool.LIST_FILES)
+			assert.equal(toolUse.name, GuardianDefaultTool.LIST_FILES)
 
 			const userMessage = conversation[2] as { role: string; content: Array<{ type?: string; [key: string]: unknown }> }
 			assert.equal(userMessage.role, "user")
@@ -183,7 +183,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_complete_1",
-						name: ClineDefaultTool.ATTEMPT,
+						name: GuardianDefaultTool.ATTEMPT,
 						arguments: JSON.stringify({ result: "done" }),
 					},
 				},
@@ -233,7 +233,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_2",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -405,7 +405,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_ctx_1",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -417,7 +417,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_ctx_2",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -438,7 +438,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_ctx_complete",
-						name: ClineDefaultTool.ATTEMPT,
+						name: GuardianDefaultTool.ATTEMPT,
 						arguments: JSON.stringify({ result: "done" }),
 					},
 				},
@@ -537,7 +537,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_threshold_1",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -557,7 +557,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_threshold_2",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -571,7 +571,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_threshold_complete",
-						name: ClineDefaultTool.ATTEMPT,
+						name: GuardianDefaultTool.ATTEMPT,
 						arguments: JSON.stringify({ result: "done" }),
 					},
 				},
@@ -642,7 +642,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_3",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -706,7 +706,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_complete_2",
-						name: ClineDefaultTool.ATTEMPT,
+						name: GuardianDefaultTool.ATTEMPT,
 						arguments: JSON.stringify({ result: "done" }),
 					},
 				},
@@ -766,7 +766,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_workspace_1",
-						name: ClineDefaultTool.LIST_FILES,
+						name: GuardianDefaultTool.LIST_FILES,
 						arguments: JSON.stringify({ path: ".", recursive: false }),
 					},
 				},
@@ -789,7 +789,7 @@ describe("SubagentRunner", () => {
 				tool_call: {
 					function: {
 						id: "toolu_subagent_workspace_complete_1",
-						name: ClineDefaultTool.ATTEMPT,
+						name: GuardianDefaultTool.ATTEMPT,
 						arguments: JSON.stringify({ result: "done" }),
 					},
 				},

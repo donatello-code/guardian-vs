@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Smoke Test Runner for Cline
+ * Smoke Test Runner for Guardian
  *
  * Runs curated smoke tests against configured providers to verify:
  * - Basic tool execution works
@@ -24,25 +24,25 @@ import { MetricsCalculator } from "../analysis/src/metrics"
 
 // Default provider and model for smoke tests
 // These ensure deterministic behavior regardless of local config
-const DEFAULT_PROVIDER = "cline"
+const DEFAULT_PROVIDER = "guardian"
 const DEFAULT_MODEL = "anthropic/claude-sonnet-4.5"
 
 // Models to test - can be overridden with --model flag
 const MODELS: string[] = [DEFAULT_MODEL]
 
-// Check if cline CLI is available
-function checkClineCli(): boolean {
+// Check if guardian CLI is available
+function checkGuardianCli(): boolean {
 	try {
-		execSync("which cline", { encoding: "utf-8", timeout: 5000 })
+		execSync("which guardian", { encoding: "utf-8", timeout: 5000 })
 		return true
 	} catch {
 		return false
 	}
 }
 
-// Use user's existing Cline config (already has auth configured)
+// Use user's existing Guardian config (already has auth configured)
 // For CI, this would be set up by the auth step before tests run
-const CLINE_CONFIG_DIR = path.join(process.env.HOME || "", ".cline")
+const CLINE_CONFIG_DIR = path.join(process.env.HOME || "", ".guardian")
 
 // Configure authentication using CLINE_API_KEY environment variable
 // Returns success if auth is configured, error message otherwise
@@ -60,7 +60,7 @@ function configureAuth(): { ok: boolean; error?: string } {
 
 	try {
 		// Run quick auth setup (non-interactive when all flags provided)
-		execSync(`cline auth --config "${CLINE_CONFIG_DIR}" -p ${DEFAULT_PROVIDER} -k "${apiKey}" -m "${DEFAULT_MODEL}"`, {
+		execSync(`guardian auth --config "${CLINE_CONFIG_DIR}" -p ${DEFAULT_PROVIDER} -k "${apiKey}" -m "${DEFAULT_MODEL}"`, {
 			encoding: "utf-8",
 			timeout: 10000,
 			stdio: "pipe",
@@ -133,7 +133,7 @@ async function runTrial(scenario: SmokeScenario, modelId: string, trialWorkdir: 
 	}
 
 	// Build CLI command with explicit model setting for determinism
-	// Provider is configured via `cline auth` before running tests
+	// Provider is configured via `guardian auth` before running tests
 	const args = [
 		"--config",
 		CLINE_CONFIG_DIR, // Use shared config directory for auth
@@ -146,8 +146,8 @@ async function runTrial(scenario: SmokeScenario, modelId: string, trialWorkdir: 
 	]
 
 	try {
-		// Run cline CLI
-		const result = await runClineWithTimeout(args, trialWorkdir, scenario.timeout * 1000)
+		// Run guardian CLI
+		const result = await runGuardianWithTimeout(args, trialWorkdir, scenario.timeout * 1000)
 
 		if (!result.success) {
 			return {
@@ -218,20 +218,20 @@ async function runTrial(scenario: SmokeScenario, modelId: string, trialWorkdir: 
 	}
 }
 
-// Run cline CLI with timeout
-interface ClineResult {
+// Run guardian CLI with timeout
+interface GuardianResult {
 	success: boolean
 	error?: string
 	stdout: string
 	stderr: string
 }
 
-function runClineWithTimeout(args: string[], cwd: string, timeoutMs: number): Promise<ClineResult> {
+function runGuardianWithTimeout(args: string[], cwd: string, timeoutMs: number): Promise<GuardianResult> {
 	return new Promise((resolve) => {
 		let stdout = ""
 		let stderr = ""
 
-		const proc = spawn("cline", args, {
+		const proc = spawn("guardian", args, {
 			cwd,
 			env: { ...process.env },
 			stdio: ["ignore", "pipe", "pipe"], // stdin: ignore, stdout/stderr: pipe
@@ -345,9 +345,9 @@ async function main() {
 		}
 	}
 
-	// Check cline CLI is available
-	if (!checkClineCli()) {
-		console.error("ERROR: cline CLI not found in PATH")
+	// Check guardian CLI is available
+	if (!checkGuardianCli()) {
+		console.error("ERROR: guardian CLI not found in PATH")
 		console.error("")
 		console.error("For local development:")
 		console.error("  cd cli && npm install && npm run build && npm link")
@@ -358,7 +358,7 @@ async function main() {
 	}
 
 	// Configure authentication if CLINE_API_KEY is set
-	// Otherwise use existing auth from ~/.cline
+	// Otherwise use existing auth from ~/.guardian
 	if (process.env.CLINE_API_KEY) {
 		console.log("Configuring authentication from CLINE_API_KEY...")
 		const authResult = configureAuth()
@@ -371,7 +371,7 @@ async function main() {
 		}
 		console.log("Authentication configured")
 	} else {
-		console.log("Using existing authentication from ~/.cline")
+		console.log("Using existing authentication from ~/.guardian")
 	}
 	console.log("")
 

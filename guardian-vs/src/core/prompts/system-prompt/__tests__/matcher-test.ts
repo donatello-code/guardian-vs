@@ -90,7 +90,7 @@ export function testVariantMatching() {
 				} as unknown as McpHub,
 				focusChainSettings: {
 					enabled: true,
-					remindClineInterval: 6,
+					remindGuardianInterval: 6,
 				},
 				browserSettings: {
 					viewport: {
@@ -98,8 +98,8 @@ export function testVariantMatching() {
 						height: 720,
 					},
 				},
-				globalClineRulesFileInstructions: "Follow global rules",
-				localClineRulesFileInstructions: "Follow local rules",
+				globalGuardianRulesFileInstructions: "Follow global rules",
+				localGuardianRulesFileInstructions: "Follow local rules",
 				preferredLanguageInstructions: "Prefer TypeScript",
 				isTesting: true,
 				enableNativeToolCalls: false,

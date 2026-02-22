@@ -1,6 +1,6 @@
 import React from "react"
 import { useExtensionState } from "@/context/ExtensionStateContext"
-import { EmptyRequest } from "@shared/proto/cline/common"
+import { EmptyRequest } from "@shared/proto/guardian/common"
 import { StateServiceClient } from "@/services/grpc-client"
 
 interface QueueDisplayProps {

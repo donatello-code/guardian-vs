@@ -1,7 +1,7 @@
 import { isGPT51Model, isGPT52Model, isNextGenModelProvider } from "@utils/model-utils"
 import { ModelFamily } from "@/shared/prompts"
 import { Logger } from "@/shared/services/Logger"
-import { ClineDefaultTool } from "@/shared/tools"
+import { GuardianDefaultTool } from "@/shared/tools"
 import { SystemPromptSection } from "../../templates/placeholders"
 import { createVariant } from "../variant-builder"
 import { validateVariant } from "../variant-validator"
@@ -51,27 +51,27 @@ export const config = createVariant(ModelFamily.NATIVE_GPT_5_1)
 		SystemPromptSection.SKILLS,
 	)
 	.tools(
-		ClineDefaultTool.BASH,
-		ClineDefaultTool.FILE_READ,
+		GuardianDefaultTool.BASH,
+		GuardianDefaultTool.FILE_READ,
 		// Should disable FILE_NEW and FILE_EDIT when enabled
-		ClineDefaultTool.APPLY_PATCH,
-		ClineDefaultTool.SEARCH,
-		ClineDefaultTool.LIST_FILES,
-		ClineDefaultTool.LIST_CODE_DEF,
-		ClineDefaultTool.BROWSER,
-		ClineDefaultTool.WEB_FETCH,
-		ClineDefaultTool.WEB_SEARCH,
-		ClineDefaultTool.MCP_ACCESS,
-		ClineDefaultTool.ASK,
-		ClineDefaultTool.ATTEMPT,
-		ClineDefaultTool.NEW_TASK,
-		ClineDefaultTool.PLAN_MODE,
-		ClineDefaultTool.ACT_MODE,
-		ClineDefaultTool.MCP_DOCS,
-		ClineDefaultTool.TODO,
-		ClineDefaultTool.GENERATE_EXPLANATION,
-		ClineDefaultTool.USE_SKILL,
-		ClineDefaultTool.USE_SUBAGENTS,
+		GuardianDefaultTool.APPLY_PATCH,
+		GuardianDefaultTool.SEARCH,
+		GuardianDefaultTool.LIST_FILES,
+		GuardianDefaultTool.LIST_CODE_DEF,
+		GuardianDefaultTool.BROWSER,
+		GuardianDefaultTool.WEB_FETCH,
+		GuardianDefaultTool.WEB_SEARCH,
+		GuardianDefaultTool.MCP_ACCESS,
+		GuardianDefaultTool.ASK,
+		GuardianDefaultTool.ATTEMPT,
+		GuardianDefaultTool.NEW_TASK,
+		GuardianDefaultTool.PLAN_MODE,
+		GuardianDefaultTool.ACT_MODE,
+		GuardianDefaultTool.MCP_DOCS,
+		GuardianDefaultTool.TODO,
+		GuardianDefaultTool.GENERATE_EXPLANATION,
+		GuardianDefaultTool.USE_SKILL,
+		GuardianDefaultTool.USE_SUBAGENTS,
 	)
 	.placeholders({
 		MODEL_FAMILY: ModelFamily.NATIVE_GPT_5_1,
