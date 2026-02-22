@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.99.2]
+
+### Fixed
+- **TypeScript Import Resolution**: Fixed symbolic link issues in guardian-rules directory to resolve webview build errors
+- **VSIX Packaging**: Updated npm dependencies and resolved extraneous package warnings
+
+## [3.99.1]
+
+### Added
+- **Complete rename from Cline to Guardian**: All references to "Cline" have been updated to "Guardian" throughout the codebase
+
 ## [3.99.0]
 
 ### Added
